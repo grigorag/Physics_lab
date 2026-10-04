@@ -25,22 +25,23 @@ site/
 ├── assets/
 │   ├── css/
 │   │   ├── main.css           Entry point: fonts + imports the layers below
-│   │   ├── tokens.css         Design tokens (colors, fonts, spacing, section accents)
+│   │   ├── tokens.css         Design tokens: dark + light themes, fonts, spacing, section accents
 │   │   ├── base.css           Reset and element defaults
 │   │   ├── layout.css         Header/footer, page container, sim layout, .explain
 │   │   ├── components.css     Panel, fields, sliders, buttons, tabs, stats, legend …
 │   │   └── home.css           Home page only
 │   ├── js/
+│   │   ├── theme-init.js      Classic script in <head>: applies the saved/system theme before first paint
 │   │   ├── catalog.js         ★ Sections and simulations: the single source of truth
-│   │   ├── home.js            Renders the home page from the catalog
+│   │   ├── home.js            Renders the home page from the catalog; search filter
 │   │   ├── thumbs.js          SVG card illustrations, keyed by sim id
 │   │   └── core/
-│   │       ├── shell.js       Renders header (breadcrumbs) and footer on every page
+│   │       ├── shell.js       Renders header (breadcrumbs, theme toggle), footer, prev/next links
 │   │       ├── canvas.js      fixedCanvas / fluidCanvas (HiDPI), pointerPos, onDrag
 │   │       ├── loop.js        startLoop(frame): rAF loop with clamped dt (seconds)
 │   │       ├── controls.js    bindRange, bindCheckbox, bindSelect, bindSegmented, bindTabs, bindPlayPause, onClick
 │   │       ├── draw.js        clear, line, arrow, circle, text, roundRect
-│   │       ├── theme.js       COLORS / FONTS / font() for canvas, fontsReady()
+│   │       ├── theme.js       Theme switching; COLORS / themed() / alpha() / onThemeChange() / font() for canvas
 │   │       ├── color.js       wavelengthToRGB, rgba
 │   │       ├── math.js        clamp, lerp, rand, DEG, TAU, vec
 │   │       └── dom.js         byId, $, $$, setText, setHTML
@@ -66,7 +67,7 @@ The home page and breadcrumbs update automatically.
 
 1. Append `{ id, title, blurb }` to `sections` in `assets/js/catalog.js`.
 2. Give it an accent color in `assets/css/tokens.css`:
-   `[data-section="<id>"] { --accent: …; }`
+   `[data-section="<id>"] { --accent: var(--blue); }` — use a palette variable so it adapts to both themes.
 
 ## Page template
 
@@ -78,6 +79,7 @@ The home page and breadcrumbs update automatically.
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Վերնագիր · Ֆիզիկայի Լաբորատորիաներ</title>
   <link rel="icon" href="../../../assets/img/favicon.svg" type="image/svg+xml">
+  <script src="../../../assets/js/theme-init.js"></script>
   <link rel="stylesheet" href="../../../assets/css/main.css">
   <script type="module" src="../../../assets/js/core/shell.js"></script>
   <script type="module" src="./main.js"></script>
@@ -202,4 +204,5 @@ The class names are defined in `components.css`. Use them in place of custom sty
 - **Animation.** Use `startLoop((dt) => { … })`, where `dt` is in seconds and clamped to 0.05.
 - **Input.** Use `onDrag(view, { start, move, end })` for mouse and touch (pointer events).
 - **Canvas colors and fonts.** Take them from `COLORS` / `font()` in `theme.js` so canvases match the UI. Simulation-specific colors (e.g. a red ladybug) can stay local constants.
+- **Themes.** The site has a dark and a light theme (`<html data-theme>`; toggle in the header, saved in `localStorage`, system setting by default). `COLORS` is updated in place when the theme changes, so read it at draw time. For a sim-local palette use `const C = themed((light) => ({ … }))`. Canvases that only draw on input must also call `onThemeChange(draw)`. A canvas that has to stay dark in both themes (light on black, as in wave optics) gets `class="canvas-wrap canvas-wrap--dark"` and imports `DARK` in place of `COLORS`.
 - **Language.** All visible text is Armenian (`lang="hy"`).

@@ -6,6 +6,7 @@
   <title>Ֆիզիկայի Լաբորատորիաներ</title>
   <meta name="description" content="Ինտերակտիվ վիրտուալ լաբորատորիաներ ֆիզիկայի դասերի համար">
   <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+  <script src="assets/js/theme-init.js"></script>
   <link rel="stylesheet" href="assets/css/main.css">
   <link rel="stylesheet" href="assets/css/home.css">
   <script type="module" src="assets/js/core/shell.js"></script>
@@ -18,10 +19,17 @@
     <section class="hero">
       <h1 class="hero__title">Ֆիզիկայի Լաբորատորիաներ</h1>
       <p class="hero__lead">Ինտերակտիվ վիրտուալ փորձեր․ փոխեք պարամետրերը և դիտեք, թե ինչպես է փոխվում երևույթը։</p>
+      <div class="search" role="search">
+        <svg class="search__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <circle cx="11" cy="11" r="7"/><path d="M16.5 16.5 21 21"/>
+        </svg>
+        <input class="search__input" id="search" type="search" placeholder="Որոնել լաբորատորիա…" aria-label="Որոնել լաբորատորիա" autocomplete="off">
+      </div>
       <ul class="jump" id="jump" aria-label="Բաժիններ"></ul>
     </section>
 
     <div id="sections"></div>
+    <p class="no-results" id="noResults" hidden>Ոչինչ չի գտնվել։ Փորձեք այլ բառ։</p>
   </main>
 
   <footer data-shell="footer"></footer>

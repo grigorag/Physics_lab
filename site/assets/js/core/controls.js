@@ -4,6 +4,14 @@
 
 import { byId, $$ } from './dom.js';
 
+/** Updates --fill (0–100%) on a range input: the painted part of its track. */
+export function syncRangeFill(input) {
+  const min = parseFloat(input.min) || 0;
+  const max = input.max === '' ? 100 : parseFloat(input.max);
+  const ratio = max > min ? (parseFloat(input.value) - min) / (max - min) : 0;
+  input.style.setProperty('--fill', `${(ratio * 100).toFixed(1)}%`);
+}
+
 /**
  * Range slider + its <output for="id"> readout.
  *   const f = bindRange('focal', { format: v => v.toFixed(1), onInput: draw });
@@ -29,6 +37,7 @@ export function bindRange(id, { format = String, onInput, onChange } = {}) {
 
   function render() {
     if (output) output.textContent = format(handle.value);
+    syncRangeFill(input);
   }
 
   input.addEventListener('input', () => { render(); onInput?.(handle.value); });

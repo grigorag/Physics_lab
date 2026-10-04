@@ -1,10 +1,10 @@
 /* ==========================================================================
-   Home page — hero, section blocks and simulation cards.
+   Home page — hero, search, section blocks and simulation cards.
    ========================================================================== */
 
 .hero {
-  padding: var(--sp-7) 0 var(--sp-6);
-  max-width: 760px;
+  padding: var(--sp-7) 0 var(--sp-5);
+  max-width: 780px;
 }
 .hero__title {
   font-family: var(--font-display);
@@ -20,12 +20,47 @@
   max-width: 60ch;
 }
 
+/* ---- Search ---- */
+.search {
+  position: relative;
+  margin-top: var(--sp-5);
+  max-width: 480px;
+}
+.search__icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  width: 18px;
+  height: 18px;
+  transform: translateY(-50%);
+  color: var(--text-3);
+  pointer-events: none;
+}
+.search__input {
+  width: 100%;
+  height: 46px;
+  padding: 0 16px 0 42px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  background: var(--surface-1);
+  box-shadow: var(--shadow-sm);
+  font-size: var(--fs-md);
+  transition: border-color var(--ease), box-shadow var(--ease);
+}
+.search__input::placeholder { color: var(--text-3); }
+.search__input:hover { border-color: var(--accent-line); }
+.search__input:focus-visible {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px var(--accent-soft);
+}
+
 /* Jump links to sections */
 .jump {
   display: flex;
   flex-wrap: wrap;
   gap: var(--sp-2);
-  margin-top: var(--sp-5);
+  margin-top: var(--sp-4);
   padding: 0;
   list-style: none;
 }
@@ -33,13 +68,14 @@
   display: inline-flex;
   align-items: center;
   gap: var(--sp-2);
+  min-height: 36px;
   padding: 6px 14px;
   border: 1px solid var(--border-strong);
   border-radius: 999px;
   background: var(--surface-1);
   font-size: var(--fs-sm);
   color: var(--text-2);
-  transition: border-color var(--ease), color var(--ease);
+  transition: border-color var(--ease), color var(--ease), background var(--ease);
 }
 .jump a::before {
   content: "";
@@ -48,14 +84,25 @@
   border-radius: 50%;
   background: var(--accent);
 }
-.jump a:hover { border-color: var(--accent); color: var(--text); }
+.jump a:hover { border-color: var(--accent); color: var(--text); background: var(--accent-soft); }
+.jump__count {
+  font-family: var(--font-mono);
+  font-size: var(--fs-2xs);
+  color: var(--text-3);
+}
+
+.no-results {
+  margin-top: var(--sp-6);
+  padding: var(--sp-6);
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius-lg);
+  text-align: center;
+  color: var(--text-3);
+}
 
 /* ---- Section block ---- */
-.home-section {
-  padding-top: var(--sp-6);
-  scroll-margin-top: 64px;
-}
-.home-section + .home-section { margin-top: var(--sp-5); }
+.home-section { padding-top: var(--sp-6); }
+.home-section + .home-section { margin-top: var(--sp-4); }
 
 .home-section__head {
   display: flex;
@@ -70,7 +117,7 @@
   font-size: var(--fs-sm);
   font-weight: 700;
   color: var(--accent);
-  padding-bottom: 3px;
+  padding-bottom: 4px;
 }
 .home-section__text { flex: 1; min-width: 0; }
 .home-section__title {
@@ -87,13 +134,13 @@
   font-size: var(--fs-xs);
   color: var(--text-3);
   white-space: nowrap;
-  padding-bottom: 3px;
+  padding-bottom: 4px;
 }
 
 /* ---- Cards ---- */
 .card-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: var(--sp-4);
 }
 
@@ -104,11 +151,13 @@
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   background: var(--surface-1);
+  box-shadow: var(--shadow-sm);
   transition: border-color var(--ease), transform var(--ease), box-shadow var(--ease);
 }
-.card:hover {
+.card:hover,
+.card:focus-visible {
   border-color: var(--accent-line);
-  transform: translateY(-2px);
+  transform: translateY(-3px);
   box-shadow: var(--shadow);
 }
 
@@ -120,7 +169,7 @@
   color: var(--accent);
   background:
     radial-gradient(120% 90% at 30% 0%, var(--accent-soft), transparent 70%),
-    linear-gradient(var(--surface-2), var(--canvas-bg));
+    var(--surface-2);
   border-bottom: 1px solid var(--border);
 }
 .card__thumb svg { width: 100%; height: 100%; }
@@ -140,12 +189,12 @@
   font-weight: 600;
 }
 .card__tag {
-  padding: 1px 7px;
+  padding: 1px 8px;
   border-radius: 999px;
   background: var(--accent-soft);
   color: var(--accent);
   font-size: var(--fs-2xs);
-  font-weight: 600;
+  font-weight: 700;
 }
 .card__summary {
   color: var(--text-2);
@@ -153,12 +202,19 @@
   flex: 1;
 }
 .card__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   margin-top: var(--sp-2);
   font-size: var(--fs-sm);
-  font-weight: 500;
+  font-weight: 600;
   color: var(--accent);
 }
-.card:hover .card__cta { text-decoration: underline; text-underline-offset: 3px; }
+.card__cta::after {
+  content: "→";
+  transition: transform var(--ease);
+}
+.card:hover .card__cta::after { transform: translateX(4px); }
 
 /* Placeholder for a section that has no simulations yet. */
 .card--empty {
@@ -169,6 +225,7 @@
   color: var(--text-3);
   font-size: var(--fs-sm);
   background: transparent;
+  box-shadow: none;
 }
 .card--empty:hover { transform: none; box-shadow: none; border-color: var(--border); }
 

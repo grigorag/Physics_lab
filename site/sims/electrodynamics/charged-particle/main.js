@@ -10,25 +10,27 @@ import { startLoop } from '../../../assets/js/core/loop.js';
 import { bindRange, bindSegmented, bindPlayPause, onClick } from '../../../assets/js/core/controls.js';
 import { setText } from '../../../assets/js/core/dom.js';
 import { clear, line, arrow, circle, text } from '../../../assets/js/core/draw.js';
-import { COLORS } from '../../../assets/js/core/theme.js';
+import { COLORS, themed, alpha } from '../../../assets/js/core/theme.js';
 import { clamp, TAU } from '../../../assets/js/core/math.js';
 import { project } from './projection.js';
 
-const C = {
-  axisX: 'rgba(240,113,74,0.75)',
-  axisY: 'rgba(46,203,161,0.9)',
-  axisZ: 'rgba(55,138,221,0.75)',
-  bLine: 'rgba(46,203,161,0.28)',
-  bHead: 'rgba(46,203,161,0.38)',
+const C = themed((light) => ({
+  axisX: alpha(COLORS.coral, 0.75),
+  axisY: alpha(COLORS.teal, 0.9),
+  axisZ: alpha(COLORS.blue, 0.75),
+  bLine: alpha(COLORS.teal, light ? 0.4 : 0.28),
+  bHead: alpha(COLORS.teal, light ? 0.5 : 0.38),
   velocity: COLORS.coral,
   force: COLORS.amber,
   positive: COLORS.purple,
-  positiveRim: '#b0aaff',
+  positiveRim: light ? '#3a2fa8' : '#b0aaff',
   negative: COLORS.coral,
-  negativeRim: '#ffaa88',
-  drop: 'rgba(124,111,247,0.18)',
-  caption: 'rgba(46,203,161,0.6)',
-};
+  negativeRim: light ? '#8f2f12' : '#ffaa88',
+  drop: alpha(COLORS.purple, light ? 0.35 : 0.18),
+  caption: alpha(COLORS.teal, light ? 0.9 : 0.6),
+  // Trail gradient, tail → head: [r, g, b] start and per-channel change.
+  trail: light ? [[90, 75, 224], [-30, -20, -40]] : [[124, 111, 247], [40, 20, -30]],
+}));
 
 const SPEED = 1.32;          // time units per second (= 0.022 per frame at 60 fps)
 const TRAIL_DT = 0.022;      // time spacing between trail samples
@@ -185,7 +187,8 @@ function frame(dt) {
   }
   for (let i = 1; i < trail.length; i++) {
     const a = i / trail.length;
-    const color = `rgba(${Math.round(124 + a * 40)},${Math.round(111 + a * 20)},${Math.round(247 - a * 30)},${(0.15 + a * 0.75).toFixed(2)})`;
+    const [c0, dc] = C.trail;
+    const color = `rgba(${c0.map((c, k) => Math.round(c + a * dc[k])).join(',')},${(0.15 + a * 0.75).toFixed(2)})`;
     line(ctx, trail[i - 1].sx, trail[i - 1].sy, trail[i].sx, trail[i].sy, { color, width: 1.2 + a * 1.8, cap: 'round' });
   }
 

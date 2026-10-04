@@ -8,17 +8,19 @@ import { fluidCanvas, onDrag } from '../../../assets/js/core/canvas.js';
 import { bindRange } from '../../../assets/js/core/controls.js';
 import { setText, setHTML } from '../../../assets/js/core/dom.js';
 import { arrow as arrowPx, circle, text, clear } from '../../../assets/js/core/draw.js';
-import { COLORS, fontsReady } from '../../../assets/js/core/theme.js';
+import { COLORS, themed, alpha, onThemeChange, fontsReady } from '../../../assets/js/core/theme.js';
 
-const C = {
+const C = themed((light) => ({
   object: COLORS.coral,
+  objectRim: light ? '#8f2f12' : '#ffaa88',
   image: COLORS.teal,
   ray1: COLORS.amber,
   ray2: COLORS.purple,
-  ray3: 'rgba(46,203,161,0.75)',
+  ray3: alpha(COLORS.teal, 0.75),
   focus: COLORS.purple,
-  lens: 'rgba(55,138,221,0.9)',
-};
+  focusRim: light ? '#3a2fa8' : '#b0aaff',
+  lens: alpha(COLORS.blue, 0.9),
+}));
 
 // ---------- Canvas & world transform ----------
 const view = fluidCanvas(document.getElementById('cv'), {
@@ -149,7 +151,7 @@ function draw() {
   // Grid
   const worldW = OX / SCALE, worldH = OY / SCALE;
   ctx.save();
-  ctx.strokeStyle = 'rgba(120,140,200,0.06)';
+  ctx.strokeStyle = COLORS.grid;
   ctx.lineWidth = 0.5;
   for (let x = -Math.ceil(worldW); x <= Math.ceil(worldW); x++) {
     ctx.beginPath(); ctx.moveTo(wx(x), 0); ctx.lineTo(wx(x), H); ctx.stroke();
@@ -166,15 +168,15 @@ function draw() {
 
   // Focal points
   for (const x of [f, -f]) {
-    dot(x, 0, 5, C.focus, '#b0aaff');
+    dot(x, 0, 5, C.focus, C.focusRim);
     label('F', x + 0.15, 0.35, C.focus, 'left', 'middle', 11);
-    dot(2 * x, 0, 3, 'rgba(124,111,247,0.4)');
-    label('2F', 2 * x + 0.1, 0.35, 'rgba(124,111,247,0.5)', 'left', 'middle', 10);
+    dot(2 * x, 0, 3, alpha(C.focus, 0.4));
+    label('2F', 2 * x + 0.1, 0.35, alpha(C.focus, 0.6), 'left', 'middle', 10);
   }
 
   // Object
   arrow(Tx, 0, Tx, Ty, C.object, 2.5);
-  dot(Tx, 0, 5, C.object, '#ffaa88');
+  dot(Tx, 0, 5, C.object, C.objectRim);
   label('S', Tx - 0.3, Ty + 0.45, C.object, 'right', 'bottom', 12);
 
   // Ray 1: parallel to the axis, then through the back focus
@@ -213,29 +215,29 @@ function draw() {
     const above = Iy < 0 ? -0.5 : 0.5;
     if (!virtual) {
       arrow(Ix, 0, Ix, Iy, C.image, 2.5);
-      dot(Ix, 0, 5, C.image, 'rgba(46,203,161,0.5)');
+      dot(Ix, 0, 5, C.image, alpha(C.image, 0.5));
       label("S'", Ix + 0.15, Iy + above, C.image, 'left', 'middle', 12);
     } else {
-      line(Ix, 0, Ix, Iy, 'rgba(46,203,161,0.55)', 2, [4, 5]);
-      dot(Ix, 0, 5, 'rgba(46,203,161,0.7)');
-      label("S'", Ix + 0.15, Iy + above, 'rgba(46,203,161,0.8)', 'left', 'middle', 12);
+      line(Ix, 0, Ix, Iy, alpha(C.image, 0.55), 2, [4, 5]);
+      dot(Ix, 0, 5, alpha(C.image, 0.7));
+      label("S'", Ix + 0.15, Iy + above, alpha(C.image, 0.8), 'left', 'middle', 12);
     }
   }
 
   // Distance annotations
   const annoY = -worldH * 0.78;
   if (absD1 > 0.5) {
-    line(Tx, annoY, 0, annoY, 'rgba(240,113,74,0.45)', 1, [3, 4]);
-    label(`|d|=${absD1.toFixed(1)}`, Tx / 2, annoY + 0.2, 'rgba(240,113,74,0.75)', 'center', 'bottom', 10);
+    line(Tx, annoY, 0, annoY, alpha(C.object, 0.45), 1, [3, 4]);
+    label(`|d|=${absD1.toFixed(1)}`, Tx / 2, annoY + 0.2, alpha(C.object, 0.8), 'center', 'bottom', 10);
   }
   if (hasImage && Math.abs(d2) < 30) {
-    line(0, annoY, Ix, annoY, 'rgba(46,203,161,0.4)', 1, [3, 4]);
-    label(`|f|=${Math.abs(d2).toFixed(1)}`, Ix / 2, annoY - 0.6, 'rgba(46,203,161,0.75)', 'center', 'bottom', 10);
+    line(0, annoY, Ix, annoY, alpha(C.image, 0.4), 1, [3, 4]);
+    label(`|f|=${Math.abs(d2).toFixed(1)}`, Ix / 2, annoY - 0.6, alpha(C.image, 0.8), 'center', 'bottom', 10);
   }
 
   // Lens caption
-  text(ctx, `F = ${f.toFixed(1)}`, wx(0), wy(lensTop) - 24, { color: 'rgba(55,138,221,0.7)', size: 11, family: 'mono', align: 'center' });
-  text(ctx, f > 0 ? 'հավաքող ոսպնյակ' : 'ցրող ոսպնյակ', wx(0), wy(lensTop) - 10, { color: 'rgba(55,138,221,0.7)', size: 11, align: 'center' });
+  text(ctx, `F = ${f.toFixed(1)}`, wx(0), wy(lensTop) - 24, { color: C.lens, size: 11, family: 'mono', align: 'center' });
+  text(ctx, f > 0 ? 'հավաքող ոսպնյակ' : 'ցրող ոսպնյակ', wx(0), wy(lensTop) - 10, { color: C.lens, size: 11, align: 'center' });
 
   updateReadouts(s);
 }
@@ -248,5 +250,6 @@ function dragTo(p) {
 }
 onDrag(view, { start: dragTo, move: dragTo });
 
+onThemeChange(draw);
 fontsReady().then(draw);
 draw();

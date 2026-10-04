@@ -2,7 +2,7 @@
 // view's logical (CSS-pixel) coordinates.
 
 import { TAU } from './math.js';
-import { font } from './theme.js';
+import { COLORS, font } from './theme.js';
 
 export function clear(ctx, width, height, color) {
   if (color) {
@@ -71,7 +71,7 @@ export function circle(ctx, x, y, r, { fill = null, stroke = null, width = 1.5 }
  *   text(ctx, 'F', x, y, { color, size: 11, family: 'mono', align: 'center' })
  */
 export function text(ctx, str, x, y, {
-  color = '#e8eaf6',
+  color = COLORS.text,
   size = 12,
   weight = 500,
   family = 'sans',

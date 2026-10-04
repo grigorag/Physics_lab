@@ -13,10 +13,10 @@
 
 /* ---- Site header (rendered by core/shell.js) ---- */
 .site-header {
-  min-height: 56px;
+  min-height: var(--header-h);
   border-bottom: 1px solid var(--border);
-  background: color-mix(in srgb, var(--bg) 82%, transparent);
-  backdrop-filter: blur(10px);
+  background: color-mix(in srgb, var(--bg) 84%, transparent);
+  backdrop-filter: blur(12px);
   position: sticky;
   top: 0;
   z-index: 10;
@@ -24,12 +24,11 @@
 .site-header__inner {
   max-width: var(--page-max);
   margin-inline: auto;
-  min-height: 56px;
+  min-height: var(--header-h);
   padding-inline: var(--sp-5);
   display: flex;
   align-items: center;
-  gap: var(--sp-4);
-  flex-wrap: wrap;
+  gap: var(--sp-3) var(--sp-4);
 }
 
 .brand {
@@ -40,8 +39,9 @@
   font-size: var(--fs-md);
   color: var(--text);
   white-space: nowrap;
+  flex: none;
 }
-.brand__mark { width: 26px; height: 26px; color: var(--accent); }
+.brand__mark { width: 28px; height: 28px; color: var(--accent); }
 .brand:hover { color: var(--accent); }
 
 .crumbs {
@@ -51,12 +51,41 @@
   font-size: var(--fs-sm);
   color: var(--text-3);
   min-width: 0;
-  flex-wrap: wrap;
+  flex: 1;
 }
-.crumbs a { color: var(--text-2); transition: color var(--ease); }
+.crumbs a { color: var(--text-2); white-space: nowrap; transition: color var(--ease); }
 .crumbs a:hover { color: var(--accent); }
-.crumbs [aria-current] { color: var(--text); }
+.crumbs [aria-current] {
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 .crumbs__sep { opacity: 0.6; }
+
+.site-header__actions { margin-left: auto; display: flex; gap: var(--sp-2); flex: none; }
+
+/* Square icon button (theme toggle). */
+.icon-btn {
+  display: inline-grid;
+  place-items: center;
+  width: var(--control-h);
+  height: var(--control-h);
+  padding: 0;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface-1);
+  color: var(--text-2);
+  cursor: pointer;
+  transition: border-color var(--ease), color var(--ease), background var(--ease);
+}
+.icon-btn:hover { border-color: var(--accent); color: var(--accent); }
+.icon-btn svg { width: 18px; height: 18px; }
+
+/* The toggle shows the theme it switches to. */
+.theme-toggle .icon-moon { display: none; }
+[data-theme="light"] .theme-toggle .icon-sun { display: none; }
+[data-theme="light"] .theme-toggle .icon-moon { display: block; }
 
 /* ---- Site footer ---- */
 .site-footer {
@@ -78,11 +107,12 @@
 .sim-head {
   display: flex;
   align-items: baseline;
-  gap: var(--sp-2) var(--sp-4);
+  gap: var(--sp-1) var(--sp-4);
   flex-wrap: wrap;
   margin-bottom: var(--sp-4);
 }
 .sim-title {
+  font-family: var(--font-display);
   font-size: var(--fs-xl);
   letter-spacing: -0.01em;
 }
@@ -98,13 +128,23 @@
   gap: var(--sp-4);
   align-items: start;
 }
-.sim-layout--wide-panel { --panel-w: 340px; }
+.sim-layout--wide-panel { --panel-w: 368px; }
 
 .stage {
   display: flex;
   flex-direction: column;
   gap: var(--sp-3);
   min-width: 0;
+}
+
+/* Desktop: the shorter column stays in view while the taller one scrolls,
+   so the canvas remains visible next to a long list of controls. */
+@media (min-width: 961px) {
+  .sim-layout > .stage,
+  .sim-layout > .panel {
+    position: sticky;
+    top: calc(var(--header-h) + var(--sp-4));
+  }
 }
 
 @media (max-width: 960px) {
@@ -114,12 +154,17 @@
 @media (max-width: 600px) {
   .page { padding: var(--sp-4) var(--sp-4) var(--sp-6); }
   .site-header__inner, .site-footer__inner { padding-inline: var(--sp-4); }
+  /* On sim pages the mark alone links home; the breadcrumb names the page. */
+  body[data-sim] .brand span { display: none; }
 }
 
 /* ---- Explanation / theory text below a simulation ---- */
 .explain {
-  margin-top: var(--sp-6);
-  max-width: 78ch;
+  margin-top: var(--sp-5);
+  padding: var(--sp-5);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface-1);
 }
 .explain h2 {
   font-family: var(--font-display);
@@ -127,7 +172,38 @@
   margin-bottom: var(--sp-3);
 }
 .explain p {
+  max-width: 78ch;
   color: var(--text-2);
-  margin-bottom: var(--sp-3);
 }
-.explain em { color: var(--accent); font-style: normal; }
+.explain p + p { margin-top: var(--sp-3); }
+.explain em { color: var(--accent); font-style: normal; font-weight: 500; }
+
+/* ---- Previous / next simulation (rendered by core/shell.js) ---- */
+.sim-nav {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-3);
+  margin-top: var(--sp-6);
+  padding-top: var(--sp-5);
+  border-top: 1px solid var(--border);
+}
+.sim-nav__link {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  padding: var(--sp-3) var(--sp-4);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface-1);
+  transition: border-color var(--ease), background var(--ease);
+}
+.sim-nav__link:hover { border-color: var(--accent-line); background: var(--surface-2); }
+.sim-nav__link--next { grid-column: 2; text-align: right; }
+.sim-nav__dir { font-size: var(--fs-xs); color: var(--text-3); }
+.sim-nav__title { font-size: var(--fs-sm); font-weight: 600; color: var(--accent); }
+
+@media (max-width: 600px) {
+  .sim-nav { grid-template-columns: 1fr; }
+  .sim-nav__link--next { grid-column: 1; text-align: left; }
+}

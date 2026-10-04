@@ -11,21 +11,22 @@ import {
 } from '../../../assets/js/core/controls.js';
 import { byId, setText, setHTML } from '../../../assets/js/core/dom.js';
 import { clear, text } from '../../../assets/js/core/draw.js';
-import { COLORS } from '../../../assets/js/core/theme.js';
+import { COLORS, themed } from '../../../assets/js/core/theme.js';
 import { TAU } from '../../../assets/js/core/math.js';
 import {
   N, m, createChain, resetChain, step, cutoffFreq, harmFreq,
 } from './physics.js';
 
-const C = {
-  guide: 'rgba(139,150,179,0.18)',
-  rest: 'rgba(139,150,179,0.16)',
-  mount: '#2d3656',
-  spring: '#5a6794',
-  source: '#f6ad55',
-  muted: '#8b96b3',
-  arrow: '#4fd1c5',
-};
+const C = themed((light) => ({
+  guide: light ? 'rgba(60,72,110,0.22)' : 'rgba(139,150,179,0.18)',
+  rest: light ? 'rgba(60,72,110,0.22)' : 'rgba(139,150,179,0.16)',
+  mount: light ? '#8f99b8' : '#2d3656',
+  spring: light ? '#6f7ba3' : '#5a6794',
+  source: light ? '#e08a1e' : '#f6ad55',
+  sourceLabel: COLORS.amber,
+  muted: COLORS.text3,
+  arrow: COLORS.teal,
+}));
 
 // ---------- State ----------
 const P = { amp: 34, damp: 0, freq: 1.1, k: 55 };
@@ -152,7 +153,7 @@ function draw() {
 
   // labels
   const lbl = { size: 12, baseline: 'alphabetic' };
-  text(ctx, 'աղբյուր', 30, y0 - 70, { ...lbl, color: C.source });
+  text(ctx, 'աղբյուր', 30, y0 - 70, { ...lbl, color: C.sourceLabel });
   text(ctx, rightWall ? 'պատ' : 'ազատ ծայր', W - (rightWall ? 70 : 120), y0 - 70, { ...lbl, color: C.muted });
 
   // oscillation-direction indicator (bottom-left)

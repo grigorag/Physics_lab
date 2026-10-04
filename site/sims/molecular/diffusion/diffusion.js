@@ -5,7 +5,7 @@ import { fixedCanvas } from '../../../assets/js/core/canvas.js';
 import { bindRange, onClick } from '../../../assets/js/core/controls.js';
 import { byId } from '../../../assets/js/core/dom.js';
 import { clear, circle } from '../../../assets/js/core/draw.js';
-import { COLORS } from '../../../assets/js/core/theme.js';
+import { COLORS, themed, onThemeChange } from '../../../assets/js/core/theme.js';
 import { rand } from '../../../assets/js/core/math.js';
 import { thermalVelocity, bounceBox, collideAll, rescale } from './physics.js';
 
@@ -14,11 +14,11 @@ const R = 4;
 const WALL_X = W / 2;
 const BINS = 24;
 
-const C = {
-  left: '#6FB3D2',   // gas A (starts on the left)
-  right: '#E2835A',  // gas B (starts on the right)
-  wall: '#3A5A80',
-};
+const C = themed((light) => ({
+  left: light ? '#3d8fb5' : '#6FB3D2',   // gas A (starts on the left)
+  right: light ? '#d9623a' : '#E2835A',  // gas B (starts on the right)
+  wall: light ? '#8a9bb8' : '#3A5A80',
+}));
 
 export function createDiffusion() {
   const view = fixedCanvas(byId('diffSim'), W, H);
@@ -121,6 +121,7 @@ export function createDiffusion() {
 
   init();
   render();
+  onThemeChange(render);
 
   return {
     /** Advance by `frames` 60-fps frames (2 substeps) and redraw. */

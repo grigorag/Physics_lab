@@ -4,7 +4,7 @@ import { fixedCanvas } from '../../../assets/js/core/canvas.js';
 import { bindRange, bindCheckbox } from '../../../assets/js/core/controls.js';
 import { byId } from '../../../assets/js/core/dom.js';
 import { text } from '../../../assets/js/core/draw.js';
-import { COLORS } from '../../../assets/js/core/theme.js';
+import { DARK as COLORS } from '../../../assets/js/core/theme.js';
 import { clamp } from '../../../assets/js/core/math.js';
 import { wavelengthToRGB } from '../../../assets/js/core/color.js';
 import { WaveField } from './wavefield.js';

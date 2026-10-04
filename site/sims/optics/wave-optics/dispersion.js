@@ -4,7 +4,7 @@ import { fixedCanvas } from '../../../assets/js/core/canvas.js';
 import { bindRange, bindCheckbox, bindSelect } from '../../../assets/js/core/controls.js';
 import { byId, setHTML } from '../../../assets/js/core/dom.js';
 import { clear, line, text } from '../../../assets/js/core/draw.js';
-import { COLORS, fontsReady } from '../../../assets/js/core/theme.js';
+import { DARK as COLORS, fontsReady } from '../../../assets/js/core/theme.js';
 import { clamp, DEG, vec } from '../../../assets/js/core/math.js';
 import { wavelengthToRGB } from '../../../assets/js/core/color.js';
 

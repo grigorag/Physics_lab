@@ -1,49 +1,25 @@
 /* ==========================================================================
    Design tokens — the only place raw colors, fonts and sizes are defined.
    Components and pages reference these variables, never literal values.
+
+   Two themes: dark (default) and light, selected by <html data-theme="…">
+   (set by assets/js/theme-init.js, switched by core/theme.js).
+   The canvas-side copy of the palettes lives in core/theme.js — keep in sync.
    ========================================================================== */
 
 :root {
-  color-scheme: dark;
-
-  /* ---- Surfaces ---- */
-  --bg:          #0a0d16;
-  --surface-1:   #111521;   /* panels, cards */
-  --surface-2:   #171c2c;   /* inputs, nested boxes */
-  --surface-3:   #1f2539;   /* hover */
-  --canvas-bg:   #0b0e17;   /* simulation background */
-  --border:        rgb(120 140 200 / 0.14);
-  --border-strong: rgb(120 140 200 / 0.28);
-
-  /* ---- Text ---- */
-  --text:   #e8eaf6;
-  --text-2: #a4acc8;
-  --text-3: #6f789a;
-
-  /* ---- Palette (also used inside canvases via core/theme.js) ---- */
-  --purple: #7c6ff7;
-  --teal:   #2ecba1;
-  --coral:  #f0714a;
-  --amber:  #f5a623;
-  --blue:   #4ea8ef;
-  --red:    #f26d6d;
-  --green:  #5ccf86;
-
-  /* ---- Accent: overridden per physics section (see below) ---- */
-  --accent: var(--purple);
-
   /* ---- Typography ---- */
   --font-sans:    'Noto Sans Armenian', 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-display: 'Noto Serif Armenian', Georgia, serif;
   --font-mono:    'JetBrains Mono', 'Noto Sans Armenian', ui-monospace, Consolas, monospace;
 
-  --fs-2xs: 0.6875rem;  /* 11px */
-  --fs-xs:  0.75rem;    /* 12px */
-  --fs-sm:  0.8125rem;  /* 13px */
-  --fs-md:  0.9375rem;  /* 15px */
-  --fs-lg:  1.125rem;   /* 18px */
-  --fs-xl:  1.5rem;     /* 24px */
-  --fs-2xl: clamp(1.9rem, 4.5vw, 3rem);
+  --fs-2xs: 0.75rem;    /* 12px */
+  --fs-xs:  0.8125rem;  /* 13px */
+  --fs-sm:  0.875rem;   /* 14px */
+  --fs-md:  1rem;       /* 16px */
+  --fs-lg:  1.1875rem;  /* 19px */
+  --fs-xl:  1.625rem;   /* 26px */
+  --fs-2xl: clamp(2rem, 4.6vw, 3.1rem);
 
   /* ---- Spacing / shape ---- */
   --sp-1: 4px;
@@ -55,15 +31,84 @@
   --sp-7: 48px;
   --sp-8: 72px;
 
-  --radius-sm: 6px;
-  --radius:    10px;
-  --radius-lg: 14px;
+  --radius-sm: 8px;
+  --radius:    12px;
+  --radius-lg: 16px;
 
-  --page-max: 1280px;
-  --panel-w:  310px;
+  --page-max: 1320px;
+  --panel-w:  336px;
+  --header-h: 60px;
+  --control-h: 38px;   /* buttons, selects, tabs: comfortable touch target */
 
-  --shadow: 0 18px 40px -24px rgb(0 0 0 / 0.7);
   --ease: 160ms ease;
+}
+
+/* ---- Dark theme (default). `.canvas-wrap--dark` keeps a canvas that must stay
+        dark (light-on-black optics) dark in the light theme too. ---- */
+:root,
+.canvas-wrap--dark {
+  --bg:          #0a0d16;
+  --surface-1:   #111521;   /* panels, cards */
+  --surface-2:   #181d2e;   /* inputs, nested boxes */
+  --surface-3:   #232a41;   /* hover, slider track */
+  --canvas-bg:   #0b0e17;   /* simulation background */
+  --border:        rgb(120 140 200 / 0.16);
+  --border-strong: rgb(120 140 200 / 0.30);
+
+  --text:   #e8eaf6;
+  --text-2: #aab2cd;
+  --text-3: #7c85a6;
+}
+:root {
+  color-scheme: dark;
+
+  /* ---- Palette (also used inside canvases via core/theme.js) ---- */
+  --purple: #8478f8;
+  --teal:   #2ecba1;
+  --coral:  #f0714a;
+  --amber:  #f5a623;
+  --blue:   #4ea8ef;
+  --red:    #f26d6d;
+  --green:  #5ccf86;
+
+  --on-accent: #0a0d16;     /* text on a solid accent fill */
+  --shadow:    0 18px 40px -24px rgb(0 0 0 / 0.7);
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.3);
+  --glow: 9%;               /* strength of the accent glow behind the page */
+
+  /* ---- Accent: overridden per physics section (see below) ---- */
+  --accent: var(--purple);
+}
+
+/* ---- Light theme ---- */
+:root[data-theme="light"] {
+  color-scheme: light;
+
+  --bg:          #f3f5fa;
+  --surface-1:   #ffffff;
+  --surface-2:   #f2f4f9;
+  --surface-3:   #dfe3ee;
+  --canvas-bg:   #fcfdff;
+  --border:        rgb(30 42 90 / 0.12);
+  --border-strong: rgb(30 42 90 / 0.24);
+
+  --text:   #161a2c;
+  --text-2: #454c69;
+  --text-3: #687090;
+
+  /* Darker palette so accents stay readable as text on white. */
+  --purple: #5a4be0;
+  --teal:   #0a8468;
+  --coral:  #cf4a22;
+  --amber:  #a86400;
+  --blue:   #1f72c4;
+  --red:    #d03a3a;
+  --green:  #23803f;
+
+  --on-accent: #ffffff;
+  --shadow:    0 14px 32px -20px rgb(30 42 90 / 0.28);
+  --shadow-sm: 0 1px 2px rgb(30 42 90 / 0.08);
+  --glow: 7%;
 }
 
 /* Section accents. Put data-section on <body> (sim pages) or on any element (home cards). */

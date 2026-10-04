@@ -6,7 +6,7 @@ import { fixedCanvas } from '../../../assets/js/core/canvas.js';
 import { bindRange, bindCheckbox, bindPlayPause, onClick } from '../../../assets/js/core/controls.js';
 import { byId, setText } from '../../../assets/js/core/dom.js';
 import { clear, circle } from '../../../assets/js/core/draw.js';
-import { COLORS } from '../../../assets/js/core/theme.js';
+import { COLORS, themed, onThemeChange } from '../../../assets/js/core/theme.js';
 import { rand } from '../../../assets/js/core/math.js';
 import { thermalVelocity, bounceBox, collide, collideAll, rescale } from './physics.js';
 
@@ -16,13 +16,13 @@ const BIG_RADIUS = 15;
 const TRAIL_MAX = 1500;
 const MSD_MAX = 400;
 
-const C = {
-  molecule: '#6FB3D2',
-  big: '#E7B95C',
+const C = themed((light) => ({
+  molecule: light ? '#3d8fb5' : '#6FB3D2',
+  big: light ? '#e0a020' : '#E7B95C',
   bigEdge: 'rgba(0, 0, 0, 0.3)',
-  trail: 'rgba(231, 185, 92, 0.35)',
-  msd: '#E7B95C',
-};
+  trail: light ? 'rgba(190, 125, 0, 0.5)' : 'rgba(231, 185, 92, 0.35)',
+  msd: light ? '#c98a08' : '#E7B95C',
+}));
 
 export function createBrownian() {
   const view = fixedCanvas(byId('sim'), W, H);
@@ -159,6 +159,7 @@ export function createBrownian() {
 
   init();
   render();
+  onThemeChange(render);
 
   return {
     /** Advance by `frames` 60-fps frames (2 substeps) and redraw; frozen while paused. */

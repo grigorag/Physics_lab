@@ -10,7 +10,7 @@ import { startLoop } from '../../../assets/js/core/loop.js';
 import { bindRange, bindCheckbox, bindSegmented, bindPlayPause, onClick } from '../../../assets/js/core/controls.js';
 import { byId } from '../../../assets/js/core/dom.js';
 import { arrow, roundRect } from '../../../assets/js/core/draw.js';
-import { COLORS, font } from '../../../assets/js/core/theme.js';
+import { font } from '../../../assets/js/core/theme.js';
 import { TAU } from '../../../assets/js/core/math.js';
 
 const W = 900;
@@ -530,7 +530,7 @@ function setReadout(id, html) {
 
 function surfaceLine(lb) {
   const on = onBelt(lb);
-  return `<span style="color:${on ? lb.color : COLORS.text3}">${on ? 'Դիրքը՝ ժապավենի վրա' : 'Դիրքը՝ գետնի վրա'}</span>`;
+  return `<span style="color:${on ? lb.color : 'var(--text-3)'}">${on ? 'Դիրքը՝ ժապավենի վրա' : 'Դիրքը՝ գետնի վրա'}</span>`;
 }
 
 function updateReadouts() {
