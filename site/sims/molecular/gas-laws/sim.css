@@ -1,0 +1,16 @@
+/* Gas laws — sim-specific layout (tokens only). */
+
+/* Row above the diagram: axes choice on the left, "clear trace" on the right. */
+.chart-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-2) var(--sp-3);
+  margin-top: var(--sp-2);
+}
+.chart-bar > .segmented { flex: 0 1 auto; }
+.chart-bar > .segmented > button { min-width: 4.2em; }
+
+.chart-caption .swatch { margin: 0 4px 0 10px; }
+.chart-caption .swatch:first-child { margin-left: 0; }

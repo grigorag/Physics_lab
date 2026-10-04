@@ -95,6 +95,66 @@ export const thumbs = {
       <rect x="146" y="74" width="6" height="8" fill-opacity=".25"/>
     </g>
   `),
+
+  projectile: svg(`
+    <path d="M6 76h148" stroke-opacity=".45"/>
+    <path d="M16 76Q76 -38 136 76" stroke-opacity=".7" stroke-dasharray="4 4"/>
+    <path d="M16 76 38 44M30 46.5 38 44l-1 8.3" stroke-width="2.2"/>
+    <path d="M30 76a14 14 0 0 0-6-11.5" stroke-opacity=".6"/>
+    <circle cx="76" cy="19" r="5" fill="currentColor" stroke="none"/>
+    <path d="M76 26v50" stroke-opacity=".3" stroke-dasharray="2 4"/>
+    <circle cx="136" cy="76" r="3" fill="currentColor" fill-opacity=".5" stroke="none"/>
+  `),
+
+  oscillations: svg(`
+    <path d="M22 12h44" stroke-width="2"/>
+    <path d="M44 12 26 60" stroke-opacity=".8"/>
+    <path d="M44 12v50M44 12l18 48" stroke-opacity=".25" stroke-dasharray="3 4"/>
+    <path d="M28 66a52 52 0 0 0 32 0" stroke-opacity=".4"/>
+    <circle cx="26" cy="60" r="7" fill="currentColor" stroke="none"/>
+    <path d="M84 45h70" stroke-opacity=".3"/>
+    <path d="M84 45c6-26 12-26 18 0s12 26 18 0 12-26 18 0 12 26 16 6" stroke-width="2"/>
+  `),
+
+  'gas-laws': svg(`
+    <path d="M14 20h116M14 70h116M14 20v50" stroke-opacity=".6"/>
+    <rect x="92" y="21" width="7" height="48" fill="currentColor" fill-opacity=".5" stroke="none"/>
+    <path d="M99 45h46" stroke-width="2.5" stroke-opacity=".7"/>
+    <path d="M146 37v16" stroke-width="2.5" stroke-opacity=".7"/>
+    <g fill="currentColor" stroke="none">
+      <circle cx="26" cy="32" r="3"/><circle cx="44" cy="56" r="3"/><circle cx="58" cy="30" r="3"/>
+      <circle cx="74" cy="48" r="3"/><circle cx="32" cy="60" r="3"/><circle cx="82" cy="28" r="3"/>
+      <circle cx="62" cy="62" r="3"/><circle cx="44" cy="40" r="3"/>
+    </g>
+    <path d="M58 30l8-5M74 48l7 6M26 32l-5 6M44 56l-8-3" stroke-opacity=".5"/>
+    <path d="M30 80c4-4 4-4 8 0s4 4 8 0 4-4 8 0 4 4 8 0 4-4 8 0" stroke-opacity=".5"/>
+  `),
+
+  'electric-field': svg(`
+    <g stroke-opacity=".55">
+      <path d="M57 45h46"/>
+      <path d="M55 39C68 20 92 20 105 39"/><path d="M55 51C68 70 92 70 105 51"/>
+      <path d="M50 36C58 2 102 2 110 36"/><path d="M50 54C58 88 102 88 110 54"/>
+      <path d="M41 42 10 34M41 48 10 56M119 42l31-8M119 48l31 8"/>
+      <path d="M77 42l4 3-4 3M77 22.5l4 2.5-4 3M77 62.5l4 2.5-4 3"/>
+    </g>
+    <circle cx="48" cy="45" r="9" fill="currentColor" stroke="none"/>
+    <circle cx="112" cy="45" r="9" fill="currentColor" fill-opacity=".15" stroke-width="2"/>
+    <path d="M44 45h8M48 41v8" stroke="var(--surface-1, #111)" stroke-width="2"/>
+    <path d="M108 45h8" stroke-width="2"/>
+  `),
+
+  refraction: svg(`
+    <rect x="-2" y="45" width="164" height="47" fill="currentColor" fill-opacity=".1" stroke="none"/>
+    <path d="M6 45h148" stroke-opacity=".6"/>
+    <path d="M80 8v74" stroke-opacity=".4" stroke-dasharray="3 4"/>
+    <path d="M36 10 80 45" stroke-width="2.2"/>
+    <path d="M55 21 62 30.7 50 30z" fill="currentColor" stroke="none"/>
+    <path d="M80 45l44-35" stroke-opacity=".4" stroke-width="1.6"/>
+    <path d="M80 45l24 39" stroke-width="2.2"/>
+    <path d="M80 27a18 18 0 0 0-14 6.8" stroke-opacity=".7"/>
+    <path d="M80 65a20 20 0 0 0 10.5-3" stroke-opacity=".7"/>
+  `),
 };
 
 export const fallbackThumb = svg(`

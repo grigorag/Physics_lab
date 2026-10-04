@@ -14,12 +14,12 @@ export const sections = [
   {
     id: 'mechanics',
     title: 'Մեխանիկա',
-    blurb: 'Մարմինների շարժում, հաշվարկման համակարգեր, մեխանիկական ալիքներ',
+    blurb: 'Մարմինների շարժում, հաշվարկման համակարգեր, տատանումներ և ալիքներ',
   },
   {
     id: 'molecular',
     title: 'Մոլեկուլային ֆիզիկա և թերմոդինամիկա',
-    blurb: 'Մոլեկուլների ջերմային շարժում, դիֆուզիա',
+    blurb: 'Մոլեկուլների ջերմային շարժում, դիֆուզիա, գազային օրենքներ',
   },
   {
     id: 'electrodynamics',
@@ -58,6 +58,20 @@ export const sims = [
     summary: 'Ալիքներ զսպանակներով կապված գնդիկների շղթայում, անդրադարձում և կանգուն ալիքներ։',
     path: 'sims/mechanics/spring-waves/',
   },
+  {
+    id: 'projectile',
+    section: 'mechanics',
+    title: 'Անկյան տակ նետված մարմնի շարժումը',
+    summary: 'Հետագիծ, թռիչքի հեռավորություն և առավելագույն բարձրություն՝ օդի դիմադրությամբ և առանց դրա։',
+    path: 'sims/mechanics/projectile/',
+  },
+  {
+    id: 'oscillations',
+    section: 'mechanics',
+    title: 'Մաթեմատիկական և զսպանակավոր ճոճանակներ',
+    summary: 'Տատանումների պարբերություն, x(t), v(t), a(t) գրաֆիկներ և էներգիայի փոխակերպումներ։',
+    path: 'sims/mechanics/oscillations/',
+  },
 
   // ---- Մոլեկուլային ֆիզիկա և թերմոդինամիկա ----
   {
@@ -66,6 +80,13 @@ export const sims = [
     title: 'Դիֆուզիա և բրոունյան շարժում',
     summary: 'Մասնիկի քաոսային թափառումը մոլեկուլների հարվածներից և երկու գազերի ինքնաբերական խառնումը։',
     path: 'sims/molecular/diffusion/',
+  },
+  {
+    id: 'gas-laws',
+    section: 'molecular',
+    title: 'Գազային օրենքներ',
+    summary: 'Գազը մխոցով անոթում․ իզոթերմ, իզոբար և իզոխոր պրոցեսներ, p–V դիագրամ։',
+    path: 'sims/molecular/gas-laws/',
   },
 
   // ---- Էլեկտրադինամիկա ----
@@ -76,6 +97,13 @@ export const sims = [
     summary: 'Լորենցի ուժ․ շարժում շրջանագծով և պարուրագծով համասեռ մագնիսական դաշտում (3D)։',
     path: 'sims/electrodynamics/charged-particle/',
   },
+  {
+    id: 'electric-field',
+    section: 'electrodynamics',
+    title: 'Էլեկտրական դաշտ և պոտենցիալ',
+    summary: 'Կետային լիցքերի դաշտի ուժագծեր, էկվիպոտենցիալ գծեր և փորձնական լիցքի շարժում։',
+    path: 'sims/electrodynamics/electric-field/',
+  },
 
   // ---- Օպտիկա ----
   {
@@ -84,6 +112,13 @@ export const sims = [
     title: 'Բարակ ոսպնյակում պատկերի ստացում',
     summary: 'Պատկերի կառուցումը հավաքող և ցրող ոսպնյակներում, բարակ ոսպնյակի բանաձև։',
     path: 'sims/optics/thin-lens/',
+  },
+  {
+    id: 'refraction',
+    section: 'optics',
+    title: 'Լույսի անդրադարձում և բեկում',
+    summary: 'Բեկման օրենք, լրիվ ներքին անդրադարձում և սահմանային անկյուն երկու միջավայրերի սահմանին։',
+    path: 'sims/optics/refraction/',
   },
   {
     id: 'wave-optics',

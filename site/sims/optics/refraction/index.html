@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="hy">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Լույսի անդրադարձում և բեկում · Ֆիզիկայի Լաբորատորիաներ</title>
+  <link rel="icon" href="../../../assets/img/favicon.svg" type="image/svg+xml">
+  <script src="../../../assets/js/theme-init.js"></script>
+  <link rel="stylesheet" href="../../../assets/css/main.css">
+  <script type="module" src="../../../assets/js/core/shell.js"></script>
+  <script type="module" src="./main.js"></script>
+</head>
+<body data-sim="refraction" data-section="optics">
+  <header data-shell="header"></header>
+
+  <main class="page">
+    <header class="sim-head">
+      <h1 class="sim-title">Լույսի անդրադարձում և բեկում</h1>
+      <p class="sim-subtitle">երկու միջավայրերի բաժանման սահմանին</p>
+    </header>
+
+    <div class="tabs" role="tablist" id="tabs">
+      <button role="tab" data-tab="boundary" aria-controls="panel-boundary" aria-selected="true">Միջավայրերի սահման</button>
+      <button role="tab" data-tab="plate" aria-controls="panel-plate">Զուգահեռ թիթեղ</button>
+    </div>
+
+    <!-- ===== Boundary of two media ===== -->
+    <div id="panel-boundary" role="tabpanel">
+      <div class="sim-layout">
+        <section class="stage">
+          <div class="canvas-wrap canvas-wrap--grab">
+            <canvas id="cv" aria-label="Լույսի ճառագայթի անդրադարձումը և բեկումը երկու միջավայրերի բաժանման սահմանին"></canvas>
+            <ul class="legend legend--tr">
+              <li><i class="legend__dot" style="--c: var(--amber)"></i>α՝ անկման անկյուն</li>
+              <li><i class="legend__dot" style="--c: var(--teal)"></i>β՝ անդրադարձման անկյուն</li>
+              <li><i class="legend__dot" style="--c: var(--purple)"></i>γ՝ բեկման անկյուն</li>
+            </ul>
+            <span class="canvas-hint">Քաշեք լույսի աղբյուրը՝ անկման անկյունը փոխելու համար</span>
+          </div>
+        </section>
+
+        <aside class="panel">
+          <section class="group">
+            <h2 class="group__title">Ճառագայթ</h2>
+            <div class="field">
+              <label class="field__label" for="angle">Անկման անկյուն α</label>
+              <output class="field__value" for="angle"></output>
+              <input type="range" id="angle" min="0" max="89" step="0.1" value="45">
+            </div>
+            <button class="btn btn--block" id="swapBtn">⇅ Փոխել ուղղությունը</button>
+          </section>
+
+          <section class="group">
+            <h2 class="group__title">Միջավայրեր</h2>
+            <div class="field">
+              <label class="field__label" for="topMedium">Վերին միջավայր</label>
+              <select class="select" id="topMedium">
+                <option value="air" selected>Օդ — n = 1.00</option>
+                <option value="water">Ջուր — n = 1.33</option>
+                <option value="glass">Ապակի — n = 1.50</option>
+                <option value="diamond">Ալմաստ — n = 2.42</option>
+                <option value="custom">Այլ…</option>
+              </select>
+            </div>
+            <div class="field" hidden>
+              <label class="field__label" for="topN">Բեկման ցուցիչ (վերին)</label>
+              <output class="field__value" for="topN"></output>
+              <input type="range" id="topN" min="1" max="2.5" step="0.01" value="1">
+            </div>
+            <div class="field">
+              <label class="field__label" for="bottomMedium">Ստորին միջավայր</label>
+              <select class="select" id="bottomMedium">
+                <option value="air">Օդ — n = 1.00</option>
+                <option value="water" selected>Ջուր — n = 1.33</option>
+                <option value="glass">Ապակի — n = 1.50</option>
+                <option value="diamond">Ալմաստ — n = 2.42</option>
+                <option value="custom">Այլ…</option>
+              </select>
+            </div>
+            <div class="field" hidden>
+              <label class="field__label" for="bottomN">Բեկման ցուցիչ (ստորին)</label>
+              <output class="field__value" for="bottomN"></output>
+              <input type="range" id="bottomN" min="1" max="2.5" step="0.01" value="1.33">
+            </div>
+          </section>
+
+          <section class="group">
+            <h2 class="group__title">Ցուցադրել</h2>
+            <label class="check"><input type="checkbox" id="showAngles" checked> Ուղղահայացը և անկյունները</label>
+            <label class="check"><input type="checkbox" id="showProtractor"> Անկյունաչափ</label>
+            <label class="check"><input type="checkbox" id="showFresnel" checked> Ճառագայթների պայծառությունը՝ ըստ էներգիայի բաժնի</label>
+          </section>
+
+          <section class="group">
+            <h2 class="group__title">Հաշվարկ</h2>
+            <dl class="stats">
+              <div class="stat"><dt>n₁ (որտեղից ընկնում է լույսը)</dt><dd id="n1Val">—</dd></div>
+              <div class="stat"><dt>n₂ (երկրորդ միջավայր)</dt><dd id="n2Val">—</dd></div>
+              <div class="stat"><dt>Անկման անկյուն α</dt><dd id="alphaVal">—</dd></div>
+              <div class="stat"><dt>Անդրադարձման անկյուն β</dt><dd id="betaVal">—</dd></div>
+              <div class="stat"><dt>Բեկման անկյուն&nbsp;γ</dt><dd id="gammaVal">—</dd></div>
+              <div class="stat"><dt>Սահմանային անկյուն α₀</dt><dd id="critVal">—</dd></div>
+              <div class="stat"><dt>Լույսի արագություն v₁</dt><dd id="v1Val">—</dd></div>
+              <div class="stat"><dt>Լույսի արագություն v₂</dt><dd id="v2Val">—</dd></div>
+              <div class="stat"><dt>Անդրադարձած էներգիա R</dt><dd id="rVal">—</dd></div>
+              <div class="stat"><dt>Անցած էներգիա T</dt><dd id="tVal">—</dd></div>
+            </dl>
+            <div class="callout" id="infoBox">—</div>
+          </section>
+
+          <section class="group">
+            <div class="formula">
+              <b>β = α</b><br>
+              անդրադարձման օրենք<br><br>
+              <b>n₁ sin α = n₂ sin γ</b><br>
+              բեկման օրենք<br><br>
+              <b>sin α₀ = n₂ / n₁</b><br>
+              լրիվ անդրադարձման սահմանային անկյուն (n₁ &gt; n₂)<br><br>
+              <b>v = c / n</b><br>
+              լույսի արագությունը միջավայրում
+            </div>
+          </section>
+        </aside>
+      </div>
+
+      <section class="explain">
+        <h2>Ինչ է կատարվում այստեղ</h2>
+        <p>Երբ լույսն ընկնում է երկու թափանցիկ միջավայրերի բաժանման սահմանին, այն մասամբ անդրադառնում է, մասամբ էլ անցնում է երկրորդ միջավայր՝ փոխելով իր տարածման ուղղությունը, այսինքն՝ բեկվում է։ Անկյունները չափվում են ոչ թե սահմանից, այլ անկման կետում սահմանին տարված ուղղահայացից։ Անդրադարձման անկյունը միշտ հավասար է անկման անկյանը՝ <em>β = α</em>։</p>
+        <p>Լույսը բեկվում է, որովհետև տարբեր միջավայրերում նրա արագությունը տարբեր է՝ <em>v = c / n</em>, որտեղ n-ը միջավայրի բեկման ցուցիչն է։ Բեկման օրենքի համաձայն՝ <em>n₁ sin α = n₂ sin γ</em>։ Օպտիկապես ավելի խիտ միջավայր անցնելիս (n₂ &gt; n₁) բեկված ճառագայթը մոտենում է ուղղահայացին, իսկ ավելի նոսր միջավայր անցնելիս՝ հեռանում է նրանից։</p>
+        <p>Երբ լույսն անցնում է խիտ միջավայրից նոսր, անկման անկյունը մեծացնելիս բեկման անկյունը հասնում է 90°-ի։ Անկման այդ անկյունը կոչվում է լրիվ անդրադարձման սահմանային անկյուն՝ <em>sin α₀ = n₂ / n₁</em>։ Ավելի մեծ անկյունների դեպքում բեկված ճառագայթ չկա, և ամբողջ լույսն անդրադառնում է. սա լրիվ ներքին անդրադարձումն է, որի վրա է հիմնված օպտիկական մանրաթելերի աշխատանքը։ Հետևեք նաև ճառագայթների պայծառությանը. որքան մեծ է անկման անկյունը, այնքան լույսի էներգիայի ավելի մեծ մասն է անդրադառնում։</p>
+      </section>
+    </div>
+
+    <!-- ===== Plane-parallel plate ===== -->
+    <div id="panel-plate" role="tabpanel" hidden>
+      <div class="sim-layout">
+        <section class="stage">
+          <div class="canvas-wrap canvas-wrap--grab">
+            <canvas id="plateCv" aria-label="Լույսի ճառագայթի անցումը հարթ-զուգահեռ թիթեղի միջով"></canvas>
+            <ul class="legend legend--tr">
+              <li><i class="legend__line" style="--c: var(--text-3)"></i>ճառագայթի ուղին առանց թիթեղի</li>
+              <li><i class="legend__line" style="--c: var(--teal)"></i>x՝ ճառագայթի տեղաշարժ</li>
+            </ul>
+            <span class="canvas-hint">Քաշեք թիթեղից վերև՝ անկման անկյունը փոխելու համար</span>
+          </div>
+        </section>
+
+        <aside class="panel">
+          <section class="group">
+            <h2 class="group__title">Պարամետրեր</h2>
+            <div class="field">
+              <label class="field__label" for="plateAngle">Անկման անկյուն α</label>
+              <output class="field__value" for="plateAngle"></output>
+              <input type="range" id="plateAngle" min="0" max="85" step="0.1" value="50">
+            </div>
+            <div class="field">
+              <label class="field__label" for="plateD">Թիթեղի հաստություն d</label>
+              <output class="field__value" for="plateD"></output>
+              <input type="range" id="plateD" min="5" max="60" step="1" value="40">
+            </div>
+            <div class="field">
+              <label class="field__label" for="plateN">Թիթեղի բեկման ցուցիչ n</label>
+              <output class="field__value" for="plateN"></output>
+              <input type="range" id="plateN" min="1" max="2.5" step="0.01" value="1.5">
+            </div>
+          </section>
+
+          <section class="group">
+            <h2 class="group__title">Հաշվարկ</h2>
+            <dl class="stats">
+              <div class="stat"><dt>Անկման անկյուն α</dt><dd id="plAlpha">—</dd></div>
+              <div class="stat"><dt>Բեկման անկյուն γ</dt><dd id="plGamma">—</dd></div>
+              <div class="stat"><dt>Ճառագայթի ուղին թիթեղում</dt><dd id="plPath">—</dd></div>
+              <div class="stat"><dt>Ճառագայթի տեղաշարժ x</dt><dd id="plShift">—</dd></div>
+            </dl>
+            <div class="callout" id="plateInfo">—</div>
+          </section>
+
+          <section class="group">
+            <div class="formula">
+              <b>sin α = n sin γ</b><br>
+              բեկման օրենքը թիթեղի նիստին<br><br>
+              <b>x = d · sin(α − γ) / cos γ</b><br>
+              ճառագայթի տեղաշարժը
+            </div>
+          </section>
+        </aside>
+      </div>
+
+      <section class="explain">
+        <h2>Հարթ-զուգահեռ թիթեղ</h2>
+        <p>Հարթ-զուգահեռ թիթեղի միջով անցնելիս ճառագայթը բեկվում է երկու անգամ՝ թիթեղ մտնելիս և թիթեղից դուրս գալիս։ Քանի որ թիթեղի նիստերը զուգահեռ են, ճառագայթը երկրորդ նիստին ընկնում է նույն γ անկյան տակ, որով բեկվել էր առաջին նիստում, ուստի դուրս գալիս այն ուղղահայացի հետ նորից կազմում է α անկյուն։</p>
+        <p>Այսպիսով՝ թիթեղը չի փոխում ճառագայթի ուղղությունը, այլ միայն տեղաշարժում է այն իրեն զուգահեռ։ Տեղաշարժը՝ <em>x = d · sin(α − γ) / cos γ</em>, այնքան մեծ է, որքան հաստ է թիթեղը, որքան մեծ է նրա բեկման ցուցիչը և որքան մեծ է անկման անկյունը։ Ուղղահայաց անկման դեպքում (α = 0) ճառագայթը չի տեղաշարժվում։</p>
+        <p>Հենց այդ պատճառով պատուհանի ապակու միջով թեք նայելիս առարկաները երևում են մի փոքր տեղաշարժված, բայց ոչ աղավաղված։</p>
+      </section>
+    </div>
+  </main>
+
+  <footer data-shell="footer"></footer>
+</body>
+</html>

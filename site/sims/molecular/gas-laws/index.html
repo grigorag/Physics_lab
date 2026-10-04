@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="hy">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Գազային օրենքներ · Ֆիզիկայի Լաբորատորիաներ</title>
+  <link rel="icon" href="../../../assets/img/favicon.svg" type="image/svg+xml">
+  <script src="../../../assets/js/theme-init.js"></script>
+  <link rel="stylesheet" href="../../../assets/css/main.css">
+  <link rel="stylesheet" href="./sim.css">
+  <script type="module" src="../../../assets/js/core/shell.js"></script>
+  <script type="module" src="./main.js"></script>
+</head>
+<body data-sim="gas-laws" data-section="molecular">
+  <header data-shell="header"></header>
+
+  <main class="page">
+    <header class="sim-head">
+      <h1 class="sim-title">Գազային օրենքներ</h1>
+      <p class="sim-subtitle">իդեալական գազը մխոցով անոթում</p>
+    </header>
+
+    <div class="sim-layout">
+      <section class="stage">
+        <div class="canvas-wrap">
+          <canvas id="scene" aria-label="Գազը մխոցով գլանում՝ ջերմաչափով և մանոմետրով"></canvas>
+          <span class="canvas-hint" id="sceneHint">Քաշեք մխոցը՝ ծավալը փոխելու համար</span>
+        </div>
+
+        <div class="chart-bar">
+          <div class="segmented" id="axes" role="group" aria-label="Դիագրամի առանցքները">
+            <button data-value="pV" aria-pressed="true">p–V</button>
+            <button data-value="VT">V–T</button>
+            <button data-value="pT">p–T</button>
+          </div>
+          <button class="btn" id="clearBtn">Մաքրել հետագիծը</button>
+        </div>
+        <div>
+          <canvas class="chart" id="chart" aria-label="Գազի վիճակի դիագրամ"></canvas>
+        </div>
+        <p class="chart-caption">
+          <i class="swatch" style="--c: var(--coral)"></i>գազի վիճակը
+          <i class="swatch" style="--c: var(--amber)"></i>անցած ուղին
+          <i class="swatch" style="--c: var(--teal)"></i>ընտրված պրոցեսի գրաֆիկը (կետագծով՝ դրա շարունակությունը)
+        </p>
+      </section>
+
+      <aside class="panel">
+        <section class="group">
+          <h2 class="group__title">Պրոցես</h2>
+          <div class="segmented" id="process" role="group" aria-label="Պրոցես">
+            <button data-value="isothermal" aria-pressed="true">Իզոթերմ</button>
+            <button data-value="isobaric">Իզոբար</button>
+            <button data-value="isochoric">Իզոխոր</button>
+          </div>
+          <div class="callout" id="lawBox">—</div>
+        </section>
+
+        <section class="group">
+          <h2 class="group__title">Պարամետրեր</h2>
+          <div class="field">
+            <label class="field__label" for="vSlider">Ծավալ V</label>
+            <output class="field__value" for="vSlider"></output>
+            <input type="range" id="vSlider" min="5" max="50" step="0.1" value="24.9">
+          </div>
+          <div class="field">
+            <label class="field__label" for="tSlider">Ջերմաստիճան T</label>
+            <output class="field__value" for="tSlider"></output>
+            <input type="range" id="tSlider" min="100" max="600" step="1" value="300">
+          </div>
+          <div class="field">
+            <label class="field__label" for="nuSlider">Նյութի քանակ ν</label>
+            <output class="field__value" for="nuSlider"></output>
+            <input type="range" id="nuSlider" min="0.5" max="2" step="0.1" value="1">
+          </div>
+          <p class="hint" id="hintBox"></p>
+        </section>
+
+        <section class="group">
+          <h2 class="group__title">Գազի վիճակը</h2>
+          <dl class="stats">
+            <div class="stat"><dt>Ճնշում p</dt><dd id="pVal">—</dd></div>
+            <div class="stat"><dt>Ծավալ V</dt><dd id="vVal">—</dd></div>
+            <div class="stat"><dt>Ջերմաստիճան T</dt><dd id="tVal">—</dd></div>
+            <div class="stat"><dt>Նյութի քանակ ν</dt><dd id="nuVal">—</dd></div>
+            <div class="stat"><dt>pV/T = νR</dt><dd id="pvtVal">—</dd></div>
+            <div class="stat"><dt>Մոլեկուլի միջին կինետիկ էներգիա Ē</dt><dd id="ekVal">—</dd></div>
+          </dl>
+        </section>
+
+        <section class="group">
+          <div class="btn-row">
+            <button class="btn" id="playBtn"></button>
+            <button class="btn" id="resetBtn">↺ Սկզբնական վիճակ</button>
+          </div>
+        </section>
+
+        <section class="group">
+          <div class="formula">
+            <b>pV = νRT</b><br>
+            իդեալական գազի վիճակի հավասարում<br>
+            R = 8,31 Ջ/(մոլ·Կ)<br><br>
+            <b>T = const: p₁V₁ = p₂V₂</b><br>
+            <b>p = const: V₁/T₁ = V₂/T₂</b><br>
+            <b>V = const: p₁/T₁ = p₂/T₂</b><br><br>
+            <b>Ē = 3/2·kT</b><br>
+            k = 1,38·10⁻²³ Ջ/Կ
+          </div>
+        </section>
+      </aside>
+    </div>
+
+    <section class="explain">
+      <h2>Ինչ է կատարվում այստեղ</h2>
+      <p>Մխոցով փակված գլանում գտնվում է հաստատուն քանակով իդեալական գազ։ Նրա վիճակը նկարագրվում է երեք մեծությամբ՝ ճնշումով (p), ծավալով (V) և բացարձակ ջերմաստիճանով (T), որոնք կապված են Մենդելեև-Կլապեյրոնի հավասարումով՝ pV = νRT։ Ուստի գազի տրված քանակի համար pV/T հարաբերությունը ցանկացած պրոցեսի ընթացքում մնում է հաստատուն։</p>
+      <p>Եթե երեք մեծություններից մեկը պահենք հաստատուն, կստանանք իզոպրոցես։ <em>Իզոթերմ</em> պրոցեսում (T = const) ճնշումը հակադարձ համեմատական է ծավալին, և p–V դիագրամում գրաֆիկը հիպերբոլ է (Բոյլ-Մարիոտի օրենք)։ <em>Իզոբար</em> պրոցեսում (p = const) ծավալն ուղիղ համեմատական է բացարձակ ջերմաստիճանին (Գեյ-Լյուսակի օրենք), իսկ <em>իզոխոր</em> պրոցեսում (V = const) ճնշումն է ուղիղ համեմատական բացարձակ ջերմաստիճանին (Շառլի օրենք)։ V–T և p–T դիագրամներում այս գրաֆիկներն ուղիղներ են, որոնց շարունակություններն անցնում են կոորդինատների սկզբնակետով՝ բացարձակ զրոյով (0 Կ = −273 °C)։</p>
+      <p>Մոլեկուլային տեսանկյունից ճնշումն առաջանում է անոթի պատերին մոլեկուլների հարվածներից։ Ջերմաստիճանը բարձրացնելիս մոլեկուլներն ավելի արագ են շարժվում (մեկ մոլեկուլի միջին կինետիկ էներգիան՝ Ē = 3/2·kT), և հարվածները դառնում են ավելի ուժեղ ու հաճախակի։ Ծավալը փոքրացնելիս մոլեկուլներն ավելի խիտ են դասավորվում և ավելի հաճախ են հարվածում պատերին։ Նկարում մոլեկուլների շարժումը որակական պատկեր է, իսկ p, V և T արժեքները հաշվվում են ճշգրիտ՝ իդեալական գազի վիճակի հավասարումով։</p>
+    </section>
+  </main>
+
+  <footer data-shell="footer"></footer>
+</body>
+</html>

@@ -113,6 +113,10 @@ input[type="range"]:focus-visible { outline: none; }
 input[type="range"]:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 5px var(--accent-soft), 0 0 0 1px var(--accent); }
 input[type="range"]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 5px var(--accent-soft), 0 0 0 1px var(--accent); }
 
+/* A slider whose quantity is not free right now. */
+input[type="range"]:disabled { opacity: 0.4; cursor: not-allowed; }
+.field:has(> input:disabled) .field__value { color: var(--text-3); }
+
 /* ---------- Select ---------- */
 .select {
   width: 100%;
@@ -278,6 +282,7 @@ input[type="range"]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 5px var(
   color: var(--text);
   font-variant-numeric: tabular-nums;
   text-align: right;
+  white-space: nowrap;
 }
 
 /* ---------- Text boxes ---------- */

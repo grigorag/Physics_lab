@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="hy">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Անկյան տակ նետված մարմնի շարժումը · Ֆիզիկայի Լաբորատորիաներ</title>
+  <link rel="icon" href="../../../assets/img/favicon.svg" type="image/svg+xml">
+  <script src="../../../assets/js/theme-init.js"></script>
+  <link rel="stylesheet" href="../../../assets/css/main.css">
+  <script type="module" src="../../../assets/js/core/shell.js"></script>
+  <script type="module" src="./main.js"></script>
+</head>
+<body data-sim="projectile" data-section="mechanics">
+  <header data-shell="header"></header>
+
+  <main class="page">
+    <header class="sim-head">
+      <h1 class="sim-title">Անկյան տակ նետված մարմնի շարժումը</h1>
+      <p class="sim-subtitle">նետում հորիզոնի նկատմամբ անկյան տակ</p>
+    </header>
+
+    <div class="sim-layout">
+      <section class="stage">
+        <div class="canvas-wrap canvas-wrap--crosshair">
+          <canvas id="cv" aria-label="Անկյան տակ նետված մարմնի հետագիծը"></canvas>
+          <ul class="legend legend--tr">
+            <li><i class="legend__line" style="--c: var(--amber)"></i>հետագիծ</li>
+            <li id="legIdeal" hidden><i class="legend__line" style="--c: var(--text-3)"></i>առանց օդի դիմադրության</li>
+            <li class="js-vec"><i class="legend__dot" style="--c: var(--coral)"></i><span>արագություն v</span></li>
+            <li class="js-vec"><i class="legend__dot" style="--c: var(--blue)"></i><span>բաղադրիչ v<sub>x</sub></span></li>
+            <li class="js-vec"><i class="legend__dot" style="--c: var(--teal)"></i><span>բաղադրիչ v<sub>y</sub></span></li>
+          </ul>
+        </div>
+
+        <div class="readouts">
+          <div class="readout">
+            <div class="readout__title">Դիրք</div>
+            <div id="posOut"></div>
+          </div>
+          <div class="readout">
+            <div class="readout__title"><i class="swatch" style="--c: var(--coral)"></i>Արագություն</div>
+            <div id="velOut"></div>
+          </div>
+          <div class="readout">
+            <div class="readout__title"><i class="swatch" style="--c: var(--amber)"></i>Թռիչքի արդյունքը</div>
+            <div id="resOut"></div>
+          </div>
+        </div>
+      </section>
+
+      <aside class="panel">
+        <section class="group">
+          <div class="btn-row">
+            <button class="btn btn--primary" id="launchBtn">➚ Նետել</button>
+            <button class="btn" id="pauseBtn"></button>
+          </div>
+          <div class="btn-row">
+            <button class="btn" id="resetBtn">↺ Սկզբնական դիրք</button>
+            <button class="btn" id="clearBtn">✕ Մաքրել</button>
+          </div>
+          <p class="hint">Նախորդ նետումների հետագծերը (մինչև 5-ը) մնում են էկրանին՝ համեմատելու համար։ «Մաքրել» կոճակը ջնջում է դրանք։</p>
+        </section>
+
+        <section class="group">
+          <h2 class="group__title">Նետման պայմաններ</h2>
+          <div class="field">
+            <label class="field__label" for="angle">Նետման անկյուն α</label>
+            <output class="field__value" for="angle"></output>
+            <input type="range" id="angle" min="0" max="90" step="1" value="45">
+          </div>
+          <p class="hint">Անկյունը կարելի է փոխել նաև նկարի վրա՝ քաշելով նետման կետի մոտ։</p>
+          <div class="field">
+            <label class="field__label" for="v0">Սկզբնական արագություն v₀</label>
+            <output class="field__value" for="v0"></output>
+            <input type="range" id="v0" min="1" max="50" step="1" value="20">
+          </div>
+          <div class="field">
+            <label class="field__label" for="h0">Սկզբնական բարձրություն h₀</label>
+            <output class="field__value" for="h0"></output>
+            <input type="range" id="h0" min="0" max="30" step="1" value="0">
+          </div>
+          <div class="field">
+            <span class="field__label" id="gLabel">Ազատ անկման արագացում g</span>
+            <output class="field__value" id="gOut"></output>
+            <div class="segmented" id="gravity" role="group" aria-labelledby="gLabel">
+              <button data-value="9.8" aria-pressed="true">Երկիր</button>
+              <button data-value="1.62">Լուսին</button>
+              <button data-value="3.71">Մարս</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="group">
+          <h2 class="group__title">Օդի դիմադրություն</h2>
+          <label class="check"><input type="checkbox" id="drag"> Հաշվի առնել օդի դիմադրությունը</label>
+          <div id="dragBox" hidden>
+            <div class="field">
+              <label class="field__label" for="kdrag">Դիմադրության գործակից k</label>
+              <output class="field__value" for="kdrag"></output>
+              <input type="range" id="kdrag" min="0.001" max="0.05" step="0.001" value="0.01">
+            </div>
+            <p class="hint">Դիմադրության ուժը համեմատական է արագության քառակուսուն և ուղղված է արագությանը հակառակ։ Այն մարմնին հաղորդում է a = k·v² արագացում (k = F/(m·v²))։ Կետագծով ցույց է տրված հետագիծն առանց դիմադրության։</p>
+          </div>
+        </section>
+
+        <section class="group">
+          <h2 class="group__title">Ցուցադրում</h2>
+          <label class="check"><input type="checkbox" id="vectors" checked> Արագության վեկտորը և բաղադրիչները</label>
+          <div class="field">
+            <span class="field__label" id="speedLabel">Անիմացիայի արագություն</span>
+            <div class="segmented" id="speed" role="group" aria-labelledby="speedLabel">
+              <button data-value="0.5">×0.5</button>
+              <button data-value="1" aria-pressed="true">×1</button>
+              <button data-value="2">×2</button>
+              <button data-value="4">×4</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="group">
+          <div class="formula">
+            <b>x = v₀·cos α·t</b><br>
+            <b>y = h₀ + v₀·sin α·t − gt²/2</b><br>
+            <b>v<sub>x</sub> = v₀·cos α,&nbsp; v<sub>y</sub> = v₀·sin α − gt</b><br><br>
+            Գետնից նետելիս (h₀ = 0)՝<br>
+            <b>T = 2v₀·sin α / g</b><br>
+            թռիչքի տևողություն<br>
+            <b>L = v₀²·sin 2α / g</b><br>
+            թռիչքի հեռավորություն<br>
+            <b>H = v₀²·sin²α / (2g)</b><br>
+            առավելագույն բարձրություն
+          </div>
+        </section>
+      </aside>
+    </div>
+
+    <section class="explain">
+      <h2>Ինչպե՞ս է շարժվում անկյան տակ նետված մարմինը</h2>
+      <p>Եթե օդի դիմադրությունը կարելի է անտեսել, մարմնի վրա ազդում է միայն ծանրության ուժը, և մարմինը շարժվում է ուղղաձիգ դեպի ներքև ուղղված հաստատուն <em>g</em> արագացմամբ։ Այդ շարժումը հարմար է դիտարկել որպես երկու անկախ շարժումների գումար. հորիզոնական ուղղությամբ մարմինը շարժվում է <em>հավասարաչափ</em>՝ v<sub>x</sub> = v₀·cos α արագությամբ, իսկ ուղղաձիգ ուղղությամբ՝ <em>հավասարաչափ արագացող</em>՝ v<sub>y</sub> = v₀·sin α − gt։ Մարմնի հետագիծը պարաբոլ է։</p>
+      <p>Հետագծի ամենաբարձր կետում v<sub>y</sub> = 0, և արագությունն ուղղված է հորիզոնական։ Գետնից նետելիս թռիչքի հեռավորությունը՝ L = v₀²·sin 2α / g, առավելագույնն է α = 45° անկյան դեպքում։ Եթե երկու նետման անկյունների գումարը 90° է (օրինակ՝ 30° և 60°), ապա թռիչքի հեռավորությունը նույնն է, թեև բարձրությունն ու թռիչքի տևողությունը տարբեր են։ Ստուգեք. նետեք մարմինը նախ 30°, ապա 60° անկյան տակ և համեմատեք հետագծերը։</p>
+      <p>Օդի դիմադրության ուժն ուղղված է արագությանը հակառակ և մեծանում է արագության աճին զուգընթաց։ Այդ դեպքում հետագիծն այլևս պարաբոլ չէ. այն համաչափ չէ՝ վայրէջքի ճյուղն ավելի զառիթափ է, թռիչքի հեռավորությունն ու բարձրությունը փոքրանում են, իսկ ամենահեռու նետման անկյունը 45°-ից փոքր է։ Լուսնի վրա, որտեղ ազատ անկման արագացումը մոտ 6 անգամ փոքր է, նույն արագությամբ նետված մարմինը թռչում է մոտ 6 անգամ ավելի հեռու և բարձր։</p>
+    </section>
+  </main>
+
+  <footer data-shell="footer"></footer>
+</body>
+</html>

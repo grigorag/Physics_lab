@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="hy">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Մաթեմատիկական և զսպանակավոր ճոճանակներ · Ֆիզիկայի Լաբորատորիաներ</title>
+  <link rel="icon" href="../../../assets/img/favicon.svg" type="image/svg+xml">
+  <script src="../../../assets/js/theme-init.js"></script>
+  <link rel="stylesheet" href="../../../assets/css/main.css">
+  <script type="module" src="../../../assets/js/core/shell.js"></script>
+  <script type="module" src="./main.js"></script>
+</head>
+<body data-sim="oscillations" data-section="mechanics">
+  <header data-shell="header"></header>
+
+  <main class="page">
+    <header class="sim-head">
+      <h1 class="sim-title">Մաթեմատիկական և զսպանակավոր ճոճանակներ</h1>
+      <p class="sim-subtitle">ներդաշնակ տատանումներ</p>
+    </header>
+
+    <div class="tabs" role="tablist" id="tabs">
+      <button role="tab" data-tab="pendulum" aria-controls="panel-pendulum" aria-selected="true">Մաթեմատիկական ճոճանակ</button>
+      <button role="tab" data-tab="spring" aria-controls="panel-spring">Զսպանակավոր ճոճանակ</button>
+    </div>
+
+    <!-- ===== Mathematical pendulum ===== -->
+    <div id="panel-pendulum" role="tabpanel">
+      <div class="sim-layout">
+        <section class="stage">
+          <div class="canvas-wrap canvas-wrap--grab">
+            <canvas id="pScene" aria-label="Մաթեմատիկական ճոճանակի սիմուլյացիա"></canvas>
+            <span class="canvas-hint">Քաշեք գնդիկը և բաց թողեք</span>
+          </div>
+          <canvas class="chart" id="pChart" aria-label="Անկյան, արագության և արագացման գրաֆիկները՝ կախված ժամանակից"></canvas>
+          <p class="chart-caption">Յուրաքանչյուր կոր բաժանված է իր առավելագույն արժեքի վրա (նշված է գրաֆիկի վերևում), որպեսզի երեքն էլ երևան նույն մասշտաբով։</p>
+          <canvas class="chart" id="pEnergy" aria-label="Կինետիկ, պոտենցիալ և լրիվ էներգիաները"></canvas>
+          <p class="chart-caption">Կինետիկ (E<sub>կ</sub>), պոտենցիալ (E<sub>պ</sub>) և լրիվ մեխանիկական (E) էներգիաները</p>
+        </section>
+
+        <aside class="panel">
+          <section class="group" aria-label="Չափումներ">
+            <dl class="stats">
+              <div class="stat"><dt>Պարբերություն T<sub>0</sub> = 2π√(l/g)</dt><dd id="pT0">—</dd></div>
+              <div class="stat"><dt>Հաճախություն ν = 1/T<sub>0</sub></dt><dd id="pFreq">—</dd></div>
+              <div class="stat"><dt>Չափված պարբերություն T</dt><dd id="pTm">—</dd></div>
+              <div class="stat"><dt>Հարաբերություն T / T<sub>0</sub></dt><dd id="pRatio">—</dd></div>
+              <div class="stat"><dt>Շեղման անկյուն φ</dt><dd id="pPhi">—</dd></div>
+              <div class="stat"><dt>Արագություն v</dt><dd id="pV">—</dd></div>
+              <div class="stat"><dt>Ժամանակ t</dt><dd id="pTime">—</dd></div>
+            </dl>
+          </section>
+
+          <section class="group">
+            <h2 class="group__title">Պարամետրեր</h2>
+            <div class="field">
+              <label class="field__label" for="pLen">Թելի երկարություն l</label>
+              <output class="field__value" for="pLen"></output>
+              <input type="range" id="pLen" min="0.2" max="3" step="0.05" value="1">
+            </div>
+            <div class="field">
+              <label class="field__label" for="pAngle">Սկզբնական անկյուն φ<sub>0</sub></label>
+              <output class="field__value" for="pAngle"></output>
+              <input type="range" id="pAngle" min="1" max="80" step="1" value="10">
+            </div>
+            <div class="field">
+              <label class="field__label" for="pMass">Գնդիկի զանգված m</label>
+              <output class="field__value" for="pMass"></output>
+              <input type="range" id="pMass" min="0.1" max="5" step="0.1" value="1">
+            </div>
+            <div class="field">
+              <span class="field__label" id="pGravityLabel">Ազատ անկման արագացում g</span>
+              <output class="field__value" id="pGravityVal"></output>
+              <div class="segmented" id="pGravity" role="group" aria-labelledby="pGravityLabel">
+                <button data-value="9.8" aria-pressed="true">Երկիր</button>
+                <button data-value="1.62">Լուսին</button>
+                <button data-value="3.71">Մարս</button>
+              </div>
+            </div>
+            <div class="field">
+              <label class="field__label" for="pDamp">Մարման գործակից γ</label>
+              <output class="field__value" for="pDamp"></output>
+              <input type="range" id="pDamp" min="0" max="1" step="0.01" value="0">
+            </div>
+            <p class="hint">γ = 0՝ դիմադրություն չկա, տատանումները չեն մարում։</p>
+          </section>
+
+          <section class="group">
+            <div class="btn-row">
+              <button class="btn" id="pPlay"></button>
+              <button class="btn" id="pReset">↺ Սկսել նորից</button>
+            </div>
+          </section>
+
+          <section class="group">
+            <h2 class="group__title">Գրաֆիկ և վեկտորներ</h2>
+            <label class="check"><input type="checkbox" id="pShowX" checked><i class="swatch swatch--square" style="--c: var(--blue)"></i>Անկյուն φ(t)</label>
+            <label class="check"><input type="checkbox" id="pShowV" checked><i class="swatch swatch--square" style="--c: var(--teal)"></i>Արագություն v(t)</label>
+            <label class="check"><input type="checkbox" id="pShowA" checked><i class="swatch swatch--square" style="--c: var(--coral)"></i>Արագացում a(t)</label>
+            <label class="check"><input type="checkbox" id="pVecV" checked><i class="swatch" style="--c: var(--teal)"></i>Արագության վեկտոր</label>
+            <label class="check"><input type="checkbox" id="pVecF"><span><i class="swatch" style="--c: var(--red)"></i>&nbsp;<i class="swatch" style="--c: var(--purple)"></i></span>Ծանրության ուժ և թելի լարման ուժ</label>
+          </section>
+
+          <section class="group">
+            <div class="formula">
+              <b>T = 2π√(l/g)</b>, &nbsp;<b>ν = 1/T</b><br>
+              a = −g·sin φ ≈ −g·φ<br>
+              E<sub>կ</sub> = mv²/2, &nbsp;E<sub>պ</sub> = mgl(1 − cos φ)
+            </div>
+          </section>
+        </aside>
+      </div>
+
+      <section class="explain">
+        <h2>Մաթեմատիկական ճոճանակ</h2>
+        <p>Մաթեմատիկական ճոճանակը անկշիռ և չձգվող թելից կախված նյութական կետ է։ Երբ այն շեղում ենք հավասարակշռության դիրքից, ծանրության ուժի՝ հետագծի շոշափողով ուղղված բաղադրիչը ձգտում է այն հետ վերադարձնել, և ճոճանակը սկսում է տատանվել։</p>
+        <p>Փոքր անկյունների դեպքում տատանումները ներդաշնակ են, իսկ պարբերությունը որոշվում է Հյուգենսի բանաձևով՝ <em>T = 2π√(l/g)</em>։ Այն կախված է միայն թելի երկարությունից և ազատ անկման արագացումից, բայց կախված չէ ո՛չ գնդիկի զանգվածից, ո՛չ էլ (փոքր շեղումների դեպքում) ամպլիտուդից։ Փոխեք զանգվածը և համոզվեք, որ չափված պարբերությունը նույնն է մնում, իսկ հետո ճոճանակը «տեղափոխեք» Լուսին կամ Մարս։</p>
+        <p>Մեծ ամպլիտուդների դեպքում sin φ ≈ φ մոտավորությունն այլևս ճիշտ չէ, և իրական պարբերությունը բանաձևով հաշվածից մեծ է. 80° շեղման դեպքում՝ մոտ 14 %-ով։ Տատանումների ընթացքում պոտենցիալ էներգիան փոխակերպվում է կինետիկի և հակառակը։ Եթե դիմադրություն չկա, լրիվ մեխանիկական էներգիան պահպանվում է, իսկ մարման դեպքում այն աստիճանաբար նվազում է։</p>
+      </section>
+    </div>
+
+    <!-- ===== Spring oscillator ===== -->
+    <div id="panel-spring" role="tabpanel" hidden>
+      <div class="sim-layout">
+        <section class="stage">
+          <div class="canvas-wrap canvas-wrap--grab">
+            <canvas id="sScene" aria-label="Զսպանակավոր ճոճանակի սիմուլյացիա"></canvas>
+            <span class="canvas-hint">Քաշեք բեռը և բաց թողեք</span>
+          </div>
+          <canvas class="chart" id="sChart" aria-label="Շեղման, արագության և արագացման գրաֆիկները՝ կախված ժամանակից"></canvas>
+          <p class="chart-caption">Յուրաքանչյուր կոր բաժանված է իր առավելագույն արժեքի վրա (նշված է գրաֆիկի վերևում), որպեսզի երեքն էլ երևան նույն մասշտաբով։</p>
+          <canvas class="chart" id="sEnergy" aria-label="Կինետիկ, պոտենցիալ և լրիվ էներգիաները"></canvas>
+          <p class="chart-caption">Կինետիկ (E<sub>կ</sub>), պոտենցիալ (E<sub>պ</sub>) և լրիվ մեխանիկական (E) էներգիաները</p>
+        </section>
+
+        <aside class="panel">
+          <section class="group" aria-label="Չափումներ">
+            <dl class="stats">
+              <div class="stat"><dt>Պարբերություն T<sub>0</sub> = 2π√(m/k)</dt><dd id="sT0">—</dd></div>
+              <div class="stat"><dt>Հաճախություն ν = 1/T<sub>0</sub></dt><dd id="sFreq">—</dd></div>
+              <div class="stat"><dt>Չափված պարբերություն T</dt><dd id="sTm">—</dd></div>
+              <div class="stat"><dt>Շեղում x</dt><dd id="sX">—</dd></div>
+              <div class="stat"><dt>Արագություն v</dt><dd id="sV">—</dd></div>
+              <div class="stat"><dt>Արագացում a</dt><dd id="sA">—</dd></div>
+              <div class="stat"><dt>Ժամանակ t</dt><dd id="sTime">—</dd></div>
+            </dl>
+          </section>
+
+          <section class="group">
+            <h2 class="group__title">Պարամետրեր</h2>
+            <div class="field">
+              <label class="field__label" for="sMass">Բեռի զանգված m</label>
+              <output class="field__value" for="sMass"></output>
+              <input type="range" id="sMass" min="0.1" max="5" step="0.1" value="1">
+            </div>
+            <div class="field">
+              <label class="field__label" for="sK">Զսպանակի կոշտություն k</label>
+              <output class="field__value" for="sK"></output>
+              <input type="range" id="sK" min="5" max="200" step="1" value="100">
+            </div>
+            <div class="field">
+              <label class="field__label" for="sAmp">Սկզբնական շեղում A</label>
+              <output class="field__value" for="sAmp"></output>
+              <input type="range" id="sAmp" min="0.02" max="0.3" step="0.01" value="0.1">
+            </div>
+            <div class="field">
+              <label class="field__label" for="sDamp">Դիմադրության գործակից b</label>
+              <output class="field__value" for="sDamp"></output>
+              <input type="range" id="sDamp" min="0" max="3" step="0.05" value="0">
+            </div>
+            <p class="hint">Դիմադրության ուժը՝ F<sub>դ</sub> = −b·v։ b = 0 դեպքում տատանումները չեն մարում։</p>
+          </section>
+
+          <section class="group">
+            <div class="btn-row">
+              <button class="btn" id="sPlay"></button>
+              <button class="btn" id="sReset">↺ Սկսել նորից</button>
+            </div>
+          </section>
+
+          <section class="group">
+            <h2 class="group__title">Գրաֆիկ և վեկտորներ</h2>
+            <label class="check"><input type="checkbox" id="sShowX" checked><i class="swatch swatch--square" style="--c: var(--blue)"></i>Շեղում x(t)</label>
+            <label class="check"><input type="checkbox" id="sShowV" checked><i class="swatch swatch--square" style="--c: var(--teal)"></i>Արագություն v(t)</label>
+            <label class="check"><input type="checkbox" id="sShowA" checked><i class="swatch swatch--square" style="--c: var(--coral)"></i>Արագացում a(t)</label>
+            <label class="check"><input type="checkbox" id="sVec" checked><span><i class="swatch" style="--c: var(--teal)"></i>&nbsp;<i class="swatch" style="--c: var(--red)"></i></span>Արագության և համազոր ուժի վեկտորներ</label>
+          </section>
+
+          <section class="group">
+            <div class="formula">
+              <b>T = 2π√(m/k)</b>, &nbsp;<b>ν = 1/T</b><br>
+              F = −kx, &nbsp;a = −(k/m)·x<br>
+              E<sub>կ</sub> = mv²/2, &nbsp;E<sub>պ</sub> = kx²/2
+            </div>
+          </section>
+        </aside>
+      </div>
+
+      <section class="explain">
+        <h2>Զսպանակավոր ճոճանակ</h2>
+        <p>Զսպանակավոր ճոճանակը զսպանակից կախված բեռ է։ Հավասարակշռության դիրքում ծանրության ուժը համակշռվում է զսպանակի առաձգականության ուժով։ Եթե բեռը շեղենք այդ դիրքից x չափով, համազոր ուժը կլինի <em>F = −kx</em>. այն միշտ ուղղված է դեպի հավասարակշռության դիրքը, ուստի բեռը կատարում է ներդաշնակ տատանումներ՝ x = A·cos(ωt), որտեղ ω = √(k/m)։</p>
+        <p>Տատանումների պարբերությունը՝ <em>T = 2π√(m/k)</em>, կախված է բեռի զանգվածից և զսպանակի կոշտությունից, բայց կախված չէ ամպլիտուդից. փոխեք սկզբնական շեղումը և համեմատեք չափված պարբերությունը հաշվարկայինի հետ։ Որքան ծանր է բեռը, այնքան դանդաղ են տատանումները, որքան կոշտ է զսպանակը՝ այնքան արագ։</p>
+        <p>Գրաֆիկներից երևում է, որ արագությունը շեղումից առաջ է ընկնում քառորդ պարբերությամբ, իսկ արագացումը և շեղումը հակափուլ են՝ a = −ω²x։ Ծայրակետերում արագությունը զրո է, իսկ պոտենցիալ էներգիան՝ առավելագույնը. հավասարակշռության դիրքով անցնելիս՝ հակառակը։ Պոտենցիալ էներգիան՝ kx²/2, այստեղ հաշվվում է հավասարակշռության դիրքից։</p>
+      </section>
+    </div>
+  </main>
+
+  <footer data-shell="footer"></footer>
+</body>
+</html>
