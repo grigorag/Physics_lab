@@ -2,7 +2,7 @@
 // footer and, on sim pages, the previous/next links — all based on the catalog.
 //
 // Pages include it with:
-//   <script type="module" src="…/assets/js/core/shell.js"></script>
+//   <script defer src="bundle.js"></script>   (built from this module by `npm run build`)
 // and mark themselves with <body data-sim="<sim id>"> (sim pages),
 // <body data-page="home"> or <body data-page="section"> (section.html?id=…). Placeholders <header data-shell="header"> and
 // <footer data-shell="footer"> are filled in place.
@@ -11,8 +11,8 @@ import { SITE_TITLE, SITE_CREDIT, sims, getSim, getSection } from '../catalog.js
 import { currentTheme, toggleTheme, onThemeChange } from './theme.js';
 import { syncRangeFill } from './controls.js';
 
-/** URL of the site root, independent of where the page lives. */
-export const ROOT = new URL('../../../', import.meta.url);
+/** URL of the site root, independent of where the page lives (every page loads assets/js/theme-init.js). */
+export const ROOT = new URL('../../', document.querySelector('script[src$="theme-init.js"]').src);
 export const siteUrl = (path = '') => new URL(path, ROOT).href;
 /** URL of the page that lists one section's labs. */
 export const sectionUrl = (id) => siteUrl(`section.html?id=${id}`);
