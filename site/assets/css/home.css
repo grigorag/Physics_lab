@@ -1,0 +1,178 @@
+/* ==========================================================================
+   Home page — hero, section blocks and simulation cards.
+   ========================================================================== */
+
+.hero {
+  padding: var(--sp-7) 0 var(--sp-6);
+  max-width: 760px;
+}
+.hero__title {
+  font-family: var(--font-display);
+  font-size: var(--fs-2xl);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+}
+.hero__lead {
+  margin-top: var(--sp-3);
+  color: var(--text-2);
+  font-size: var(--fs-lg);
+  max-width: 60ch;
+}
+
+/* Jump links to sections */
+.jump {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  margin-top: var(--sp-5);
+  padding: 0;
+  list-style: none;
+}
+.jump a {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: 6px 14px;
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  background: var(--surface-1);
+  font-size: var(--fs-sm);
+  color: var(--text-2);
+  transition: border-color var(--ease), color var(--ease);
+}
+.jump a::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+.jump a:hover { border-color: var(--accent); color: var(--text); }
+
+/* ---- Section block ---- */
+.home-section {
+  padding-top: var(--sp-6);
+  scroll-margin-top: 64px;
+}
+.home-section + .home-section { margin-top: var(--sp-5); }
+
+.home-section__head {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--sp-4);
+  padding-bottom: var(--sp-3);
+  margin-bottom: var(--sp-4);
+  border-bottom: 1px solid var(--border);
+}
+.home-section__index {
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  color: var(--accent);
+  padding-bottom: 3px;
+}
+.home-section__text { flex: 1; min-width: 0; }
+.home-section__title {
+  font-family: var(--font-display);
+  font-size: var(--fs-xl);
+}
+.home-section__blurb {
+  margin-top: 2px;
+  color: var(--text-3);
+  font-size: var(--fs-sm);
+}
+.home-section__count {
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  color: var(--text-3);
+  white-space: nowrap;
+  padding-bottom: 3px;
+}
+
+/* ---- Cards ---- */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+  gap: var(--sp-4);
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface-1);
+  transition: border-color var(--ease), transform var(--ease), box-shadow var(--ease);
+}
+.card:hover {
+  border-color: var(--accent-line);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+
+.card__thumb {
+  aspect-ratio: 16 / 9;
+  display: grid;
+  place-items: center;
+  padding: var(--sp-4) var(--sp-5);
+  color: var(--accent);
+  background:
+    radial-gradient(120% 90% at 30% 0%, var(--accent-soft), transparent 70%),
+    linear-gradient(var(--surface-2), var(--canvas-bg));
+  border-bottom: 1px solid var(--border);
+}
+.card__thumb svg { width: 100%; height: 100%; }
+
+.card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: var(--sp-4);
+  flex: 1;
+}
+.card__title {
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-2);
+  font-size: var(--fs-md);
+  font-weight: 600;
+}
+.card__tag {
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: var(--fs-2xs);
+  font-weight: 600;
+}
+.card__summary {
+  color: var(--text-2);
+  font-size: var(--fs-sm);
+  flex: 1;
+}
+.card__cta {
+  margin-top: var(--sp-2);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  color: var(--accent);
+}
+.card:hover .card__cta { text-decoration: underline; text-underline-offset: 3px; }
+
+/* Placeholder for a section that has no simulations yet. */
+.card--empty {
+  border-style: dashed;
+  min-height: 140px;
+  display: grid;
+  place-items: center;
+  color: var(--text-3);
+  font-size: var(--fs-sm);
+  background: transparent;
+}
+.card--empty:hover { transform: none; box-shadow: none; border-color: var(--border); }
+
+@media (max-width: 600px) {
+  .hero { padding-top: var(--sp-5); }
+  .home-section__head { flex-wrap: wrap; }
+}

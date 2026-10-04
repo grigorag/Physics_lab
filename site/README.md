@@ -1,0 +1,205 @@
+# Ֆիզիկայի Լաբորատորիաներ
+
+Interactive physics simulations for the classroom, published as one static website.
+It uses plain HTML, CSS and JavaScript ES modules. There is no build step and nothing to install.
+
+## Running locally
+
+ES modules do not load from `file://`, so serve the folder over HTTP:
+
+```sh
+# any one of these, run inside site/
+python -m http.server 8000        # → http://localhost:8000
+npx serve .
+```
+
+You can also open `site/index.html` in VS Code and click **Go Live** (Live Server extension).
+
+To deploy, upload the `site/` folder as-is to any static host (GitHub Pages, Netlify, a school server).
+
+## Structure
+
+```
+site/
+├── index.html                 Home page (sections + cards, generated from the catalog)
+├── assets/
+│   ├── css/
+│   │   ├── main.css           Entry point: fonts + imports the layers below
+│   │   ├── tokens.css         Design tokens (colors, fonts, spacing, section accents)
+│   │   ├── base.css           Reset and element defaults
+│   │   ├── layout.css         Header/footer, page container, sim layout, .explain
+│   │   ├── components.css     Panel, fields, sliders, buttons, tabs, stats, legend …
+│   │   └── home.css           Home page only
+│   ├── js/
+│   │   ├── catalog.js         ★ Sections and simulations: the single source of truth
+│   │   ├── home.js            Renders the home page from the catalog
+│   │   ├── thumbs.js          SVG card illustrations, keyed by sim id
+│   │   └── core/
+│   │       ├── shell.js       Renders header (breadcrumbs) and footer on every page
+│   │       ├── canvas.js      fixedCanvas / fluidCanvas (HiDPI), pointerPos, onDrag
+│   │       ├── loop.js        startLoop(frame): rAF loop with clamped dt (seconds)
+│   │       ├── controls.js    bindRange, bindCheckbox, bindSelect, bindSegmented, bindTabs, bindPlayPause, onClick
+│   │       ├── draw.js        clear, line, arrow, circle, text, roundRect
+│   │       ├── theme.js       COLORS / FONTS / font() for canvas, fontsReady()
+│   │       ├── color.js       wavelengthToRGB, rgba
+│   │       ├── math.js        clamp, lerp, rand, DEG, TAU, vec
+│   │       └── dom.js         byId, $, $$, setText, setHTML
+│   └── img/favicon.svg
+└── sims/
+    └── <section>/<sim-id>/
+        ├── index.html         Markup only (no inline <style>/<script>)
+        ├── main.js            Entry module
+        └── *.js / sim.css     Optional extra modules / sim-specific styles
+```
+
+Sections: `mechanics`, `molecular`, `electrodynamics`, `optics`.
+
+## Adding a simulation
+
+1. Create `sims/<section>/<id>/index.html` and `main.js`. Copy `sims/optics/thin-lens/` as a template.
+2. Add an entry to `sims` in `assets/js/catalog.js` (id, section, title, summary, path).
+3. Optionally add a card illustration to `assets/js/thumbs.js` under the same id.
+
+The home page and breadcrumbs update automatically.
+
+## Adding a section
+
+1. Append `{ id, title, blurb }` to `sections` in `assets/js/catalog.js`.
+2. Give it an accent color in `assets/css/tokens.css`:
+   `[data-section="<id>"] { --accent: …; }`
+
+## Page template
+
+```html
+<!DOCTYPE html>
+<html lang="hy">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Վերնագիր · Ֆիզիկայի Լաբորատորիաներ</title>
+  <link rel="icon" href="../../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../../assets/css/main.css">
+  <script type="module" src="../../../assets/js/core/shell.js"></script>
+  <script type="module" src="./main.js"></script>
+</head>
+<body data-sim="<sim id>" data-section="<section id>">
+  <header data-shell="header"></header>
+  <main class="page">
+    <header class="sim-head">
+      <h1 class="sim-title">…</h1>
+      <p class="sim-subtitle">…</p>
+    </header>
+
+    <!-- optional: <div class="tabs" role="tablist" id="tabs">…</div> -->
+
+    <div class="sim-layout">
+      <section class="stage">
+        <div class="canvas-wrap"><canvas id="cv"></canvas> <!-- overlays --></div>
+        <!-- optional readouts / charts -->
+      </section>
+      <aside class="panel"> <!-- .group blocks --> </aside>
+    </div>
+
+    <section class="explain"> <h2>…</h2> <p>…</p> </section>   <!-- optional theory text -->
+  </main>
+  <footer data-shell="footer"></footer>
+</body>
+</html>
+```
+
+`data-section` on `<body>` sets `--accent` for the whole page: slider thumbs, values, active buttons and tabs.
+
+## Components
+
+The class names are defined in `components.css`. Use them in place of custom styles.
+
+```html
+<!-- Panel group -->
+<section class="group">
+  <h2 class="group__title">Պարամետրեր</h2>
+  …
+</section>
+
+<!-- Slider with live value: bindRange('mass', { format: v => v.toFixed(1), onInput }) -->
+<div class="field">
+  <label class="field__label" for="mass">Զանգված m</label>
+  <output class="field__value" for="mass"></output>
+  <input type="range" id="mass" min="1" max="10" step="0.5" value="2">
+</div>
+
+<!-- Select: bindSelect('mat', { onChange }) -->
+<div class="field">
+  <label class="field__label" for="mat">Միջավայր</label>
+  <select class="select" id="mat">…</select>
+</div>
+
+<!-- Checkbox: bindCheckbox('trail', { onChange }) -->
+<label class="check"><input type="checkbox" id="trail" checked> Հետագիծ</label>
+
+<!-- Buttons -->
+<div class="btn-row">
+  <button class="btn" id="playBtn"></button>                 <!-- bindPlayPause('playBtn', …) -->
+  <button class="btn" id="resetBtn">↺ Վերագործարկել</button>
+</div>
+<button class="btn btn--primary btn--block">…</button>
+<!-- .btn is inline-flex: wrap mixed text like "f<sub>n</sub>-ի վրա" in one <span> -->
+<button class="btn"><span>↪ Սահել f<sub>n</sub>-ի վրա</span></button>
+
+<!-- One-of-many choice: bindSegmented('charge', { onChange }) -->
+<div class="segmented" id="charge" role="group" aria-label="Լիցք">
+  <button data-value="1" aria-pressed="true">e</button>
+  <button data-value="2">2e</button>
+</div>
+
+<!-- Any control can take its own accent: add .tint and set --accent inline -->
+<div class="segmented tint" style="--accent: #e0675a" id="lb1-surface">…</div>
+
+<!-- Tabs: bindTabs('tabs', { onChange, hash: true }) -->
+<div class="tabs" role="tablist" id="tabs">
+  <button role="tab" data-tab="a" aria-controls="panel-a" aria-selected="true">Ա</button>
+  <button role="tab" data-tab="b" aria-controls="panel-b">Բ</button>
+</div>
+<div id="panel-a">…</div>
+<div id="panel-b" hidden>…</div>
+
+<!-- Stats -->
+<dl class="stats">
+  <div class="stat"><dt>Պարբերություն T</dt><dd id="period">—</dd></div>
+</dl>
+
+<!-- Text boxes -->
+<div class="formula"><b>1/d + 1/f = 1/F</b><br>բացատրություն</div>
+<div class="callout">…</div>
+<p class="hint">Small explanatory note. Add .hint--ok / .hint--warn for status colors.</p>
+
+<!-- Canvas overlays -->
+<div class="canvas-wrap canvas-wrap--grab">    <!-- or --crosshair -->
+  <canvas id="cv"></canvas>
+  <ul class="legend legend--tl">            <!-- or --tr -->
+    <li><i class="legend__dot"  style="--c: var(--coral)"></i>արագություն</li>
+    <li><i class="legend__line" style="--c: var(--amber)"></i>ճառագայթ</li>
+  </ul>
+  <span class="canvas-hint">Քաշեք՝ պտտելու համար</span>
+</div>
+
+<!-- Readout cards under the canvas -->
+<div class="readouts">
+  <div class="readout">
+    <div class="readout__title"><i class="swatch" style="--c:#c14a3a"></i>Կարմիր զատիկ</div>
+    <div id="r1"></div>
+  </div>
+</div>
+
+<!-- Small chart canvas -->
+<canvas class="chart" id="msd"></canvas>
+<p class="chart-caption">…</p>
+```
+
+## JavaScript conventions
+
+- Every page script is an ES module. Import only from `assets/js/core/*`, plus local files in the sim folder.
+- **Canvas.** Use `fixedCanvas(el, w, h)` when the physics runs in fixed pixel coordinates. Use `fluidCanvas(el, { height: w => …, onResize })` when the drawing adapts to the width. Draw in logical units; the DPR scaling is already handled.
+- **Animation.** Use `startLoop((dt) => { … })`, where `dt` is in seconds and clamped to 0.05.
+- **Input.** Use `onDrag(view, { start, move, end })` for mouse and touch (pointer events).
+- **Canvas colors and fonts.** Take them from `COLORS` / `font()` in `theme.js` so canvases match the UI. Simulation-specific colors (e.g. a red ladybug) can stay local constants.
+- **Language.** All visible text is Armenian (`lang="hy"`).

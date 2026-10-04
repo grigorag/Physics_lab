@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="hy">
+<head>
+<meta charset="UTF-8">
+<title>Շարժման հարաբերականություն</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Armenian:wght@500;700&family=Noto+Sans+Armenian:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f3efe6;
+    --panel: #fbf8f1;
+    --ink: #2a2620;
+    --muted: #6b6358;
+    --line: #d8d0bf;
+    --accent: #c14a3a;
+    --accent2: #2b6bb0;
+    --belt: #3a3a3a;
+    --belt-arrow: #ffd23f;
+    --ground: #bfd4a8;
+    --ground-line: #a4bd8d;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Noto Sans Armenian', sans-serif;
+    min-height: 100vh;
+  }
+  body {
+    background-image:
+      radial-gradient(circle at 20% 10%, rgba(193,74,58,0.04) 0%, transparent 40%),
+      radial-gradient(circle at 80% 90%, rgba(43,107,176,0.04) 0%, transparent 40%);
+  }
+  .wrap {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 32px 24px 48px;
+  }
+  header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 16px;
+    margin-bottom: 28px;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  h1 {
+    font-family: 'Noto Serif Armenian', serif;
+    font-weight: 700;
+    font-size: 32px;
+    margin: 0;
+    letter-spacing: -0.5px;
+  }
+  .subtitle {
+    color: var(--muted);
+    font-size: 14px;
+    font-style: italic;
+    font-family: 'Noto Serif Armenian', serif;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 360px;
+    gap: 24px;
+  }
+  @media (max-width: 980px) {
+    .grid { grid-template-columns: 1fr; }
+  }
+  .canvas-card {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 14px;
+    box-shadow: 0 1px 0 rgba(0,0,0,0.02), 0 12px 24px -16px rgba(0,0,0,0.15);
+  }
+  canvas {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 3px;
+    background: #fff;
+  }
+  .readout {
+    margin-top: 12px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+  }
+  .readout > div {
+    background: rgba(0,0,0,0.025);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 8px 10px;
+  }
+  .readout .lbl {
+    color: var(--muted);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 4px;
+    font-family: 'Noto Sans Armenian', sans-serif;
+    font-weight: 600;
+  }
+  .readout .val { color: var(--ink); }
+  .readout .dot {
+    display: inline-block;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    margin-right: 6px;
+    vertical-align: middle;
+  }
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 18px 20px;
+    box-shadow: 0 1px 0 rgba(0,0,0,0.02), 0 12px 24px -16px rgba(0,0,0,0.15);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .group {
+    border-top: 1px solid var(--line);
+    padding-top: 14px;
+  }
+  .group:first-child { border-top: 0; padding-top: 0; }
+  .group h3 {
+    margin: 0 0 12px 0;
+    font-family: 'Noto Serif Armenian', serif;
+    font-size: 15px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .swatch {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 1.5px solid var(--ink);
+    display: inline-block;
+  }
+  .swatch.belt {
+    border-radius: 3px;
+    background: var(--belt);
+    border-color: var(--belt);
+  }
+  .row {
+    display: grid;
+    grid-template-columns: 86px 1fr 44px;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+  .row:last-child { margin-bottom: 0; }
+  .row label {
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .row .v {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    text-align: right;
+    color: var(--ink);
+  }
+  input[type=range] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 4px;
+    background: var(--line);
+    border-radius: 2px;
+    outline: none;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--ink);
+    cursor: pointer;
+    border: 2px solid var(--panel);
+    box-shadow: 0 0 0 1px var(--ink);
+  }
+  input[type=range]::-moz-range-thumb {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--ink);
+    cursor: pointer;
+    border: 2px solid var(--panel);
+    box-shadow: 0 0 0 1px var(--ink);
+  }
+  .buttons {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  button {
+    flex: 1;
+    min-width: 100px;
+    padding: 9px 14px;
+    border: 1px solid var(--ink);
+    border-radius: 4px;
+    background: var(--ink);
+    color: var(--panel);
+    cursor: pointer;
+    font-family: 'Noto Sans Armenian', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    transition: background 0.15s, color 0.15s;
+  }
+  button.secondary {
+    background: transparent;
+    color: var(--ink);
+  }
+  button:hover { background: var(--accent); border-color: var(--accent); color: white; }
+  button.secondary:hover { background: var(--ink); color: var(--panel); border-color: var(--ink); }
+  .toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--muted);
+    cursor: pointer;
+    user-select: none;
+  }
+  .toggle input { accent-color: var(--ink); }
+  .note {
+    font-size: 12px;
+    color: var(--muted);
+    font-style: italic;
+    line-height: 1.5;
+    font-family: 'Noto Serif Armenian', serif;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Շարժման հարաբերականություն</h1>
+      <div class="subtitle">երկու զատիկ, մեկ կոնվեյեր, և հաշվիչ համակարգերի խաղ</div>
+    </div>
+  </header>
+
+  <div class="grid">
+    <div>
+      <div class="canvas-card">
+        <canvas id="canvas" width="800" height="520"></canvas>
+        <div class="readout">
+          <div>
+            <div class="lbl"><span class="dot" style="background:#c14a3a"></span>Կարմիր զատիկ</div>
+            <div class="val" id="r1"></div>
+          </div>
+          <div>
+            <div class="lbl"><span class="dot" style="background:#2b6bb0"></span>Կապույտ զատիկ</div>
+            <div class="val" id="r2"></div>
+          </div>
+          <div>
+            <div class="lbl"><span class="dot" style="background:#3a3a3a"></span>Կոնվեյեր</div>
+            <div class="val" id="rb"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <aside class="panel">
+      <div class="group">
+        <h3>Կառավարում</h3>
+        <div class="buttons">
+          <button id="playBtn">⏸ Դադար</button>
+          <button id="resetBtn" class="secondary">↺ Վերագործարկել</button>
+        </div>
+        <label class="toggle" style="margin-top:10px;">
+          <input type="checkbox" id="vectorsToggle" checked>
+          Ցույց տալ արագության վեկտորները
+        </label>
+      </div>
+
+      <div class="group">
+        <h3><span class="swatch belt"></span>Կոնվեյերի ժապավեն</h3>
+        <div class="row">
+          <label>Արագ. X</label>
+          <input type="range" id="belt-vx" min="-180" max="180" value="60" step="1">
+          <span class="v" id="belt-vx-v">60</span>
+        </div>
+        <div class="note">Կոնվեյերը շարժվում է միայն հորիզոնական ուղղությամբ։</div>
+      </div>
+
+      <div class="group">
+        <h3><span class="swatch" style="background:#c14a3a"></span>Կարմիր զատիկ</h3>
+        <div class="row">
+          <label>Սկզբն. X</label>
+          <input type="range" id="lb1-x0" min="20" max="780" value="120" step="1">
+          <span class="v" id="lb1-x0-v">120</span>
+        </div>
+        <div class="row">
+          <label>Սկզբն. Y</label>
+          <input type="range" id="lb1-y0" min="20" max="500" value="90" step="1">
+          <span class="v" id="lb1-y0-v">90</span>
+        </div>
+        <div class="row">
+          <label>Արագ. X</label>
+          <input type="range" id="lb1-vx" min="-120" max="120" value="40" step="1">
+          <span class="v" id="lb1-vx-v">40</span>
+        </div>
+        <div class="row">
+          <label>Արագ. Y</label>
+          <input type="range" id="lb1-vy" min="-120" max="120" value="20" step="1">
+          <span class="v" id="lb1-vy-v">20</span>
+        </div>
+      </div>
+
+      <div class="group">
+        <h3><span class="swatch" style="background:#2b6bb0"></span>Կապույտ զատիկ</h3>
+        <div class="row">
+          <label>Սկզբն. X</label>
+          <input type="range" id="lb2-x0" min="20" max="780" value="120" step="1">
+          <span class="v" id="lb2-x0-v">120</span>
+        </div>
+        <div class="row">
+          <label>Սկզբն. Y</label>
+          <input type="range" id="lb2-y0" min="20" max="500" value="260" step="1">
+          <span class="v" id="lb2-y0-v">260</span>
+        </div>
+        <div class="row">
+          <label>Արագ. X</label>
+          <input type="range" id="lb2-vx" min="-120" max="120" value="30" step="1">
+          <span class="v" id="lb2-vx-v">30</span>
+        </div>
+        <div class="row">
+          <label>Արագ. Y</label>
+          <input type="range" id="lb2-vy" min="-120" max="120" value="0" step="1">
+          <span class="v" id="lb2-vy-v">0</span>
+        </div>
+      </div>
+
+      <div class="note">
+        Երբ զատիկը գտնվում է ժապավենի վրա, կոնվեյերի արագությունն ավելանում է նրա սեփական արագությանը։
+        Կանաչ սլաքը՝ սեփական արագությունն է, դեղինը՝ կոնվեյերինը, իսկ սև սլաքը՝ արդյունարար (գետնի համակարգում)։
+      </div>
+    </aside>
+  </div>
+</div>
+
+<script>
+(() => {
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width;
+  const H = canvas.height;
+
+  // Belt geometry: a horizontal strip across the middle
+  const BELT_TOP = 200;
+  const BELT_BOTTOM = 340;
+
+  // State
+  const state = {
+    paused: false,
+    showVectors: true,
+    beltVx: 60,
+    beltPhase: 0, // animated offset for chevrons
+    lb1: { x0: 120, y0: 90,  vx: 40, vy: 20, x: 120, y: 90,  color: '#c14a3a', dark: '#7a2a1f' },
+    lb2: { x0: 120, y0: 260, vx: 30, vy: 0,  x: 120, y: 260, color: '#2b6bb0', dark: '#193f6b' }
+  };
+
+  // ---------- Control wiring ----------
+  function bindRange(id, getter, setter, fmt = v => v) {
+    const el = document.getElementById(id);
+    const valEl = document.getElementById(id + '-v');
+    el.value = getter();
+    valEl.textContent = fmt(getter());
+    el.addEventListener('input', () => {
+      const v = parseFloat(el.value);
+      setter(v);
+      valEl.textContent = fmt(v);
+    });
+  }
+
+  bindRange('belt-vx', () => state.beltVx, v => state.beltVx = v);
+
+  bindRange('lb1-x0', () => state.lb1.x0, v => state.lb1.x0 = v);
+  bindRange('lb1-y0', () => state.lb1.y0, v => state.lb1.y0 = v);
+  bindRange('lb1-vx', () => state.lb1.vx, v => state.lb1.vx = v);
+  bindRange('lb1-vy', () => state.lb1.vy, v => state.lb1.vy = v);
+
+  bindRange('lb2-x0', () => state.lb2.x0, v => state.lb2.x0 = v);
+  bindRange('lb2-y0', () => state.lb2.y0, v => state.lb2.y0 = v);
+  bindRange('lb2-vx', () => state.lb2.vx, v => state.lb2.vx = v);
+  bindRange('lb2-vy', () => state.lb2.vy, v => state.lb2.vy = v);
+
+  const playBtn = document.getElementById('playBtn');
+  const resetBtn = document.getElementById('resetBtn');
+  const vectorsToggle = document.getElementById('vectorsToggle');
+
+  playBtn.addEventListener('click', () => {
+    state.paused = !state.paused;
+    playBtn.textContent = state.paused ? '▶ Շարունակել' : '⏸ Դադար';
+  });
+
+  resetBtn.addEventListener('click', () => {
+    state.lb1.x = state.lb1.x0;
+    state.lb1.y = state.lb1.y0;
+    state.lb2.x = state.lb2.x0;
+    state.lb2.y = state.lb2.y0;
+    state.beltPhase = 0;
+  });
+
+  vectorsToggle.addEventListener('change', () => {
+    state.showVectors = vectorsToggle.checked;
+  });
+
+  // Initialize positions from sliders
+  state.lb1.x = state.lb1.x0; state.lb1.y = state.lb1.y0;
+  state.lb2.x = state.lb2.x0; state.lb2.y = state.lb2.y0;
+
+  // ---------- Physics ----------
+  function onBelt(lb) {
+    return lb.y >= BELT_TOP && lb.y <= BELT_BOTTOM;
+  }
+
+  function update(dt) {
+    state.beltPhase += state.beltVx * dt;
+
+    for (const lb of [state.lb1, state.lb2]) {
+      let gvx = lb.vx;
+      let gvy = lb.vy;
+      if (onBelt(lb)) gvx += state.beltVx;
+
+      lb.x += gvx * dt;
+      lb.y += gvy * dt;
+
+      // Wrap around edges so the bugs don't get lost
+      if (lb.x < -20) lb.x = W + 20;
+      if (lb.x > W + 20) lb.x = -20;
+      if (lb.y < -20) lb.y = H + 20;
+      if (lb.y > H + 20) lb.y = -20;
+    }
+  }
+
+  // ---------- Drawing ----------
+  function drawGround() {
+    // Two ground strips (above and below the belt)
+    const grad = ctx.createLinearGradient(0, 0, 0, H);
+    grad.addColorStop(0, '#cfe0b8');
+    grad.addColorStop(1, '#b5cc99');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, W, BELT_TOP);
+    ctx.fillRect(0, BELT_BOTTOM, W, H - BELT_BOTTOM);
+
+    // Subtle grid texture
+    ctx.strokeStyle = 'rgba(80, 100, 60, 0.18)';
+    ctx.lineWidth = 1;
+    const step = 40;
+    for (let x = 0; x <= W; x += step) {
+      ctx.beginPath();
+      ctx.moveTo(x + 0.5, 0);
+      ctx.lineTo(x + 0.5, BELT_TOP);
+      ctx.moveTo(x + 0.5, BELT_BOTTOM);
+      ctx.lineTo(x + 0.5, H);
+      ctx.stroke();
+    }
+    for (let y = 0; y <= BELT_TOP; y += step) {
+      ctx.beginPath();
+      ctx.moveTo(0, y + 0.5);
+      ctx.lineTo(W, y + 0.5);
+      ctx.stroke();
+    }
+    for (let y = BELT_BOTTOM; y <= H; y += step) {
+      ctx.beginPath();
+      ctx.moveTo(0, y + 0.5);
+      ctx.lineTo(W, y + 0.5);
+      ctx.stroke();
+    }
+
+    // Little grass tufts
+    ctx.fillStyle = 'rgba(70, 90, 50, 0.35)';
+    for (let i = 0; i < 80; i++) {
+      const seedX = (i * 97 + 13) % W;
+      const seedY = (i * 53 + 7) % H;
+      // Only put tufts on ground areas
+      if (seedY > BELT_TOP - 6 && seedY < BELT_BOTTOM + 6) continue;
+      ctx.fillRect(seedX, seedY, 1.5, 1.5);
+    }
+  }
+
+  function drawBelt() {
+    // Belt body
+    const grad = ctx.createLinearGradient(0, BELT_TOP, 0, BELT_BOTTOM);
+    grad.addColorStop(0, '#2c2c2c');
+    grad.addColorStop(0.5, '#444');
+    grad.addColorStop(1, '#2c2c2c');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, BELT_TOP, W, BELT_BOTTOM - BELT_TOP);
+
+    // Side rails (lighter strips at the edges, to suggest rollers)
+    ctx.fillStyle = '#1a1a1a';
+    ctx.fillRect(0, BELT_TOP - 4, W, 6);
+    ctx.fillRect(0, BELT_BOTTOM - 2, W, 6);
+    ctx.fillStyle = '#5a5a5a';
+    ctx.fillRect(0, BELT_TOP - 1, W, 1);
+    ctx.fillRect(0, BELT_BOTTOM, W, 1);
+
+    // Chevrons - moving pattern showing belt direction
+    const chevSpacing = 70;
+    const phase = ((state.beltPhase % chevSpacing) + chevSpacing) % chevSpacing;
+    const dir = state.beltVx >= 0 ? 1 : -1;
+    const cy = (BELT_TOP + BELT_BOTTOM) / 2;
+    const cHeight = (BELT_BOTTOM - BELT_TOP) * 0.55;
+
+    ctx.strokeStyle = 'rgba(255, 210, 63, 0.95)';
+    ctx.lineWidth = 5;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+
+    for (let x = -chevSpacing * 2; x < W + chevSpacing * 2; x += chevSpacing) {
+      const cx = x + phase;
+      ctx.beginPath();
+      ctx.moveTo(cx - 14 * dir, cy - cHeight / 2);
+      ctx.lineTo(cx + 14 * dir, cy);
+      ctx.lineTo(cx - 14 * dir, cy + cHeight / 2);
+      ctx.stroke();
+    }
+
+    // Subtle scanline texture
+    ctx.strokeStyle = 'rgba(0,0,0,0.15)';
+    ctx.lineWidth = 1;
+    for (let y = BELT_TOP + 6; y < BELT_BOTTOM; y += 8) {
+      ctx.beginPath();
+      ctx.moveTo(0, y + 0.5);
+      ctx.lineTo(W, y + 0.5);
+      ctx.stroke();
+    }
+  }
+
+  function drawLadybug(lb, gvx, gvy) {
+    // Direction faces ground-frame motion if moving; otherwise own motion; otherwise +x
+    let angle;
+    if (Math.hypot(gvx, gvy) > 0.5) angle = Math.atan2(gvy, gvx);
+    else if (Math.hypot(lb.vx, lb.vy) > 0.5) angle = Math.atan2(lb.vy, lb.vx);
+    else angle = 0;
+
+    ctx.save();
+    ctx.translate(lb.x, lb.y);
+
+    // Soft shadow
+    ctx.save();
+    ctx.translate(2, 3);
+    ctx.rotate(angle);
+    ctx.fillStyle = 'rgba(0,0,0,0.22)';
+    ctx.beginPath();
+    ctx.ellipse(0, 0, 17, 13, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+
+    ctx.rotate(angle);
+
+    // Legs (six little lines)
+    ctx.strokeStyle = '#111';
+    ctx.lineWidth = 1.5;
+    ctx.lineCap = 'round';
+    const legXs = [-8, 0, 8];
+    for (const lx of legXs) {
+      ctx.beginPath();
+      ctx.moveTo(lx, -8);
+      ctx.lineTo(lx + (lx === 0 ? 0 : (lx > 0 ? 3 : -3)), -14);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(lx, 8);
+      ctx.lineTo(lx + (lx === 0 ? 0 : (lx > 0 ? 3 : -3)), 14);
+      ctx.stroke();
+    }
+
+    // Body
+    ctx.fillStyle = lb.color;
+    ctx.beginPath();
+    ctx.ellipse(0, 0, 16, 12, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Body shading
+    const bodyGrad = ctx.createRadialGradient(-3, -3, 2, 0, 0, 16);
+    bodyGrad.addColorStop(0, 'rgba(255,255,255,0.35)');
+    bodyGrad.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.fillStyle = bodyGrad;
+    ctx.beginPath();
+    ctx.ellipse(0, 0, 16, 12, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Center line (wing divide)
+    ctx.strokeStyle = '#1a1a1a';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(8, 0);
+    ctx.lineTo(-14, 0);
+    ctx.stroke();
+
+    // Spots
+    ctx.fillStyle = '#1a1a1a';
+    const spots = [[3, -6], [3, 6], [-7, -6], [-7, 6], [-2, 0]];
+    for (const [sx, sy] of spots) {
+      ctx.beginPath();
+      ctx.arc(sx, sy, 2.2, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // Head
+    ctx.fillStyle = '#1a1a1a';
+    ctx.beginPath();
+    ctx.ellipse(13, 0, 5, 7, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Tiny eyes
+    ctx.fillStyle = '#fff';
+    ctx.beginPath();
+    ctx.arc(15, -3, 1, 0, Math.PI * 2);
+    ctx.arc(15, 3, 1, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Antennae
+    ctx.strokeStyle = '#1a1a1a';
+    ctx.lineWidth = 1.2;
+    ctx.beginPath();
+    ctx.moveTo(16, -3);
+    ctx.quadraticCurveTo(22, -7, 24, -10);
+    ctx.moveTo(16, 3);
+    ctx.quadraticCurveTo(22, 7, 24, 10);
+    ctx.stroke();
+    // Antenna tips
+    ctx.fillStyle = '#1a1a1a';
+    ctx.beginPath();
+    ctx.arc(24, -10, 1.4, 0, Math.PI * 2);
+    ctx.arc(24, 10, 1.4, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.restore();
+  }
+
+  function drawArrow(x1, y1, x2, y2, color, width = 2.5, headSize = 9) {
+    const dx = x2 - x1, dy = y2 - y1;
+    const len = Math.hypot(dx, dy);
+    if (len < 2) return;
+    const ux = dx / len, uy = dy / len;
+
+    ctx.strokeStyle = color;
+    ctx.fillStyle = color;
+    ctx.lineWidth = width;
+    ctx.lineCap = 'round';
+
+    // Shaft (stop short of tip so head sits cleanly)
+    const sx = x2 - ux * headSize * 0.9;
+    const sy = y2 - uy * headSize * 0.9;
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(sx, sy);
+    ctx.stroke();
+
+    // Head
+    const px = -uy, py = ux;
+    ctx.beginPath();
+    ctx.moveTo(x2, y2);
+    ctx.lineTo(sx + px * headSize * 0.5, sy + py * headSize * 0.5);
+    ctx.lineTo(sx - px * headSize * 0.5, sy - py * headSize * 0.5);
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  function drawVectors(lb) {
+    if (!state.showVectors) return;
+    const SCALE = 0.6;
+    const onB = onBelt(lb);
+
+    const ownVx = lb.vx, ownVy = lb.vy;
+    const beltVx = onB ? state.beltVx : 0;
+    const gvx = ownVx + beltVx;
+    const gvy = ownVy;
+
+    // Own velocity (green)
+    drawArrow(lb.x, lb.y, lb.x + ownVx * SCALE, lb.y + ownVy * SCALE, '#2e7d32', 2.5, 9);
+
+    // Belt velocity (yellow) - offset slightly so it doesn't overlap
+    if (onB && Math.abs(beltVx) > 0.5) {
+      drawArrow(lb.x, lb.y - 22, lb.x + beltVx * SCALE, lb.y - 22, '#c79100', 2.5, 9);
+    }
+
+    // Ground-frame resultant (black) - drawn slightly lower
+    drawArrow(lb.x, lb.y + 22, lb.x + gvx * SCALE, lb.y + 22 + gvy * SCALE, '#1a1a1a', 3, 10);
+  }
+
+  function drawLegend() {
+    if (!state.showVectors) return;
+    const x = 14, y = H - 70;
+    ctx.fillStyle = 'rgba(255,255,255,0.85)';
+    ctx.strokeStyle = 'rgba(0,0,0,0.15)';
+    ctx.lineWidth = 1;
+    roundRect(x, y, 200, 58, 4);
+    ctx.fill();
+    ctx.stroke();
+
+    ctx.font = "12px 'Noto Sans Armenian', sans-serif";
+    ctx.fillStyle = '#2e7d32';
+    ctx.fillRect(x + 10, y + 12, 14, 3);
+    ctx.fillStyle = '#1a1a1a';
+    ctx.fillText('սեփական արագություն', x + 32, y + 17);
+
+    ctx.fillStyle = '#c79100';
+    ctx.fillRect(x + 10, y + 28, 14, 3);
+    ctx.fillStyle = '#1a1a1a';
+    ctx.fillText('ժապավենի արագություն', x + 32, y + 33);
+
+    ctx.fillStyle = '#1a1a1a';
+    ctx.fillRect(x + 10, y + 44, 14, 3);
+    ctx.fillText('արդյունարար (գետնի)', x + 32, y + 49);
+  }
+
+  function roundRect(x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.lineTo(x + w - r, y);
+    ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+    ctx.lineTo(x + w, y + h - r);
+    ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+    ctx.lineTo(x + r, y + h);
+    ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+    ctx.lineTo(x, y + r);
+    ctx.quadraticCurveTo(x, y, x + r, y);
+    ctx.closePath();
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    drawGround();
+    drawBelt();
+
+    // Compute ground-frame velocities for ladybug heading direction
+    const g1 = { vx: state.lb1.vx + (onBelt(state.lb1) ? state.beltVx : 0), vy: state.lb1.vy };
+    const g2 = { vx: state.lb2.vx + (onBelt(state.lb2) ? state.beltVx : 0), vy: state.lb2.vy };
+
+    // Vectors below ladybugs (so they're visible)
+    drawVectors(state.lb1);
+    drawVectors(state.lb2);
+
+    drawLadybug(state.lb1, g1.vx, g1.vy);
+    drawLadybug(state.lb2, g2.vx, g2.vy);
+
+    drawLegend();
+  }
+
+  // ---------- Readouts ----------
+  function fmt(v) {
+    const s = (v >= 0 ? '+' : '') + v.toFixed(0);
+    return s.padStart(4, ' ');
+  }
+
+  function updateReadout() {
+    const lb1 = state.lb1, lb2 = state.lb2;
+    const onB1 = onBelt(lb1), onB2 = onBelt(lb2);
+    const gvx1 = lb1.vx + (onB1 ? state.beltVx : 0);
+    const gvx2 = lb2.vx + (onB2 ? state.beltVx : 0);
+
+    document.getElementById('r1').innerHTML =
+      `սեփ.: (${fmt(lb1.vx)}, ${fmt(lb1.vy)})<br>` +
+      `գետ.: (${fmt(gvx1)}, ${fmt(lb1.vy)})<br>` +
+      `<span style="color:${onB1 ? '#c14a3a' : '#6b6358'}">${onB1 ? 'ժապավենի վրա' : 'գետնի վրա'}</span>`;
+
+    document.getElementById('r2').innerHTML =
+      `սեփ.: (${fmt(lb2.vx)}, ${fmt(lb2.vy)})<br>` +
+      `գետ.: (${fmt(gvx2)}, ${fmt(lb2.vy)})<br>` +
+      `<span style="color:${onB2 ? '#2b6bb0' : '#6b6358'}">${onB2 ? 'ժապավենի վրա' : 'գետնի վրա'}</span>`;
+
+    document.getElementById('rb').innerHTML =
+      `արագ.: ${fmt(state.beltVx)} px/վ<br>` +
+      `ուղղ.: ${state.beltVx > 0 ? '→' : (state.beltVx < 0 ? '←' : '—')}`;
+  }
+
+  // ---------- Main loop ----------
+  let lastTime = performance.now();
+  function loop(now) {
+    const dt = Math.min((now - lastTime) / 1000, 0.05);
+    lastTime = now;
+    if (!state.paused) update(dt);
+    draw();
+    updateReadout();
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>

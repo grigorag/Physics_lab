@@ -1,0 +1,395 @@
+/* ==========================================================================
+   Components — reusable UI pieces shared by all simulations.
+   Markup reference: see site/README.md ("Կոմպոնենտներ / Components").
+   ========================================================================== */
+
+/* ---------- Panel (control sidebar) ---------- */
+.panel {
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--sp-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+  box-shadow: var(--shadow);
+}
+
+/* A titled block inside the panel; consecutive groups get a divider. */
+.group { display: flex; flex-direction: column; gap: var(--sp-3); }
+.group + .group {
+  border-top: 1px solid var(--border);
+  padding-top: var(--sp-4);
+}
+.group__title {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-size: var(--fs-2xs);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+
+/* ---------- Field: label + live value + input ---------- */
+.field {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: baseline;
+  gap: 6px var(--sp-2);
+}
+.field__label {
+  font-size: var(--fs-sm);
+  color: var(--text-2);
+}
+.field__value {
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  font-weight: 500;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  white-space: nowrap;
+}
+.field > input,
+.field > select,
+.field > .segmented { grid-column: 1 / -1; }
+
+/* ---------- Range slider ---------- */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 18px;
+  margin: 0;
+  background: transparent;
+  cursor: pointer;
+}
+input[type="range"]::-webkit-slider-runnable-track {
+  height: 4px;
+  border-radius: 2px;
+  background: var(--surface-3);
+}
+input[type="range"]::-moz-range-track {
+  height: 4px;
+  border-radius: 2px;
+  background: var(--surface-3);
+}
+input[type="range"]::-moz-range-progress {
+  height: 4px;
+  border-radius: 2px;
+  background: var(--accent-line);
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  margin-top: -5px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 2px solid var(--surface-1);
+  box-shadow: 0 0 0 1px var(--accent-line);
+  transition: transform var(--ease);
+}
+input[type="range"]::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 2px solid var(--surface-1);
+  box-shadow: 0 0 0 1px var(--accent-line);
+}
+input[type="range"]:hover::-webkit-slider-thumb,
+input[type="range"]:focus-visible::-webkit-slider-thumb { transform: scale(1.2); }
+input[type="range"]:focus-visible { outline: none; }
+input[type="range"]:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 4px var(--accent-soft); }
+input[type="range"]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 4px var(--accent-soft); }
+
+/* ---------- Select ---------- */
+.select {
+  width: 100%;
+  padding: 7px 30px 7px 10px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23a4acc8' stroke-width='1.5'/%3E%3C/svg%3E") no-repeat right 10px center,
+    var(--surface-2);
+  font-size: var(--fs-sm);
+  appearance: none;
+  cursor: pointer;
+}
+.select:hover { border-color: var(--accent-line); }
+
+/* ---------- Checkbox ---------- */
+.check {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-size: var(--fs-sm);
+  color: var(--text-2);
+  cursor: pointer;
+  user-select: none;
+}
+.check input {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+.check:hover { color: var(--text); }
+
+/* ---------- Buttons ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  color: var(--text-2);
+  font-size: var(--fs-sm);
+  line-height: 1.2;
+  cursor: pointer;
+  transition: border-color var(--ease), color var(--ease), background var(--ease);
+}
+.btn:hover { border-color: var(--accent); color: var(--accent); }
+.btn:disabled { opacity: 0.4; cursor: default; border-color: var(--border); color: var(--text-3); }
+.btn--primary {
+  background: var(--accent-soft);
+  border-color: var(--accent-line);
+  color: var(--accent);
+}
+.btn--primary:hover { background: color-mix(in srgb, var(--accent) 24%, transparent); }
+.btn[aria-pressed="true"] {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.btn--block { width: 100%; }
+
+.btn-row { display: flex; gap: var(--sp-2); flex-wrap: wrap; }
+.btn-row > .btn { flex: 1 1 0; min-width: max-content; }
+
+/* ---------- Segmented control (one-of-many buttons) ---------- */
+.segmented {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.segmented > button {
+  flex: 1 1 auto;
+  padding: 5px 10px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  color: var(--text-2);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  cursor: pointer;
+  transition: border-color var(--ease), color var(--ease), background var(--ease);
+}
+.segmented > button:hover { border-color: var(--accent); color: var(--accent); }
+.segmented > button[aria-pressed="true"] {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* ---------- Tabs (switch between experiments / modes on one page) ---------- */
+.tabs {
+  display: flex;
+  gap: var(--sp-1);
+  flex-wrap: wrap;
+  margin-bottom: var(--sp-4);
+  border-bottom: 1px solid var(--border);
+}
+.tabs > [role="tab"] {
+  position: relative;
+  padding: 9px 14px;
+  border: 0;
+  background: none;
+  color: var(--text-2);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  cursor: pointer;
+  transition: color var(--ease);
+}
+.tabs > [role="tab"]:hover { color: var(--text); }
+.tabs > [role="tab"][aria-selected="true"] { color: var(--accent); }
+.tabs > [role="tab"][aria-selected="true"]::after {
+  content: "";
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  bottom: -1px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--accent);
+}
+
+/* ---------- Stats (label → value list) ---------- */
+.stats { display: flex; flex-direction: column; gap: 6px; margin: 0; }
+.stat {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--sp-3);
+  font-size: var(--fs-xs);
+}
+.stat dt { color: var(--text-3); }
+.stat dd {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-weight: 500;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+/* ---------- Text boxes ---------- */
+.formula {
+  padding: 10px 12px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  line-height: 1.7;
+  color: var(--text-2);
+}
+.formula b { color: var(--accent); font-weight: 500; }
+
+.callout {
+  padding: 10px 12px;
+  border: 1px solid var(--accent-line);
+  border-radius: var(--radius);
+  background: var(--accent-soft);
+  font-size: var(--fs-xs);
+  line-height: 1.6;
+  color: var(--text-2);
+}
+.callout b { color: var(--text); }
+
+.hint {
+  font-size: var(--fs-xs);
+  line-height: 1.5;
+  color: var(--text-3);
+}
+.hint b { color: var(--text-2); }
+.hint--ok   { color: var(--green); }
+.hint--warn { color: var(--red); }
+.hint--ok b, .hint--warn b { color: inherit; }
+
+/* ---------- Canvas container + overlays ---------- */
+.canvas-wrap {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--canvas-bg);
+  box-shadow: var(--shadow);
+}
+.canvas-wrap > canvas { width: 100%; height: auto; touch-action: none; }
+.canvas-wrap--grab > canvas { cursor: grab; }
+.canvas-wrap--grab > canvas:active { cursor: grabbing; }
+.canvas-wrap--crosshair > canvas { cursor: crosshair; }
+
+.legend {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  padding: 8px 10px;
+  list-style: none;
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--canvas-bg) 72%, transparent);
+  font-size: var(--fs-2xs);
+  color: var(--text-2);
+  pointer-events: none;
+}
+.legend--tl { top: 10px; left: 10px; }
+.legend--tr { top: 10px; right: 10px; }
+.legend li { display: flex; align-items: center; gap: 7px; }
+.legend__dot  { width: 8px;  height: 8px; border-radius: 50%; background: var(--c); flex: none; }
+.legend__line { width: 16px; height: 2px; background: var(--c); flex: none; }
+
+.canvas-hint {
+  position: absolute;
+  right: 12px;
+  bottom: 10px;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--canvas-bg) 72%, transparent);
+  font-size: var(--fs-2xs);
+  color: var(--text-3);
+  pointer-events: none;
+}
+
+/* On phones the overlays would hide the scene: flow them below the canvas. */
+@media (max-width: 600px) {
+  .legend, .canvas-hint {
+    position: static;
+    background: none;
+    border-radius: 0;
+  }
+  .legend { flex-flow: row wrap; gap: 4px 14px; border-top: 1px solid var(--border); }
+  .canvas-hint { display: block; padding: 0 10px 8px; }
+}
+
+/* Small canvas used for charts (graphs next to / under the main stage). */
+.chart {
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--canvas-bg);
+}
+.chart-caption { font-size: var(--fs-xs); color: var(--text-3); }
+
+/* Colored dot used inline next to labels. */
+.swatch {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--c);
+  box-shadow: 0 0 0 1px var(--border-strong);   /* keeps dark colors visible */
+  flex: none;
+}
+.swatch--square { border-radius: 3px; }
+
+/* ---------- Readout cards (row of value boxes under the canvas) ---------- */
+.readouts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: var(--sp-3);
+}
+.readout {
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface-1);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  line-height: 1.6;
+  color: var(--text-2);
+  font-variant-numeric: tabular-nums;
+}
+.readout__title {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 4px;
+  font-family: var(--font-sans);
+  font-size: var(--fs-2xs);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+.readout b { color: var(--text); font-weight: 500; }

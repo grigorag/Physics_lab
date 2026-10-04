@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="hy">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Լիցքավորված մասնիկի շարժումը մագնիսական դաշտում</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Manrope:wght@400;500;600&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0b0e17;
+    --surface: #111521;
+    --surface2: #181d2e;
+    --border: rgba(120,140,200,0.13);
+    --border2: rgba(120,140,200,0.22);
+    --accent-purple: #7c6ff7;
+    --accent-teal: #2ecba1;
+    --accent-coral: #f0714a;
+    --accent-amber: #f5a623;
+    --text-primary: #e8eaf6;
+    --text-secondary: #7e88ab;
+    --text-muted: #4a5270;
+    --mono: 'JetBrains Mono', monospace;
+    --sans: 'Manrope', sans-serif;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text-primary);
+    font-family: var(--sans);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1.5rem 1rem;
+  }
+
+  header {
+    width: 100%;
+    max-width: 900px;
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 1.25rem;
+    flex-wrap: wrap;
+  }
+
+  header h1 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+  }
+
+  header p {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-family: var(--mono);
+  }
+
+  .layout {
+    width: 100%;
+    max-width: 900px;
+    display: grid;
+    grid-template-columns: 230px 1fr;
+    gap: 12px;
+    align-items: start;
+  }
+
+  .panel {
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: 12px;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  .section-label {
+    font-size: 10px;
+    font-family: var(--mono);
+    color: var(--text-muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+
+  .control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .ctrl { display: flex; flex-direction: column; gap: 5px; }
+  .ctrl-row { display: flex; align-items: center; justify-content: space-between; }
+
+  .ctrl-label {
+    font-size: 12px;
+    color: var(--text-secondary);
+    font-family: var(--mono);
+  }
+
+  .ctrl-value {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--accent-purple);
+    font-family: var(--mono);
+    min-width: 50px;
+    text-align: right;
+  }
+
+  input[type=range] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 3px;
+    background: var(--surface2);
+    border-radius: 2px;
+    outline: none;
+    cursor: pointer;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 13px; height: 13px;
+    border-radius: 50%;
+    background: var(--accent-purple);
+    cursor: pointer;
+    border: 2px solid var(--bg);
+    transition: transform 0.15s;
+  }
+  input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.2); }
+  input[type=range]::-moz-range-thumb {
+    width: 13px; height: 13px;
+    border-radius: 50%;
+    background: var(--accent-purple);
+    cursor: pointer;
+    border: 2px solid var(--bg);
+  }
+
+  .chip-group { display: flex; gap: 5px; flex-wrap: wrap; }
+
+  .chip {
+    font-size: 11px;
+    font-family: var(--mono);
+    padding: 4px 10px;
+    border-radius: 6px;
+    border: 0.5px solid var(--border2);
+    background: var(--surface2);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .chip:hover { border-color: var(--accent-purple); color: var(--accent-purple); }
+  .chip.active { background: rgba(124,111,247,0.15); border-color: var(--accent-purple); color: var(--accent-purple); }
+
+  .btn-row { display: flex; gap: 6px; }
+
+  button {
+    flex: 1;
+    font-size: 11px;
+    font-family: var(--mono);
+    padding: 7px 10px;
+    border-radius: 7px;
+    border: 0.5px solid var(--border2);
+    background: var(--surface2);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+  }
+  button:hover { border-color: var(--accent-purple); color: var(--accent-purple); }
+  button.active-btn { background: rgba(124,111,247,0.15); border-color: var(--accent-purple); color: var(--accent-purple); }
+
+  .divider { height: 0.5px; background: var(--border); }
+
+  .stats { display: flex; flex-direction: column; gap: 8px; }
+  .stat-row { display: flex; justify-content: space-between; align-items: center; }
+  .stat-label { font-size: 11px; color: var(--text-muted); font-family: var(--mono); }
+  .stat-val { font-size: 11px; font-weight: 500; color: var(--text-primary); font-family: var(--mono); }
+
+  .canvas-wrap {
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  canvas { display: block; width: 100%; cursor: grab; }
+  canvas:active { cursor: grabbing; }
+
+  .canvas-hint {
+    position: absolute;
+    bottom: 10px;
+    right: 12px;
+    font-size: 10px;
+    font-family: var(--mono);
+    color: var(--text-muted);
+    pointer-events: none;
+  }
+
+  .legend {
+    position: absolute;
+    top: 10px;
+    left: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    pointer-events: none;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 10px;
+    font-family: var(--mono);
+    color: var(--text-muted);
+  }
+
+  .legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .legend-line { width: 16px; height: 2px; flex-shrink: 0; }
+
+  @media (max-width: 640px) {
+    .layout { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Լիցքավորված մասնիկի շարժումը մագնիսական դաշտում</h1>
+  <p>Լորենցի ուժ</p>
+</header>
+
+<div class="layout">
+  <div class="panel">
+
+    <div>
+      <div class="section-label">Մագնիսական դաշտ</div>
+      <div class="control-group">
+        <div class="ctrl">
+          <div class="ctrl-row">
+            <span class="ctrl-label">B (Տլ)</span>
+            <span class="ctrl-value" id="BOut">1.5</span>
+          </div>
+          <input type="range" id="Bfield" min="0.5" max="4" value="1.5" step="0.1">
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div>
+      <div class="section-label">Մասնիկ</div>
+      <div class="control-group">
+
+        <div class="ctrl">
+          <div class="ctrl-row">
+            <span class="ctrl-label">Լիցք q</span>
+          </div>
+          <div class="chip-group">
+            <span class="chip active" data-q="1">e</span>
+            <span class="chip" data-q="2">2e</span>
+            <span class="chip" data-q="4">4e</span>
+            <span class="chip" data-q="-1">−e</span>
+            <span class="chip" data-q="-2">−2e</span>
+          </div>
+        </div>
+
+        <div class="ctrl">
+          <div class="ctrl-row">
+            <span class="ctrl-label">Զանգված (m<sub>e</sub>)</span>
+            <span class="ctrl-value" id="massOut">1</span>
+          </div>
+          <input type="range" id="massSlider" min="1" max="8" value="1" step="1">
+        </div>
+
+        <div class="ctrl">
+          <div class="ctrl-row">
+            <span class="ctrl-label">V<sub>⊥</sub> (արագ. ⊥B)</span>
+            <span class="ctrl-value" id="vPerpOut">3.0</span>
+          </div>
+          <input type="range" id="vPerp" min="0.5" max="5" value="3" step="0.5">
+        </div>
+
+        <div class="ctrl">
+          <div class="ctrl-row">
+            <span class="ctrl-label">V<sub>∥</sub> (արագ. ∥B)</span>
+            <span class="ctrl-value" id="vParOut">1.0</span>
+          </div>
+          <input type="range" id="vPar" min="0" max="3" value="1" step="0.5">
+        </div>
+
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div>
+      <div class="section-label">Ցուցադրում</div>
+      <div class="control-group">
+        <div class="ctrl">
+          <div class="ctrl-row">
+            <span class="ctrl-label">Հետագծի երկ.</span>
+            <span class="ctrl-value" id="trailOut">300</span>
+          </div>
+          <input type="range" id="trailLen" min="30" max="600" value="300" step="30">
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="btn-row">
+      <button id="toggleBtn">⏸ Դադար</button>
+      <button id="resetBtn">↺ Վերակ.</button>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="stats">
+      <div class="section-label">Ֆիզիկական մեծություններ</div>
+      <div class="stat-row">
+        <span class="stat-label">Լարմորի շառ.</span>
+        <span class="stat-val" id="rLarmor">—</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">ω ցիկ.հաճ․</span>
+        <span class="stat-val" id="omegaC">—</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">T պարբ.</span>
+        <span class="stat-val" id="periodC">—</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">Պարույրի քայլ</span>
+        <span class="stat-val" id="pitchC">—</span>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="canvas-wrap">
+    <canvas id="cv3d"></canvas>
+    <div class="legend">
+      <div class="legend-item">
+        <div class="legend-line" style="background:#7c6ff7;"></div>
+        <span>հետագիծ</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot" style="background:#f0714a;"></div>
+        <span>արագություն v</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot" style="background:#f5a623;"></div>
+        <span>ուժ F</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot" style="background:#2ecba1;"></div>
+        <span>B դաշտ (↑ Y-առանցք)</span>
+      </div>
+    </div>
+    <div class="canvas-hint">Քաշել՝ պտտելու համար · scroll՝ Մեծ/Փոքր</div>
+  </div>
+</div>
+
+<script>
+const cv = document.getElementById('cv3d');
+const ctx = cv.getContext('2d');
+
+let paused = false;
+let t = 0;
+let trailPoints = [];
+
+// Initial camera: Y-axis visually pointing straight up
+// rotX = -PI/2 tilts the XZ plane to look like a floor, Y goes up on screen
+// We want a nice 3/4 view: rotX ~ -0.55, rotY ~ 0.5
+let rotX = -0.55, rotY = 0.52;
+let zoom = 1.0;
+let dragging = false, lastMX = 0, lastMY = 0;
+let selectedQ = 1;
+
+cv.addEventListener('mousedown', e => { dragging = true; lastMX = e.clientX; lastMY = e.clientY; });
+cv.addEventListener('mousemove', e => {
+  if (!dragging) return;
+  rotY += (e.clientX - lastMX) * 0.007;
+  rotX += (e.clientY - lastMY) * 0.007;
+  rotX = Math.max(-1.5, Math.min(0.2, rotX));
+  lastMX = e.clientX; lastMY = e.clientY;
+});
+cv.addEventListener('mouseup', () => dragging = false);
+cv.addEventListener('mouseleave', () => dragging = false);
+cv.addEventListener('wheel', e => {
+  e.preventDefault();
+  zoom *= e.deltaY < 0 ? 1.08 : 0.93;
+  zoom = Math.max(0.4, Math.min(3, zoom));
+}, { passive: false });
+
+cv.addEventListener('touchstart', e => { dragging = true; lastMX = e.touches[0].clientX; lastMY = e.touches[0].clientY; }, { passive: true });
+cv.addEventListener('touchmove', e => {
+  if (!dragging) return;
+  rotY += (e.touches[0].clientX - lastMX) * 0.009;
+  rotX += (e.touches[0].clientY - lastMY) * 0.009;
+  rotX = Math.max(-1.5, Math.min(0.2, rotX));
+  lastMX = e.touches[0].clientX; lastMY = e.touches[0].clientY;
+}, { passive: true });
+cv.addEventListener('touchend', () => dragging = false);
+
+document.querySelectorAll('.chip[data-q]').forEach(chip => {
+  chip.addEventListener('click', () => {
+    document.querySelectorAll('.chip[data-q]').forEach(c => c.classList.remove('active'));
+    chip.classList.add('active');
+    selectedQ = parseFloat(chip.dataset.q);
+    trailPoints = []; t = 0;
+    updateStats();
+  });
+});
+
+document.getElementById('toggleBtn').addEventListener('click', () => {
+  paused = !paused;
+  document.getElementById('toggleBtn').textContent = paused ? '▶ Սկսել' : '⏸ Դադար';
+  document.getElementById('toggleBtn').classList.toggle('active-btn', paused);
+});
+
+document.getElementById('resetBtn').addEventListener('click', () => { t = 0; trailPoints = []; });
+
+['Bfield','massSlider','vPerp','vPar','trailLen'].forEach(id => {
+  document.getElementById(id).addEventListener('input', () => {
+    trailPoints = []; t = 0;
+    updateLabels(); updateStats();
+  });
+});
+
+function updateLabels() {
+  document.getElementById('BOut').textContent = parseFloat(document.getElementById('Bfield').value).toFixed(1);
+  document.getElementById('massOut').textContent = document.getElementById('massSlider').value;
+  document.getElementById('vPerpOut').textContent = parseFloat(document.getElementById('vPerp').value).toFixed(1);
+  document.getElementById('vParOut').textContent = parseFloat(document.getElementById('vPar').value).toFixed(1);
+  document.getElementById('trailOut').textContent = document.getElementById('trailLen').value;
+}
+
+function updateStats() {
+  const B = parseFloat(document.getElementById('Bfield').value);
+  const m = parseInt(document.getElementById('massSlider').value);
+  const vp = parseFloat(document.getElementById('vPerp').value);
+  const vz = parseFloat(document.getElementById('vPar').value);
+  const q = Math.abs(selectedQ);
+  const r = (m * vp) / (q * B);
+  const omega = (q * B) / m;
+  const T = (2 * Math.PI * m) / (q * B);
+  const pitch = vz * T;
+  document.getElementById('rLarmor').textContent = r.toFixed(3) + ' պայմ l.';
+  document.getElementById('omegaC').textContent = omega.toFixed(3) + ' ռադ/վ';
+  document.getElementById('periodC').textContent = T.toFixed(3) + ' վ';
+  document.getElementById('pitchC').textContent = pitch.toFixed(3) + ' պայմ l.';
+}
+
+// Project 3D -> 2D with rotX around X-axis, rotY around Y-axis
+// In world space: Y is UP. We rotate so Y appears up on screen.
+function project(x, y, z, cx, cy, scale) {
+  // Rotate around Y axis (yaw)
+  const cosY = Math.cos(rotY), sinY = Math.sin(rotY);
+  const x1 = x * cosY + z * sinY;
+  const z1 = -x * sinY + z * cosY;
+  // Rotate around X axis (pitch) — negative rotX means tilting to see floor
+  const cosX = Math.cos(rotX), sinX = Math.sin(rotX);
+  const y2 = y * cosX - z1 * sinX;
+  const z2 = y * sinX + z1 * cosX;
+  // Perspective
+  const fov = 700;
+  const s = fov / (fov + z2 + 250);
+  // Screen: x goes right, y goes DOWN on canvas, so we negate y2 to make Y go UP visually
+  return { sx: cx + x1 * scale * s, sy: cy - y2 * scale * s, z: z2, s };
+}
+
+function drawArrow(p1, p2, color, lw, label) {
+  if (!p1 || !p2) return;
+  ctx.strokeStyle = color;
+  ctx.lineWidth = lw;
+  ctx.lineCap = 'round';
+  ctx.beginPath();
+  ctx.moveTo(p1.sx, p1.sy);
+  ctx.lineTo(p2.sx, p2.sy);
+  ctx.stroke();
+  const dx = p2.sx - p1.sx, dy = p2.sy - p1.sy;
+  if (Math.sqrt(dx*dx + dy*dy) < 2) return;
+  const angle = Math.atan2(dy, dx);
+  const al = Math.max(6, 10 * p2.s);
+  ctx.fillStyle = color;
+  ctx.beginPath();
+  ctx.moveTo(p2.sx, p2.sy);
+  ctx.lineTo(p2.sx - al * Math.cos(angle - 0.42), p2.sy - al * Math.sin(angle - 0.42));
+  ctx.lineTo(p2.sx - al * Math.cos(angle + 0.42), p2.sy - al * Math.sin(angle + 0.42));
+  ctx.closePath();
+  ctx.fill();
+  if (label) {
+    ctx.fillStyle = color;
+    ctx.font = "500 11px 'JetBrains Mono', monospace";
+    ctx.fillText(label, p2.sx + 5, p2.sy - 4);
+  }
+}
+
+function resize() {
+  const w = cv.parentElement.clientWidth;
+  cv.width = w;
+  cv.height = Math.max(340, Math.round(w * 0.62));
+}
+
+function draw() {
+  const W = cv.width, H = cv.height;
+  const cx = W * 0.5, cy = H * 0.52;
+  const baseScale = Math.min(W, H) * 0.12 * zoom;
+  const B = parseFloat(document.getElementById('Bfield').value);
+  const m = parseInt(document.getElementById('massSlider').value);
+  const vp = parseFloat(document.getElementById('vPerp').value);
+  const vz = parseFloat(document.getElementById('vPar').value);
+  const q = selectedQ;
+  const maxTrail = parseInt(document.getElementById('trailLen').value);
+
+  ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = '#0b0e17';
+  ctx.fillRect(0, 0, W, H);
+
+  const omega = (Math.abs(q) * B) / m;
+  const R = (m * vp) / (Math.abs(q) * B);
+  const sign = q > 0 ? 1 : -1;
+
+  // XZ floor grid at Y=0
+  const gridN = 4;
+  ctx.lineWidth = 0.5;
+  ctx.strokeStyle = 'rgba(120,140,200,0.07)';
+  for (let i = -gridN; i <= gridN; i++) {
+    const g1s = project(i, 0, -gridN, cx, cy, baseScale);
+    const g1e = project(i, 0,  gridN, cx, cy, baseScale);
+    const g2s = project(-gridN, 0, i, cx, cy, baseScale);
+    const g2e = project( gridN, 0, i, cx, cy, baseScale);
+    ctx.beginPath(); ctx.moveTo(g1s.sx, g1s.sy); ctx.lineTo(g1e.sx, g1e.sy); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(g2s.sx, g2s.sy); ctx.lineTo(g2e.sx, g2e.sy); ctx.stroke();
+  }
+
+  // B field arrows — along +Y (vertical up)
+  const Bpos = [[-2,0,-2],[-2,0,0],[-2,0,2],[0,0,-2],[0,0,2],[2,0,-2],[2,0,0],[2,0,2]];
+  Bpos.forEach(([bx, by, bz]) => {
+    const p1 = project(bx, by,       bz, cx, cy, baseScale);
+    const p2 = project(bx, by + 1.1, bz, cx, cy, baseScale);
+    ctx.strokeStyle = 'rgba(46,203,161,0.28)';
+    ctx.lineWidth = 0.8;
+    ctx.beginPath(); ctx.moveTo(p1.sx, p1.sy); ctx.lineTo(p2.sx, p2.sy); ctx.stroke();
+    const sz = 5 * p2.s;
+    const ang = Math.atan2(p2.sy - p1.sy, p2.sx - p1.sx);
+    ctx.fillStyle = 'rgba(46,203,161,0.38)';
+    ctx.beginPath();
+    ctx.moveTo(p2.sx, p2.sy);
+    ctx.lineTo(p2.sx - sz * Math.cos(ang - 0.42), p2.sy - sz * Math.sin(ang - 0.42));
+    ctx.lineTo(p2.sx - sz * Math.cos(ang + 0.42), p2.sy - sz * Math.sin(ang + 0.42));
+    ctx.closePath();
+    ctx.fill();
+  });
+
+  // Coordinate axes
+  const axLen = 3.2;
+  drawArrow(project(0,0,0,cx,cy,baseScale), project(axLen,0,0,cx,cy,baseScale), 'rgba(240,113,74,0.75)', 1.5, 'X');
+  drawArrow(project(0,0,0,cx,cy,baseScale), project(0,axLen,0,cx,cy,baseScale), 'rgba(46,203,161,0.9)',  1.5, 'Y (B↑)');
+  drawArrow(project(0,0,0,cx,cy,baseScale), project(0,0,axLen,cx,cy,baseScale), 'rgba(55,138,221,0.75)', 1.5, 'Z');
+
+  // Advance time
+  if (!paused) t += 0.022;
+  const tCur = t % (14 * Math.PI);
+  const dt = 0.022;
+
+  // Trail: particle moves in XZ plane (circular) + drifts along Y
+  const trailCount = Math.min(Math.floor(tCur / dt), maxTrail);
+  trailPoints = [];
+  for (let i = 0; i <= trailCount; i++) {
+    const ti = tCur - (trailCount - i) * dt;
+    if (ti < 0) continue;
+    trailPoints.push([
+      R * Math.cos(sign * omega * ti),
+      vz * ti * 0.18,
+      R * Math.sin(sign * omega * ti)
+    ]);
+  }
+
+  // Draw trail
+  if (trailPoints.length > 1) {
+    for (let i = 1; i < trailPoints.length; i++) {
+      const alpha = i / trailPoints.length;
+      const p1 = project(...trailPoints[i-1], cx, cy, baseScale);
+      const p2 = project(...trailPoints[i],   cx, cy, baseScale);
+      ctx.strokeStyle = `rgba(${Math.round(124+alpha*40)},${Math.round(111+alpha*20)},${Math.round(247-alpha*30)},${(0.15+alpha*0.75).toFixed(2)})`;
+      ctx.lineWidth = 1.2 + alpha * 1.8;
+      ctx.lineCap = 'round';
+      ctx.beginPath(); ctx.moveTo(p1.sx, p1.sy); ctx.lineTo(p2.sx, p2.sy); ctx.stroke();
+    }
+  }
+
+  // Particle position
+  const px = R * Math.cos(sign * omega * tCur);
+  const py = vz * tCur * 0.18;
+  const pz = R * Math.sin(sign * omega * tCur);
+  const pp = project(px, py, pz, cx, cy, baseScale);
+
+  // Velocity vector
+  const vx_c = -sign * R * omega * Math.sin(sign * omega * tCur);
+  const vy_c = vz * 0.18;
+  const vz_c =  sign * R * omega * Math.cos(sign * omega * tCur);
+  const vMag = Math.sqrt(vx_c*vx_c + vy_c*vy_c + vz_c*vz_c) || 1;
+  const vs = 0.65 / vMag;
+  drawArrow(pp, project(px+vx_c*vs, py+vy_c*vs, pz+vz_c*vs, cx, cy, baseScale), '#f0714a', 2, 'v');
+
+  // Lorentz force F = q(v × B), B = B·ŷ => F = q(vy*0 - vz*B, vz*0 - vx*0, vx*B - vy*0) ... 
+  // v × (B ŷ) = B·(vz_c, 0, -vx_c) wait let's be precise:
+  // v = (vx,vy,vz), B = (0,B,0)
+  // v×B = (vy*0 - vz*B, vz*0 - vx*0, vx*B - vy*0) = (-vz*B, 0, vx*B)
+  const Fx = q * (-vz_c * B);
+  const Fz = q * ( vx_c * B);
+  const FMag = Math.sqrt(Fx*Fx + Fz*Fz);
+  if (FMag > 0.001) {
+    const fs = 0.55 / FMag;
+    drawArrow(pp, project(px+Fx*fs, py, pz+Fz*fs, cx, cy, baseScale), '#f5a623', 2, 'F');
+  }
+
+  // Particle sphere
+  const pr = Math.max(7, 11 * pp.s);
+  ctx.beginPath();
+  ctx.arc(pp.sx, pp.sy, pr, 0, Math.PI * 2);
+  ctx.fillStyle = q > 0 ? '#7c6ff7' : '#f0714a';
+  ctx.fill();
+  ctx.strokeStyle = q > 0 ? '#b0aaff' : '#ffaa88';
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+
+  ctx.fillStyle = '#fff';
+  ctx.font = `500 ${Math.round(pr * 1.1)}px 'JetBrains Mono', monospace`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(q > 0 ? '+' : '−', pp.sx, pp.sy + 0.5);
+  ctx.textBaseline = 'alphabetic';
+
+  // Projection line to floor
+  const gnd = project(px, 0, pz, cx, cy, baseScale);
+  ctx.strokeStyle = 'rgba(124,111,247,0.18)';
+  ctx.lineWidth = 0.8;
+  ctx.setLineDash([3, 4]);
+  ctx.beginPath(); ctx.moveTo(pp.sx, pp.sy); ctx.lineTo(gnd.sx, gnd.sy); ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Top-right label
+  ctx.fillStyle = 'rgba(46,203,161,0.6)';
+  ctx.font = "11px 'JetBrains Mono', monospace";
+  ctx.textAlign = 'right';
+  ctx.fillText('B ↑ ուղղձիգ՝ վեր', W - 12, 18);
+  ctx.textAlign = 'left';
+
+  requestAnimationFrame(draw);
+}
+
+window.addEventListener('resize', resize);
+resize();
+updateLabels();
+updateStats();
+draw();
+</script>
+</body>
+</html>

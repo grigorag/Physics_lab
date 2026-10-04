@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="hy">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ալիքային օպտիկայի վիրտուալ լաբորատորիա · Ֆիզիկայի Լաբորատորիաներ</title>
+  <link rel="icon" href="../../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../../assets/css/main.css">
+  <script type="module" src="../../../assets/js/core/shell.js"></script>
+  <script type="module" src="./main.js"></script>
+</head>
+<body data-sim="wave-optics" data-section="optics">
+  <header data-shell="header"></header>
+
+  <main class="page">
+    <header class="sim-head">
+      <h1 class="sim-title">Ալիքային օպտիկայի վիրտուալ լաբորատորիա</h1>
+      <p class="sim-subtitle">Ինտերակտիվ փորձեր: Ինտերֆերենց · Դիֆրակցիա · Բևեռացում · Դիսպերսիա</p>
+    </header>
+
+    <div class="tabs" role="tablist" id="tabs">
+      <button role="tab" data-tab="itf" aria-controls="tab-itf" aria-selected="true">Ինտերֆերենց</button>
+      <button role="tab" data-tab="dif" aria-controls="tab-dif">Դիֆրակցիա</button>
+      <button role="tab" data-tab="pol" aria-controls="tab-pol">Բևեռացում</button>
+      <button role="tab" data-tab="dsp" aria-controls="tab-dsp">Դիսպերսիա</button>
+    </div>
+
+    <!-- ============ INTERFERENCE ============ -->
+    <section id="tab-itf" role="tabpanel">
+      <div class="sim-layout">
+        <section class="stage">
+          <div class="canvas-wrap">
+            <canvas id="itf-canvas" aria-label="Երկու կոհերենտ աղբյուրից ալիքների ինտերֆերենց"></canvas>
+          </div>
+        </section>
+
+        <aside class="panel">
+          <section class="group">
+            <div class="field">
+              <label class="field__label" for="itf-lambda">Ալիքի երկարություն λ</label>
+              <output class="field__value" for="itf-lambda"></output>
+              <input type="range" id="itf-lambda" min="16" max="60" step="1" value="34">
+            </div>
+            <div class="field">
+              <label class="field__label" for="itf-sep">Աղբյուրների հեռավորություն d</label>
+              <output class="field__value" for="itf-sep"></output>
+              <input type="range" id="itf-sep" min="20" max="220" step="2" value="110">
+            </div>
+            <div class="field">
+              <label class="field__label" for="itf-phase">Փուլերի տարբերություն Δφ</label>
+              <output class="field__value" for="itf-phase"></output>
+              <input type="range" id="itf-phase" min="0" max="360" step="5" value="0">
+            </div>
+            <div class="field">
+              <label class="field__label" for="itf-speed">Անիմացիայի արագություն</label>
+              <output class="field__value" for="itf-speed"></output>
+              <input type="range" id="itf-speed" min="0" max="3" step="0.1" value="1">
+            </div>
+          </section>
+          <section class="group">
+            <label class="check"><input type="checkbox" id="itf-intensity"> Ժամանակային միջինացված ինտենսիվություն</label>
+            <label class="check"><input type="checkbox" id="itf-pause"> Կանգ</label>
+          </section>
+        </aside>
+      </div>
+
+      <section class="explain">
+        <h2>Երկու կոհերենտ աղբյուրից ալիքների ինտերֆերենց</h2>
+        <p>Երկու կոհերենտ կետային աղբյուրներ արձակում են շրջանաձև ալիքներ: Այնտեղ, որտեղ ալեկատարը հանդիպում են ալեկատարին (ընթացքների տարբերությունը = <em>mλ</em>), ալիքներն իրար ուժեղացնում են՝ կառուցողական ինտերֆերենցիա: Այնտեղ, որտեղ ալեկատարը հանդիպում է ալեփոսին (ընթացքների տարբերություն = <em>(m+½)λ</em>, ալիքներն իրար թուլացնում են՝ դեստրուկտիվ ինտերֆերենցիա, որը տեսանելի է որպես հանգիստ մութ «հանգուցային գծեր»: Միացրեք ըստ ժամանակի միջինացված ինտենսիվությունը՝ ստացիոնար եզրային պատկերը տեսնելու համար:</p>
+      </section>
+    </section>
+
+    <!-- ============ DIFFRACTION ============ -->
+    <section id="tab-dif" role="tabpanel" hidden>
+      <div class="sim-layout">
+        <section class="stage">
+          <div class="canvas-wrap">
+            <canvas id="dif-canvas" aria-label="Դիֆրակցիա՝ ճեղքերից"></canvas>
+          </div>
+        </section>
+
+        <aside class="panel">
+          <section class="group">
+            <div class="field">
+              <label class="field__label" for="dif-n">Ճեղքերի քանակը N</label>
+              <output class="field__value" for="dif-n"></output>
+              <input type="range" id="dif-n" min="1" max="4" step="1" value="2">
+            </div>
+            <div class="field">
+              <label class="field__label" for="dif-a">Ճեղքի լայնությունը a</label>
+              <output class="field__value" for="dif-a"></output>
+              <input type="range" id="dif-a" min="6" max="44" step="1" value="14">
+            </div>
+            <div class="field">
+              <label class="field__label" for="dif-d">Ճեղքերի հեռավորությունը d</label>
+              <output class="field__value" for="dif-d"></output>
+              <input type="range" id="dif-d" min="24" max="150" step="2" value="70">
+            </div>
+            <div class="field">
+              <label class="field__label" for="dif-wl">Ալիքի երկարությունը</label>
+              <output class="field__value" for="dif-wl"></output>
+              <input type="range" id="dif-wl" min="380" max="700" step="5" value="540">
+            </div>
+            <div class="field">
+              <label class="field__label" for="dif-speed">Անիմացիայի արագությունը</label>
+              <output class="field__value" for="dif-speed"></output>
+              <input type="range" id="dif-speed" min="0" max="3" step="0.1" value="1">
+            </div>
+          </section>
+          <section class="group">
+            <label class="check"><input type="checkbox" id="dif-intensity"> Ժամանակային միջինացված ինտենսիվություն</label>
+            <label class="check"><input type="checkbox" id="dif-pause"> Կանգ</label>
+          </section>
+        </aside>
+      </div>
+
+      <section class="explain">
+        <h2>Դիֆրակցիա՝ ճեղքերից</h2>
+        <p>Հարթ ալիքը հասնում է նեղ ճեղքեր ունեցող արգելապատնեշի։ Հյույգենսի սկզբունքի համաձայն՝ ճեղքի յուրաքանչյուր կետ հանդիսանում է նոր՝ երկրորդային ալիքի աղբյուր, ուստի ալիքը շեղվում է դեպի ստվերի շրջան։ Մեկ ճեղքով դուք ստանում եք [sinα/α]² ալիքային ծրարը, մի քանի ճեղքերով այդ ծրարի ներսում հայտնվում են արտահայտված ինտերֆերենցիոն գծեր։ Աջ կողմում գտնվող սպիտակ կորը էկրանին չափված ինտենսիվությունն է։ Նեղ ճեղքեր → ավելի լայն տարածում. երկար ալիքի երկարություններ → ավելի հեռու ինտերֆերենցիոն գծեր։</p>
+      </section>
+    </section>
+
+    <!-- ============ POLARIZATION ============ -->
+    <section id="tab-pol" role="tabpanel" hidden>
+      <div class="sim-layout">
+        <section class="stage">
+          <div class="canvas-wrap">
+            <canvas id="pol-canvas" aria-label="Բևեռացում"></canvas>
+          </div>
+        </section>
+
+        <aside class="panel">
+          <section class="group">
+            <div class="field">
+              <label class="field__label" for="pol-src">Լույսի աղբյուր</label>
+              <select class="select" id="pol-src">
+                <option value="unpol" selected>Չբևեռացված լամպ</option>
+                <option value="pol">Բևեռացված լազեր (ուղղաձիգ, 0°)</option>
+              </select>
+            </div>
+          </section>
+          <section class="group">
+            <label class="check"><input type="checkbox" id="pol-e1" checked> Բևեռացուցիչ 1</label>
+            <div class="field">
+              <label class="field__label" for="pol-a1">P1 անկյուն</label>
+              <output class="field__value" for="pol-a1"></output>
+              <input type="range" id="pol-a1" min="0" max="180" step="1" value="0">
+            </div>
+            <label class="check"><input type="checkbox" id="pol-e2" checked> Բևեռացուցիչ 2</label>
+            <div class="field">
+              <label class="field__label" for="pol-a2">P2 անկյուն</label>
+              <output class="field__value" for="pol-a2"></output>
+              <input type="range" id="pol-a2" min="0" max="180" step="1" value="40">
+            </div>
+            <label class="check"><input type="checkbox" id="pol-e3"> Բևեռացուցիչ 3</label>
+            <div class="field">
+              <label class="field__label" for="pol-a3">P3 անկյուն</label>
+              <output class="field__value" for="pol-a3"></output>
+              <input type="range" id="pol-a3" min="0" max="180" step="1" value="90">
+            </div>
+          </section>
+          <section class="group">
+            <div class="btn-row">
+              <button class="btn" id="pol-preset-crossed">Փոխուղղահայաց/90°</button>
+              <button class="btn" id="pol-preset-three">Մտցնել 45°</button>
+            </div>
+            <div class="callout" id="pol-readout">—</div>
+          </section>
+        </aside>
+      </div>
+
+      <section class="explain">
+        <h2>Բևեռացում</h2>
+        <p>Լույսը լայնական ալիք է։ E էլեկտրական դաշտը տատանվում է տարածման ուղղությանը ուղղահայաց հարթության մեջ։ Բևեռացուցիչը փոխանցում է միայն իր առանցքի երկայնքով ուղղված բաղադրիչը։ Իդեալական բևեռացուցիչը փոխանցում է չբևեռացված լույսի <em>50%</em>-ը։ Բևեռացված լույսի ինտենսիվությունը ըստ Մալուսի օրենքի՝ <em>I = I₀ cos²θ</em>։ Փորձեք փոխուղղահայաց զույգը (լույս չկա), ապա դրանց միջև տեղադրեք 45° ֆիլտր. զարմանալիորեն լույսը կրկին անցնում է։</p>
+      </section>
+    </section>
+
+    <!-- ============ DISPERSION ============ -->
+    <section id="tab-dsp" role="tabpanel" hidden>
+      <div class="sim-layout">
+        <section class="stage">
+          <div class="canvas-wrap">
+            <canvas id="dsp-canvas" aria-label="Լույսի դիսպերսիան պրիզմայից"></canvas>
+          </div>
+        </section>
+
+        <aside class="panel">
+          <section class="group">
+            <div class="field">
+              <label class="field__label" for="dsp-mat">Միջավայր</label>
+              <select class="select" id="dsp-mat">
+                <option value="crown" selected>Crown ապակի (~1.52)</option>
+                <option value="flint">Խիտ ֆլինտ ապակի (~1.8)</option>
+                <option value="water">Ջուր</option>
+                <option value="diamond">Ալմաստ</option>
+              </select>
+            </div>
+            <div class="field">
+              <label class="field__label" for="dsp-apex">Բեկող անկյուն A</label>
+              <output class="field__value" for="dsp-apex"></output>
+              <input type="range" id="dsp-apex" min="25" max="75" step="1" value="60">
+            </div>
+            <div class="field">
+              <label class="field__label" for="dsp-inc">Անկման անկյուն θᵢ</label>
+              <output class="field__value" for="dsp-inc"></output>
+              <input type="range" id="dsp-inc" min="15" max="80" step="1" value="50">
+            </div>
+            <div class="field">
+              <label class="field__label" for="dsp-ex">Դիսպերսիայի ընդլայնում</label>
+              <output class="field__value" for="dsp-ex"></output>
+              <input type="range" id="dsp-ex" min="1" max="8" step="0.5" value="3">
+            </div>
+          </section>
+          <section class="group">
+            <label class="check"><input type="checkbox" id="dsp-single"> Միագույն լույս</label>
+            <div class="field">
+              <label class="field__label" for="dsp-wl">Ալիքի երկարություն</label>
+              <output class="field__value" for="dsp-wl"></output>
+              <input type="range" id="dsp-wl" min="380" max="700" step="5" value="540">
+            </div>
+          </section>
+          <section class="group">
+            <div class="callout" id="dsp-readout">—</div>
+          </section>
+        </aside>
+      </div>
+
+      <section class="explain">
+        <h2>Լույսի դիսպերսիան պրիզմայից</h2>
+        <p>Միջավայրի բեկման ցուցիչը կախված է ալիքի երկարությունից (<em>Կոշի բանաձևով: n(λ) = A + B/λ²</em>). Կապույտ լույսը ավելի է դանդաղում և թեքվում ավելի շատ, քան կարմիրը: Ուստի, երբ լույսը երկու անգամ բեկվում է պրիզմայով անցնելիս, սպիտակ լույսը բաժանվում է սպեկտրի: Ֆլինտ ապակին և ալմաստը ավելի մեծ բեկման ցուցիչ ունեն, քան Crown ապակին կամ ջուրը: (Ընդլայնման անկյունը տեսանելիությունը ակնառու դարձնելու համար է, իսկ իրական անկյունները տեսնելու համար "Դիսպերսիայի ընդլայնում" կարգավորիչը պետք է դնել 1).</p>
+      </section>
+    </section>
+  </main>
+
+  <footer data-shell="footer"></footer>
+</body>
+</html>

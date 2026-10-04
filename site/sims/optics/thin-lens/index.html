@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="hy">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Բարակ ոսպնյակում պատկերի ստացում · Ֆիզիկայի Լաբորատորիաներ</title>
+  <link rel="icon" href="../../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../../assets/css/main.css">
+  <script type="module" src="../../../assets/js/core/shell.js"></script>
+  <script type="module" src="./main.js"></script>
+</head>
+<body data-sim="thin-lens" data-section="optics">
+  <header data-shell="header"></header>
+
+  <main class="page">
+    <header class="sim-head">
+      <h1 class="sim-title">Բարակ ոսպնյակ</h1>
+      <p class="sim-subtitle">պատկերի ստացման երկրաչափություն</p>
+    </header>
+
+    <div class="sim-layout">
+      <section class="stage">
+        <div class="canvas-wrap canvas-wrap--crosshair">
+          <canvas id="cv" aria-label="Բարակ ոսպնյակով պատկերի կառուցում"></canvas>
+          <ul class="legend legend--tr">
+            <li><i class="legend__dot" style="--c: var(--coral)"></i>առարկա</li>
+            <li><i class="legend__dot" style="--c: var(--teal)"></i>պատկեր</li>
+            <li><i class="legend__line" style="--c: var(--amber)"></i>ճառ. 1 (զուգահեռ օպտ. առանցքին)</li>
+            <li><i class="legend__line" style="--c: var(--purple)"></i>ճառ. 2 (կենտրոնով)</li>
+            <li><i class="legend__line" style="--c: var(--teal)"></i>ճառ. 3 (կիզակետով)</li>
+          </ul>
+          <span class="canvas-hint">Քաշեք մկնիկով՝ առարկան տեղաշարժելու համար</span>
+        </div>
+      </section>
+
+      <aside class="panel">
+        <section class="group">
+          <h2 class="group__title">Պարամետրեր</h2>
+          <div class="field">
+            <label class="field__label" for="fSlider">Կիզակետային հեռավորություն F</label>
+            <output class="field__value" for="fSlider"></output>
+            <input type="range" id="fSlider" min="-8" max="8" value="4" step="0.5">
+          </div>
+          <div class="field">
+            <label class="field__label" for="dSlider">Առարկայի դիրք d</label>
+            <output class="field__value" for="dSlider"></output>
+            <input type="range" id="dSlider" min="-18" max="0" value="-7" step="0.1">
+          </div>
+          <div class="field">
+            <label class="field__label" for="hSlider">Առարկայի բարձրություն h</label>
+            <output class="field__value" for="hSlider"></output>
+            <input type="range" id="hSlider" min="0.5" max="5" value="3" step="0.5">
+          </div>
+        </section>
+
+        <section class="group">
+          <h2 class="group__title">Հաշվարկ</h2>
+          <dl class="stats">
+            <div class="stat"><dt>d առարկայի հեռ.</dt><dd id="d1Val">—</dd></div>
+            <div class="stat"><dt>|f| պատկերի հեռ.</dt><dd id="d2Val">—</dd></div>
+            <div class="stat"><dt>Խոշորացում Г = H/h</dt><dd id="magVal">—</dd></div>
+            <div class="stat"><dt>1/d + 1/f</dt><dd id="checkVal">—</dd></div>
+            <div class="stat"><dt>1/F</dt><dd id="fInvVal">—</dd></div>
+          </dl>
+        </section>
+
+        <section class="group">
+          <div class="formula">
+            <b>1/d + 1/f = 1/F</b><br>
+            բարակ ոսպնյակի բանաձև<br><br>
+            <b>Г = f/d</b><br>
+            խոշորացում
+          </div>
+          <div class="callout" id="infoBox">—</div>
+        </section>
+      </aside>
+    </div>
+  </main>
+
+  <footer data-shell="footer"></footer>
+</body>
+</html>

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="hy">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Շարժման հարաբերականություն · Ֆիզիկայի Լաբորատորիաներ</title>
+  <link rel="icon" href="../../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../../assets/css/main.css">
+  <script type="module" src="../../../assets/js/core/shell.js"></script>
+  <script type="module" src="./main.js"></script>
+</head>
+<body data-sim="relative-motion-2d" data-section="mechanics">
+  <header data-shell="header"></header>
+
+  <main class="page">
+    <header class="sim-head">
+      <h1 class="sim-title">Շարժման հարաբերականություն</h1>
+      <p class="sim-subtitle">երկու զատիկ, մեկ կոնվեյեր, և հաշվիչ համակարգերի խաղ</p>
+    </header>
+
+    <div class="sim-layout">
+      <section class="stage">
+        <div class="canvas-wrap">
+          <canvas id="cv" aria-label="Երկու զատիկ գետնի և կոնվեյերի ժապավենի վրա"></canvas>
+        </div>
+
+        <div class="readouts">
+          <div class="readout">
+            <div class="readout__title"><i class="swatch" style="--c:#c14a3a"></i>Կարմիր զատիկ</div>
+            <div id="r1"></div>
+          </div>
+          <div class="readout">
+            <div class="readout__title"><i class="swatch" style="--c:#2b6bb0"></i>Կապույտ զատիկ</div>
+            <div id="r2"></div>
+          </div>
+          <div class="readout">
+            <div class="readout__title"><i class="swatch swatch--square" style="--c:#3a3a3a"></i>Կոնվեյեր</div>
+            <div id="rb"></div>
+          </div>
+        </div>
+      </section>
+
+      <aside class="panel">
+        <section class="group">
+          <h2 class="group__title">Կառավարում</h2>
+          <div class="btn-row">
+            <button class="btn" id="playBtn">⏸ Դադար</button>
+            <button class="btn" id="resetBtn">↺ Վերագործարկել</button>
+          </div>
+          <label class="check"><input type="checkbox" id="vectorsToggle" checked> Ցույց տալ արագության վեկտորները</label>
+        </section>
+
+        <section class="group">
+          <h2 class="group__title"><i class="swatch swatch--square" style="--c:#3a3a3a"></i>Կոնվեյերի ժապավեն</h2>
+          <div class="field">
+            <label class="field__label" for="belt-vx">Արագ. X</label>
+            <output class="field__value" for="belt-vx"></output>
+            <input type="range" id="belt-vx" min="-180" max="180" value="60" step="1">
+          </div>
+          <p class="hint">Կոնվեյերը շարժվում է միայն հորիզոնական ուղղությամբ։</p>
+        </section>
+
+        <section class="group">
+          <h2 class="group__title"><i class="swatch" style="--c:#c14a3a"></i>Կարմիր զատիկ</h2>
+          <div class="field">
+            <label class="field__label" for="lb1-x0">Սկզբն. X</label>
+            <output class="field__value" for="lb1-x0"></output>
+            <input type="range" id="lb1-x0" min="20" max="780" value="120" step="1">
+          </div>
+          <div class="field">
+            <label class="field__label" for="lb1-y0">Սկզբն. Y</label>
+            <output class="field__value" for="lb1-y0"></output>
+            <input type="range" id="lb1-y0" min="20" max="500" value="90" step="1">
+          </div>
+          <div class="field">
+            <label class="field__label" for="lb1-vx">Արագ. X</label>
+            <output class="field__value" for="lb1-vx"></output>
+            <input type="range" id="lb1-vx" min="-120" max="120" value="40" step="1">
+          </div>
+          <div class="field">
+            <label class="field__label" for="lb1-vy">Արագ. Y</label>
+            <output class="field__value" for="lb1-vy"></output>
+            <input type="range" id="lb1-vy" min="-120" max="120" value="20" step="1">
+          </div>
+        </section>
+
+        <section class="group">
+          <h2 class="group__title"><i class="swatch" style="--c:#2b6bb0"></i>Կապույտ զատիկ</h2>
+          <div class="field">
+            <label class="field__label" for="lb2-x0">Սկզբն. X</label>
+            <output class="field__value" for="lb2-x0"></output>
+            <input type="range" id="lb2-x0" min="20" max="780" value="120" step="1">
+          </div>
+          <div class="field">
+            <label class="field__label" for="lb2-y0">Սկզբն. Y</label>
+            <output class="field__value" for="lb2-y0"></output>
+            <input type="range" id="lb2-y0" min="20" max="500" value="260" step="1">
+          </div>
+          <div class="field">
+            <label class="field__label" for="lb2-vx">Արագ. X</label>
+            <output class="field__value" for="lb2-vx"></output>
+            <input type="range" id="lb2-vx" min="-120" max="120" value="30" step="1">
+          </div>
+          <div class="field">
+            <label class="field__label" for="lb2-vy">Արագ. Y</label>
+            <output class="field__value" for="lb2-vy"></output>
+            <input type="range" id="lb2-vy" min="-120" max="120" value="0" step="1">
+          </div>
+        </section>
+
+        <p class="hint">
+          Երբ զատիկը գտնվում է ժապավենի վրա, կոնվեյերի արագությունն ավելանում է նրա սեփական արագությանը։
+          Կանաչ սլաքը՝ սեփական արագությունն է, դեղինը՝ կոնվեյերինը, իսկ սև սլաքը՝ արդյունարար (գետնի համակարգում)։
+        </p>
+      </aside>
+    </div>
+  </main>
+
+  <footer data-shell="footer"></footer>
+</body>
+</html>

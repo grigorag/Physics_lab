@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="hy">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Լայնական և երկայնական ալիքներ — զսպանակավոր մոդել · Ֆիզիկայի Լաբորատորիաներ</title>
+  <link rel="icon" href="../../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../../assets/css/main.css">
+  <script type="module" src="../../../assets/js/core/shell.js"></script>
+  <script type="module" src="./main.js"></script>
+</head>
+<body data-sim="spring-waves" data-section="mechanics">
+  <header data-shell="header"></header>
+
+  <main class="page">
+    <header class="sim-head">
+      <h1 class="sim-title">Ալիքներ զսպանակավոր ճոճանակների շղթայում</h1>
+    </header>
+
+    <div class="tabs" role="tablist" id="tabs">
+      <button role="tab" data-tab="transverse" aria-selected="true">Լայնական ալիք</button>
+      <button role="tab" data-tab="longitudinal">Երկայնական ալիք</button>
+    </div>
+
+    <div class="sim-layout">
+      <section class="stage">
+        <div class="canvas-wrap">
+          <canvas id="cv" aria-label="Զսպանակներով կապված գնդիկների շղթա"></canvas>
+          <span class="canvas-hint">Փոխիր ամպլիտուդը, մարումը, հաճախությունը — և համեմատիր երկու ռեժիմները</span>
+        </div>
+      </section>
+
+      <aside class="panel">
+        <section class="group">
+          <h2 class="group__title" id="modeTitle">Լայնական ալիք</h2>
+          <p class="hint" id="desc"></p>
+        </section>
+
+        <section class="group">
+          <div class="field">
+            <label class="field__label" for="amp">Ամպլիտուդ (սկզբնական էներգիա)</label>
+            <output class="field__value" for="amp"></output>
+            <input type="range" id="amp" min="0" max="60" step="1" value="34">
+          </div>
+          <div class="field">
+            <label class="field__label" for="damp">Մարման գործակից (միջավայր)</label>
+            <output class="field__value" for="damp"></output>
+            <input type="range" id="damp" min="0" max="3" step="0.01" value="0">
+          </div>
+          <p class="hint">0 = իդեալական միջավայր (առանց կորուստի). մեծացնելիս ալիքը մարում է հեռավորության հետ։</p>
+          <div class="field">
+            <label class="field__label" for="freq">Աղբյուրի հաճախություն</label>
+            <output class="field__value" for="freq"></output>
+            <input type="range" id="freq" min="0.02" max="4" step="0.01" value="1.1">
+          </div>
+          <div class="field">
+            <label class="field__label" for="k">Կապի կոշտություն (k)</label>
+            <output class="field__value" for="k"></output>
+            <input type="range" id="k" min="10" max="120" step="1" value="55">
+          </div>
+          <p class="hint" id="cutoff" aria-live="polite"></p>
+        </section>
+
+        <section class="group">
+          <label class="check"><input type="checkbox" id="wall" checked> Աջ պատ (ամրացված ծայր)</label>
+          <p class="hint">Անջատելիս աջ ծայրը դառնում է ազատ. ալիքն անդրադառնում է առանց փուլի շրջման (պուճտ՝ հանգույցի փոխարեն)։</p>
+        </section>
+
+        <section class="group">
+          <h2 class="group__title">Կանգուն ալիքի հարմոնիկներ</h2>
+          <div class="field">
+            <label class="field__label" for="nharm">Հարմոնիկ n</label>
+            <output class="field__value" for="nharm"></output>
+            <input type="range" id="nharm" min="1" max="34" step="1" value="1">
+          </div>
+          <p class="hint" id="harmInfo"></p>
+          <button class="btn btn--block" id="snapBtn"><span>↪ Սահել f<sub>n</sub>-ի վրա</span></button>
+          <p class="hint">Հստակ ռեզոնանսի համար դիր մարումը 0 և պահիր աջ պատը։ Հաշվարկը՝ ամրացված–ամրացված շղթայի՝ fₙ = √(k/m)·sin(nπ/2(N−1))/π։</p>
+        </section>
+
+        <section class="group">
+          <div class="btn-row">
+            <button class="btn" id="resetBtn">↺ Վերագործարկել</button>
+            <button class="btn" id="pauseBtn"></button>
+          </div>
+          <div class="btn-row">
+            <button class="btn" id="pulseBtn">↯ Մեկ իմպուլս</button>
+            <button class="btn" id="contBtn">∿ Անընդհատ</button>
+          </div>
+        </section>
+      </aside>
+    </div>
+  </main>
+
+  <footer data-shell="footer"></footer>
+</body>
+</html>

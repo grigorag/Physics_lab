@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html lang="hy">
+<head>
+<meta charset="UTF-8">
+<title>Շարժման հարաբերականություն</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Armenian:wght@500;700&family=Noto+Sans+Armenian:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f3efe6;
+    --panel: #fbf8f1;
+    --ink: #2a2620;
+    --muted: #6b6358;
+    --line: #d8d0bf;
+    --accent: #c14a3a;
+    --accent2: #2b6bb0;
+    --gold: #ffd23f;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Noto Sans Armenian', sans-serif;
+    min-height: 100vh;
+  }
+  body {
+    background-image:
+      radial-gradient(circle at 20% 10%, rgba(193,74,58,0.04) 0%, transparent 40%),
+      radial-gradient(circle at 80% 90%, rgba(43,107,176,0.04) 0%, transparent 40%);
+  }
+  .wrap {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 32px 24px 48px;
+  }
+  header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 16px;
+    margin-bottom: 28px;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  h1 {
+    font-family: 'Noto Serif Armenian', serif;
+    font-weight: 700;
+    font-size: 32px;
+    margin: 0;
+    letter-spacing: -0.5px;
+  }
+  .subtitle {
+    color: var(--muted);
+    font-size: 14px;
+    font-style: italic;
+    font-family: 'Noto Serif Armenian', serif;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 360px;
+    gap: 24px;
+  }
+  @media (max-width: 980px) {
+    .grid { grid-template-columns: 1fr; }
+  }
+  .canvas-card {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 14px;
+    box-shadow: 0 1px 0 rgba(0,0,0,0.02), 0 12px 24px -16px rgba(0,0,0,0.15);
+  }
+  canvas {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 3px;
+    background: #fff;
+  }
+  .readout {
+    margin-top: 12px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+  }
+  .readout > div {
+    background: rgba(0,0,0,0.025);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 8px 10px;
+  }
+  .readout .lbl {
+    color: var(--muted);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 4px;
+    font-family: 'Noto Sans Armenian', sans-serif;
+    font-weight: 600;
+  }
+  .readout .val { color: var(--ink); line-height: 1.45; }
+  .readout .dot {
+    display: inline-block;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    margin-right: 6px;
+    vertical-align: middle;
+  }
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 18px 20px;
+    box-shadow: 0 1px 0 rgba(0,0,0,0.02), 0 12px 24px -16px rgba(0,0,0,0.15);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .group {
+    border-top: 1px solid var(--line);
+    padding-top: 14px;
+  }
+  .group:first-child { border-top: 0; padding-top: 0; }
+  .group h3 {
+    margin: 0 0 12px 0;
+    font-family: 'Noto Serif Armenian', serif;
+    font-size: 15px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .swatch {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 1.5px solid var(--ink);
+    display: inline-block;
+  }
+  .swatch.belt {
+    border-radius: 3px;
+    background: #3a3a3a;
+    border-color: #3a3a3a;
+  }
+  .row {
+    display: grid;
+    grid-template-columns: 86px 1fr 44px;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+  .row.surface-row {
+    grid-template-columns: 86px 1fr;
+  }
+  .row:last-child { margin-bottom: 0; }
+  .row label {
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .row .v {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    text-align: right;
+    color: var(--ink);
+  }
+  input[type=range] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 4px;
+    background: var(--line);
+    border-radius: 2px;
+    outline: none;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--ink);
+    cursor: pointer;
+    border: 2px solid var(--panel);
+    box-shadow: 0 0 0 1px var(--ink);
+  }
+  input[type=range]::-moz-range-thumb {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--ink);
+    cursor: pointer;
+    border: 2px solid var(--panel);
+    box-shadow: 0 0 0 1px var(--ink);
+  }
+  .buttons {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .buttons button {
+    flex: 1;
+    min-width: 100px;
+    padding: 9px 14px;
+    border: 1px solid var(--ink);
+    border-radius: 4px;
+    background: var(--ink);
+    color: var(--panel);
+    cursor: pointer;
+    font-family: 'Noto Sans Armenian', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    transition: background 0.15s, color 0.15s;
+  }
+  .buttons button.secondary {
+    background: transparent;
+    color: var(--ink);
+  }
+  .buttons button:hover { background: var(--accent); border-color: var(--accent); color: white; }
+  .buttons button.secondary:hover { background: var(--ink); color: var(--panel); border-color: var(--ink); }
+
+  .toggle-group {
+    display: flex;
+    border: 1px solid var(--ink);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .toggle-group .toggle-btn {
+    flex: 1;
+    -webkit-appearance: none;
+    appearance: none;
+    padding: 7px 10px;
+    border: none;
+    border-right: 1px solid var(--ink);
+    background: transparent;
+    color: var(--ink);
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: 'Noto Sans Armenian', sans-serif;
+    transition: background 0.15s, color 0.15s;
+    min-width: 0;
+  }
+  .toggle-group .toggle-btn:last-child { border-right: none; }
+  .toggle-group .toggle-btn:hover {
+    background: rgba(0,0,0,0.06);
+  }
+  .toggle-group.lb1 .toggle-btn.active,
+  .toggle-group.lb1 .toggle-btn.active:hover {
+    background: var(--accent);
+    color: white;
+  }
+  .toggle-group.lb2 .toggle-btn.active,
+  .toggle-group.lb2 .toggle-btn.active:hover {
+    background: var(--accent2);
+    color: white;
+  }
+
+  .toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--muted);
+    cursor: pointer;
+    user-select: none;
+  }
+  .toggle input { accent-color: var(--ink); }
+  .note {
+    font-size: 12px;
+    color: var(--muted);
+    font-style: italic;
+    line-height: 1.5;
+    font-family: 'Noto Serif Armenian', serif;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Շարժման հարաբերականություն</h1>
+      
+    </div>
+  </header>
+
+  <div class="grid">
+    <div>
+      <div class="canvas-card">
+        <canvas id="canvas" width="900" height="560"></canvas>
+        <div class="readout">
+          <div>
+            <div class="lbl"><span class="dot" style="background:#c14a3a"></span>Կարմիր զատիկ</div>
+            <div class="val" id="r1"></div>
+          </div>
+          <div>
+            <div class="lbl"><span class="dot" style="background:#2b6bb0"></span>Կապույտ զատիկ</div>
+            <div class="val" id="r2"></div>
+          </div>
+          <div>
+            <div class="lbl"><span class="dot" style="background:#3a3a3a"></span>Ժապավեն</div>
+            <div class="val" id="rb"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <aside class="panel">
+      <div class="group">
+        <h3>Կառավարում</h3>
+        <div class="buttons">
+          <button id="playBtn">▶ Սկսել</button>
+          <button id="resetBtn" class="secondary">↺ Վերագործարկել</button>
+        </div>
+        <label class="toggle" style="margin-top:10px;">
+          <input type="checkbox" id="vectorsToggle" checked>
+          Ցույց տալ արագության վեկտորները
+        </label>
+      </div>
+
+      <div class="group">
+        <h3><span class="swatch belt"></span>Ժապավենի արագություն</h3>
+        <div class="row">
+          <label>V<sun>ժապ․</sub></label>
+          <input type="range" id="belt-vx" min="-100" max="100" value="20" step="1">
+          <span class="v" id="belt-vx-v">20</span>
+        </div>
+      </div>
+
+      <div class="group">
+        <h3><span class="swatch" style="background:#c14a3a"></span>Կարմիր զատիկ</h3>
+        <div class="row surface-row">
+          <label>Մակերևույթ</label>
+          <div class="toggle-group lb1" id="lb1-surface">
+            <button type="button" class="toggle-btn" data-value="ground">Գետին</button>
+            <button type="button" class="toggle-btn" data-value="belt">Ժապավեն</button>
+          </div>
+        </div>
+        <div class="row">
+          <label>Սկզբն. X<sub>0</sub></label>
+          <input type="range" id="lb1-x0" min="-100" max="800" value="0" step="1">
+          <span class="v" id="lb1-x0-v">0</span>
+        </div>
+        <div class="row">
+          <label>Արագ. V<sub>0</sub></label>
+          <input type="range" id="lb1-vx" min="-100" max="100" value="70" step="1">
+          <span class="v" id="lb1-vx-v">70</span>
+        </div>
+      </div>
+
+      <div class="group">
+        <h3><span class="swatch" style="background:#2b6bb0"></span>Կապույտ զատիկ</h3>
+        <div class="row surface-row">
+          <label>Մակերևույթ</label>
+          <div class="toggle-group lb2" id="lb2-surface">
+            <button type="button" class="toggle-btn" data-value="ground">Գետին</button>
+            <button type="button" class="toggle-btn" data-value="belt">Ժապավեն</button>
+          </div>
+        </div>
+        <div class="row">
+          <label>Սկզբն. X<sub>0</sub></label>
+          <input type="range" id="lb2-x0" min="-100" max="800" value="0" step="1">
+          <span class="v" id="lb2-x0-v">0</span>
+        </div>
+        <div class="row">
+          <label>Արագ. V<sub>0</sub></label>
+          <input type="range" id="lb2-vx" min="-100" max="100" value="+50" step="1">
+          <span class="v" id="lb2-vx-v">50</span>
+        </div>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<script>
+(() => {
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width;   // 900
+  const H = canvas.height;  // 560
+
+  // ---------- Layout regions (canvas pixels) ----------
+  const HEADER_TOP = 0, HEADER_BOTTOM = 60;
+  const BELT_TOP = 220, BELT_BOTTOM = 330;
+  const RULER_TOP = 500, RULER_BOTTOM = H;
+  const PLAY_TOP = HEADER_BOTTOM;
+  const PLAY_BOTTOM = RULER_TOP;
+
+  // ---------- World <-> canvas conversion ----------
+  // World x = 0 corresponds to canvas pixel WORLD_OFFSET.
+  // So canvas pixel 0 is world x = -WORLD_OFFSET (= -100).
+  const WORLD_OFFSET = 100;
+  const toCanvasX = wx => wx + WORLD_OFFSET;
+  const WORLD_MIN = -WORLD_OFFSET;       // = -100
+  const WORLD_MAX = W - WORLD_OFFSET;    // =  800
+
+  // ---------- State ----------
+  const state = {
+    paused: true,             // start paused; user presses "Սկսել"
+    showVectors: true,
+    time: 0,
+    beltVx: 20,
+    beltPhase: 0,
+    lb1: {
+      x0: 0, vx: 70, x: 0,
+      surface: 'ground',
+      yGround: 140, yBelt: 250,
+      y: 140,
+      color: '#c14a3a'
+    },
+    lb2: {
+      x0: 0, vx: 50, x: 0,
+      surface: 'belt',
+      yGround: 415, yBelt: 305,
+      y: 305,
+      color: '#2b6bb0'
+    },
+    meetings: [],
+    flashStart: -Infinity
+  };
+
+  // ---------- Helpers ----------
+  function onBelt(lb) { return lb.surface === 'belt'; }
+  function groundVx(lb) { return lb.vx + (onBelt(lb) ? state.beltVx : 0); }
+  function syncSurfaceY(lb) { lb.y = lb.surface === 'ground' ? lb.yGround : lb.yBelt; }
+
+  // ---------- Control wiring ----------
+  function bindRange(id, getter, setter, onChange) {
+    const el = document.getElementById(id);
+    const valEl = document.getElementById(id + '-v');
+    el.value = getter();
+    valEl.textContent = getter();
+    el.addEventListener('input', () => {
+      const v = parseFloat(el.value);
+      setter(v);
+      valEl.textContent = v;
+      if (onChange) onChange(v);
+    });
+  }
+
+  function bindToggleGroup(groupId, getter, setter, onChange) {
+    const group = document.getElementById(groupId);
+    const buttons = group.querySelectorAll('.toggle-btn');
+    function refresh() {
+      const current = getter();
+      buttons.forEach(b => b.classList.toggle('active', b.dataset.value === current));
+    }
+    buttons.forEach(b => {
+      b.addEventListener('click', () => {
+        setter(b.dataset.value);
+        refresh();
+        if (onChange) onChange(b.dataset.value);
+      });
+    });
+    refresh();
+  }
+
+  bindRange('belt-vx', () => state.beltVx, v => state.beltVx = v);
+
+  bindRange('lb1-x0', () => state.lb1.x0, v => state.lb1.x0 = v,
+            v => { state.lb1.x = v; });
+  bindRange('lb1-vx', () => state.lb1.vx, v => state.lb1.vx = v);
+  bindToggleGroup('lb1-surface',
+                  () => state.lb1.surface,
+                  v => state.lb1.surface = v,
+                  () => syncSurfaceY(state.lb1));
+
+  bindRange('lb2-x0', () => state.lb2.x0, v => state.lb2.x0 = v,
+            v => { state.lb2.x = v; });
+  bindRange('lb2-vx', () => state.lb2.vx, v => state.lb2.vx = v);
+  bindToggleGroup('lb2-surface',
+                  () => state.lb2.surface,
+                  v => state.lb2.surface = v,
+                  () => syncSurfaceY(state.lb2));
+
+  const playBtn = document.getElementById('playBtn');
+  const resetBtn = document.getElementById('resetBtn');
+  const vectorsToggle = document.getElementById('vectorsToggle');
+
+  playBtn.addEventListener('click', () => {
+    state.paused = !state.paused;
+  });
+
+  function reset() {
+    state.lb1.x = state.lb1.x0;
+    state.lb2.x = state.lb2.x0;
+    syncSurfaceY(state.lb1);
+    syncSurfaceY(state.lb2);
+    state.time = 0;
+    state.meetings = [];
+    state.beltPhase = 0;
+    state.flashStart = -Infinity;
+    state.paused = true;
+    // Initial overlap counts as a meeting at t=0
+    if (Math.abs(state.lb1.x - state.lb2.x) < 0.5) {
+      state.meetings.push({ t: 0, x: state.lb1.x });
+      state.flashStart = state.time;
+    }
+  }
+  resetBtn.addEventListener('click', reset);
+
+  vectorsToggle.addEventListener('change', () => {
+    state.showVectors = vectorsToggle.checked;
+  });
+
+  reset();
+
+  // ---------- Physics ----------
+  function update(dt) {
+    state.beltPhase += state.beltVx * dt;
+
+    const prevX1 = state.lb1.x;
+    const prevX2 = state.lb2.x;
+    const prevDx = prevX1 - prevX2;
+
+    state.lb1.x += groundVx(state.lb1) * dt;
+    state.lb2.x += groundVx(state.lb2) * dt;
+    state.time += dt;
+
+    const currDx = state.lb1.x - state.lb2.x;
+    if (prevDx !== 0 && prevDx * currDx < 0) {
+      const f = prevDx / (prevDx - currDx);
+      const tMeet = (state.time - dt) + f * dt;
+      const xMeet = prevX1 + f * (state.lb1.x - prevX1);
+      state.meetings.push({ t: tMeet, x: xMeet });
+      state.flashStart = state.time;
+    }
+  }
+
+  // ---------- Drawing ----------
+  function drawHeader() {
+    ctx.fillStyle = '#2a2620';
+    ctx.fillRect(0, 0, W, HEADER_BOTTOM);
+    ctx.fillStyle = '#ffd23f';
+    ctx.fillRect(0, HEADER_BOTTOM - 2, W, 2);
+
+    // Clock
+    ctx.fillStyle = '#a8a094';
+    ctx.font = "600 11px 'Noto Sans Armenian', sans-serif";
+    ctx.textBaseline = 'top';
+    ctx.textAlign = 'left';
+    ctx.fillText('ԺԱՄԱՆԱԿ', 18, 10);
+
+    ctx.font = "700 24px 'JetBrains Mono', monospace";
+    ctx.fillStyle = '#ffd23f';
+    ctx.fillText('t = ' + state.time.toFixed(2) + ' վ', 18, 25);
+
+    // Meeting info
+    ctx.textAlign = 'right';
+    if (state.meetings.length === 0) {
+      ctx.font = "italic 13px 'Noto Serif Armenian', serif";
+      ctx.fillStyle = '#8a8275';
+      ctx.fillText('սպասում ենք հանդիպման…', W - 18, 23);
+    } else {
+      const last = state.meetings[state.meetings.length - 1];
+      ctx.fillStyle = '#a8a094';
+      ctx.font = "600 11px 'Noto Sans Armenian', sans-serif";
+      ctx.fillText('ՀԱՆԴԻՊՈՒՄ #' + state.meetings.length, W - 18, 10);
+
+      ctx.font = "700 18px 'JetBrains Mono', monospace";
+      ctx.fillStyle = '#e8836f';
+      const txt = 't = ' + last.t.toFixed(2) + ' վ    x = ' + last.x.toFixed(1) + ' սմ';
+      ctx.fillText(txt, W - 18, 27);
+    }
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'alphabetic';
+  }
+
+  function drawGround() {
+    const grad = ctx.createLinearGradient(0, PLAY_TOP, 0, PLAY_BOTTOM);
+    grad.addColorStop(0, '#cfe0b8');
+    grad.addColorStop(1, '#b5cc99');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, PLAY_TOP, W, BELT_TOP - PLAY_TOP);
+    ctx.fillRect(0, BELT_BOTTOM, W, PLAY_BOTTOM - BELT_BOTTOM);
+
+    ctx.strokeStyle = 'rgba(80, 100, 60, 0.18)';
+    ctx.lineWidth = 1;
+    const step = 40;
+    for (let x = 0; x <= W; x += step) {
+      ctx.beginPath();
+      ctx.moveTo(x + 0.5, PLAY_TOP);
+      ctx.lineTo(x + 0.5, BELT_TOP);
+      ctx.moveTo(x + 0.5, BELT_BOTTOM);
+      ctx.lineTo(x + 0.5, PLAY_BOTTOM);
+      ctx.stroke();
+    }
+    for (let y = PLAY_TOP; y <= BELT_TOP; y += step) {
+      ctx.beginPath();
+      ctx.moveTo(0, y + 0.5);
+      ctx.lineTo(W, y + 0.5);
+      ctx.stroke();
+    }
+    for (let y = BELT_BOTTOM + (step - BELT_BOTTOM % step); y <= PLAY_BOTTOM; y += step) {
+      ctx.beginPath();
+      ctx.moveTo(0, y + 0.5);
+      ctx.lineTo(W, y + 0.5);
+      ctx.stroke();
+    }
+
+    ctx.fillStyle = 'rgba(70, 90, 50, 0.32)';
+    for (let i = 0; i < 110; i++) {
+      const sx = (i * 97 + 13) % W;
+      const sy = ((i * 53 + 7) % (PLAY_BOTTOM - PLAY_TOP)) + PLAY_TOP;
+      if (sy > BELT_TOP - 6 && sy < BELT_BOTTOM + 6) continue;
+      ctx.fillRect(sx, sy, 1.5, 1.5);
+    }
+  }
+
+  function drawBelt() {
+    const grad = ctx.createLinearGradient(0, BELT_TOP, 0, BELT_BOTTOM);
+    grad.addColorStop(0, '#2c2c2c');
+    grad.addColorStop(0.5, '#444');
+    grad.addColorStop(1, '#2c2c2c');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, BELT_TOP, W, BELT_BOTTOM - BELT_TOP);
+
+    ctx.fillStyle = '#1a1a1a';
+    ctx.fillRect(0, BELT_TOP - 4, W, 6);
+    ctx.fillRect(0, BELT_BOTTOM - 2, W, 6);
+    ctx.fillStyle = '#5a5a5a';
+    ctx.fillRect(0, BELT_TOP - 1, W, 1);
+    ctx.fillRect(0, BELT_BOTTOM, W, 1);
+
+    const chevSpacing = 70;
+    const phase = ((state.beltPhase % chevSpacing) + chevSpacing) % chevSpacing;
+    const dir = state.beltVx >= 0 ? 1 : -1;
+    const cy = (BELT_TOP + BELT_BOTTOM) / 2;
+    const cHeight = (BELT_BOTTOM - BELT_TOP) * 0.55;
+
+    ctx.strokeStyle = 'rgba(255, 210, 63, 0.95)';
+    ctx.lineWidth = 5;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    for (let x = -chevSpacing * 2; x < W + chevSpacing * 2; x += chevSpacing) {
+      const cx = x + phase;
+      ctx.beginPath();
+      ctx.moveTo(cx - 14 * dir, cy - cHeight / 2);
+      ctx.lineTo(cx + 14 * dir, cy);
+      ctx.lineTo(cx - 14 * dir, cy + cHeight / 2);
+      ctx.stroke();
+    }
+
+    ctx.strokeStyle = 'rgba(0,0,0,0.15)';
+    ctx.lineWidth = 1;
+    for (let y = BELT_TOP + 6; y < BELT_BOTTOM; y += 8) {
+      ctx.beginPath();
+      ctx.moveTo(0, y + 0.5);
+      ctx.lineTo(W, y + 0.5);
+      ctx.stroke();
+    }
+  }
+
+  function drawRuler() {
+    const grad = ctx.createLinearGradient(0, RULER_TOP, 0, RULER_BOTTOM);
+    grad.addColorStop(0, '#ebd9b5');
+    grad.addColorStop(1, '#d8c39a');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, RULER_TOP, W, RULER_BOTTOM - RULER_TOP);
+
+    ctx.fillStyle = '#a48657';
+    ctx.fillRect(0, RULER_TOP, W, 2);
+    ctx.fillStyle = 'rgba(255,255,255,0.4)';
+    ctx.fillRect(0, RULER_TOP + 2, W, 1);
+
+    // Ticks aligned with canvas pixels every 10
+    ctx.fillStyle = '#3a2f1c';
+    for (let x = 0; x <= W; x += 10) {
+      let h;
+      if (x % 100 === 0) h = 16;
+      else if (x % 50 === 0) h = 10;
+      else h = 5;
+      ctx.fillRect(x, RULER_TOP + 4, x % 100 === 0 ? 2 : 1, h);
+    }
+
+    // Labels at every major (canvas) tick, showing world x = canvas_x - WORLD_OFFSET
+    ctx.fillStyle = '#3a2f1c';
+    ctx.font = "700 11px 'JetBrains Mono', monospace";
+    ctx.textBaseline = 'top';
+    for (let x = 0; x <= W; x += 100) {
+      const worldX = x - WORLD_OFFSET;
+      let align = 'center';
+      let drawX = x;
+      if (x === 0) { align = 'left'; drawX = 4; }
+      else if (x > W - 50) { align = 'right'; drawX = W - 4; }
+      ctx.textAlign = align;
+      ctx.fillText(worldX.toString(), drawX, RULER_TOP + 24);
+    }
+
+    // Origin highlight (vertical mark at world x=0)
+    const originCx = toCanvasX(0);
+    ctx.fillStyle = 'rgba(193, 74, 58, 0.55)';
+    ctx.fillRect(originCx - 0.5, RULER_TOP - 0, 1.5, 4);
+
+    // Unit
+    ctx.font = "italic 11px 'Noto Serif Armenian', serif";
+    ctx.fillStyle = '#6b5a3a';
+    ctx.textAlign = 'right';
+    ctx.fillText('սանտիմետր (սմ)', W - 6, RULER_TOP + 42);
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'alphabetic';
+  }
+
+  function drawMeetingMarker() {
+    if (state.meetings.length === 0) return;
+    const last = state.meetings[state.meetings.length - 1];
+    const cx = toCanvasX(last.x);
+    if (cx < 0 || cx > W) return;
+
+    ctx.save();
+    ctx.strokeStyle = 'rgba(232, 131, 111, 0.85)';
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([6, 5]);
+    ctx.beginPath();
+    ctx.moveTo(cx + 0.5, PLAY_TOP);
+    ctx.lineTo(cx + 0.5, PLAY_BOTTOM);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    ctx.fillStyle = 'rgba(232, 131, 111, 0.95)';
+    const tag = '× ' + last.x.toFixed(1);
+    ctx.font = "700 11px 'JetBrains Mono', monospace";
+    ctx.textBaseline = 'top';
+    ctx.textAlign = 'center';
+    const tw = ctx.measureText(tag).width + 12;
+    const ty = PLAY_TOP + 6;
+    ctx.fillRect(cx - tw / 2, ty, tw, 18);
+    ctx.fillStyle = '#fbf8f1';
+    ctx.fillText(tag, cx, ty + 4);
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'alphabetic';
+
+    const since = state.time - state.flashStart;
+    if (since >= 0 && since < 1.2) {
+      const t = since / 1.2;
+      const radius = 8 + t * 60;
+      const alpha = (1 - t) * 0.7;
+      ctx.strokeStyle = `rgba(232, 131, 111, ${alpha})`;
+      ctx.lineWidth = 3 * (1 - t) + 0.5;
+      const flashY = (state.lb1.y + state.lb2.y) / 2;
+      ctx.beginPath();
+      ctx.arc(cx, flashY, radius, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+  function drawLadybug(lb) {
+    const cx = toCanvasX(lb.x);
+    const cy = lb.y;
+    const angle = (lb.vx + (onBelt(lb) ? state.beltVx : 0)) >= 0 ? 0 : Math.PI;
+
+    // Off-screen indicators at canvas edges
+    const offLeft = cx < 18;
+    const offRight = cx > W - 18;
+    if (offLeft || offRight) {
+      const ex = offLeft ? 12 : W - 12;
+      ctx.save();
+      ctx.fillStyle = lb.color;
+      ctx.strokeStyle = '#1a1a1a';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      if (offLeft) {
+        ctx.moveTo(ex, cy);
+        ctx.lineTo(ex + 12, cy - 8);
+        ctx.lineTo(ex + 12, cy + 8);
+      } else {
+        ctx.moveTo(ex, cy);
+        ctx.lineTo(ex - 12, cy - 8);
+        ctx.lineTo(ex - 12, cy + 8);
+      }
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.font = "700 11px 'JetBrains Mono', monospace";
+      ctx.fillStyle = lb.color;
+      ctx.textBaseline = 'middle';
+      ctx.textAlign = offLeft ? 'left' : 'right';
+      ctx.fillText('x = ' + lb.x.toFixed(0), offLeft ? ex + 18 : ex - 18, cy);
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'alphabetic';
+      ctx.restore();
+      return;
+    }
+
+    ctx.save();
+    ctx.translate(cx, cy);
+
+    // Shadow
+    ctx.save();
+    ctx.translate(2, 3);
+    ctx.rotate(angle);
+    ctx.fillStyle = 'rgba(0,0,0,0.22)';
+    ctx.beginPath();
+    ctx.ellipse(0, 0, 17, 13, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+
+    ctx.rotate(angle);
+
+    // Legs
+    ctx.strokeStyle = '#111';
+    ctx.lineWidth = 1.5;
+    ctx.lineCap = 'round';
+    const legXs = [-8, 0, 8];
+    for (const lx of legXs) {
+      const dx = lx === 0 ? 0 : (lx > 0 ? 3 : -3);
+      ctx.beginPath();
+      ctx.moveTo(lx, -8);
+      ctx.lineTo(lx + dx, -14);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(lx, 8);
+      ctx.lineTo(lx + dx, 14);
+      ctx.stroke();
+    }
+
+    // Body
+    ctx.fillStyle = lb.color;
+    ctx.beginPath();
+    ctx.ellipse(0, 0, 16, 12, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Highlight
+    const hg = ctx.createRadialGradient(-3, -3, 2, 0, 0, 16);
+    hg.addColorStop(0, 'rgba(255,255,255,0.35)');
+    hg.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.fillStyle = hg;
+    ctx.beginPath();
+    ctx.ellipse(0, 0, 16, 12, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Center line
+    ctx.strokeStyle = '#1a1a1a';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(8, 0);
+    ctx.lineTo(-14, 0);
+    ctx.stroke();
+
+    // Spots
+    ctx.fillStyle = '#1a1a1a';
+    const spots = [[3, -6], [3, 6], [-7, -6], [-7, 6], [-2, 0]];
+    for (const [sx, sy] of spots) {
+      ctx.beginPath();
+      ctx.arc(sx, sy, 2.2, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // Head
+    ctx.fillStyle = '#1a1a1a';
+    ctx.beginPath();
+    ctx.ellipse(13, 0, 5, 7, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Eyes
+    ctx.fillStyle = '#fff';
+    ctx.beginPath();
+    ctx.arc(15, -3, 1, 0, Math.PI * 2);
+    ctx.arc(15, 3, 1, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Antennae
+    ctx.strokeStyle = '#1a1a1a';
+    ctx.lineWidth = 1.2;
+    ctx.beginPath();
+    ctx.moveTo(16, -3);
+    ctx.quadraticCurveTo(22, -7, 24, -10);
+    ctx.moveTo(16, 3);
+    ctx.quadraticCurveTo(22, 7, 24, 10);
+    ctx.stroke();
+    ctx.fillStyle = '#1a1a1a';
+    ctx.beginPath();
+    ctx.arc(24, -10, 1.4, 0, Math.PI * 2);
+    ctx.arc(24, 10, 1.4, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.restore();
+  }
+
+  function drawArrow(x1, y1, x2, y2, color, width = 2.5, headSize = 9) {
+    const dx = x2 - x1, dy = y2 - y1;
+    const len = Math.hypot(dx, dy);
+    if (len < 2) return;
+    const ux = dx / len, uy = dy / len;
+    ctx.strokeStyle = color;
+    ctx.fillStyle = color;
+    ctx.lineWidth = width;
+    ctx.lineCap = 'round';
+    const sx = x2 - ux * headSize * 0.9;
+    const sy = y2 - uy * headSize * 0.9;
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(sx, sy);
+    ctx.stroke();
+    const px = -uy, py = ux;
+    ctx.beginPath();
+    ctx.moveTo(x2, y2);
+    ctx.lineTo(sx + px * headSize * 0.5, sy + py * headSize * 0.5);
+    ctx.lineTo(sx - px * headSize * 0.5, sy - py * headSize * 0.5);
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  function drawVectors(lb) {
+    if (!state.showVectors) return;
+    const cx = toCanvasX(lb.x);
+    if (cx < 18 || cx > W - 18) return;
+    const SCALE = 0.55;
+    const onB = onBelt(lb);
+    const ownVx = lb.vx;
+    const beltVx = onB ? state.beltVx : 0;
+    const gvx = ownVx + beltVx;
+
+    drawArrow(cx, lb.y - 22, cx + ownVx * SCALE, lb.y - 22, '#2e7d32', 2.5, 9);
+    if (onB && Math.abs(beltVx) > 0.5) {
+      drawArrow(cx, lb.y - 36, cx + beltVx * SCALE, lb.y - 36, '#c79100', 2.5, 9);
+    }
+    drawArrow(cx, lb.y + 22, cx + gvx * SCALE, lb.y + 22, '#1a1a1a', 3, 10);
+  }
+
+  function drawLegend() {
+    if (!state.showVectors) return;
+    const x = 14, y = PLAY_BOTTOM - 70;
+    ctx.save();
+    ctx.fillStyle = 'rgba(255,255,255,0.88)';
+    ctx.strokeStyle = 'rgba(0,0,0,0.18)';
+    ctx.lineWidth = 1;
+    roundRect(x, y, 210, 60, 4);
+    ctx.fill();
+    ctx.stroke();
+
+    ctx.font = "12px 'Noto Sans Armenian', sans-serif";
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = '#2e7d32';
+    ctx.fillRect(x + 10, y + 14, 16, 3);
+    ctx.fillStyle = '#1a1a1a';
+    ctx.fillText('սեփական արագություն', x + 32, y + 15);
+    ctx.fillStyle = '#c79100';
+    ctx.fillRect(x + 10, y + 30, 16, 3);
+    ctx.fillStyle = '#1a1a1a';
+    ctx.fillText('ժապավենի արագություն', x + 32, y + 31);
+    ctx.fillStyle = '#1a1a1a';
+    ctx.fillRect(x + 10, y + 46, 16, 3);
+    ctx.fillText('արդյունարար (գետին)', x + 32, y + 47);
+    ctx.textBaseline = 'alphabetic';
+    ctx.restore();
+  }
+
+  function roundRect(x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.lineTo(x + w - r, y);
+    ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+    ctx.lineTo(x + w, y + h - r);
+    ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+    ctx.lineTo(x + r, y + h);
+    ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+    ctx.lineTo(x, y + r);
+    ctx.quadraticCurveTo(x, y, x + r, y);
+    ctx.closePath();
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    drawGround();
+    drawBelt();
+    drawRuler();
+    drawMeetingMarker();
+    drawHeader();
+
+    drawVectors(state.lb1);
+    drawVectors(state.lb2);
+
+    drawLadybug(state.lb1);
+    drawLadybug(state.lb2);
+
+    drawLegend();
+  }
+
+  // ---------- Readouts ----------
+  function fmt(v) {
+    return ((v >= 0 ? '+' : '') + v.toFixed(0)).padStart(5, ' ');
+  }
+
+  function offScreenStr(lb) {
+    return (lb.x < WORLD_MIN || lb.x > WORLD_MAX) ? ' • էկրանից դուրս' : '';
+  }
+
+  function updateReadout() {
+    const lb1 = state.lb1, lb2 = state.lb2;
+    const onB1 = onBelt(lb1), onB2 = onBelt(lb2);
+    const gvx1 = groundVx(lb1);
+    const gvx2 = groundVx(lb2);
+
+    document.getElementById('r1').innerHTML =
+      `x = ${lb1.x.toFixed(1)} սմ${offScreenStr(lb1)}<br>` +
+      `սեփական V<sub>x</sub>: ${fmt(lb1.vx)} սմ/վ<br>` +
+      `Երկրի նկատմամբ V<sub>x</sub>: ${fmt(gvx1)} սմ/վ<br>` +
+      `<span style="color:${onB1 ? '#c14a3a' : '#6b6358'}">${onB1 ? 'Դիրքը՝ ժապավենի վրա' : 'Դիրքը՝ գետնի վրա'}</span>`;
+
+    document.getElementById('r2').innerHTML =
+      `x = ${lb2.x.toFixed(1)} սմ${offScreenStr(lb2)}<br>` +
+      `սեփական V<sub>x</sub>:          ${fmt(lb2.vx)} սմ/վ<br>` +
+      `Երկրի նկատմամբ. V<sub>x</sub>: ${fmt(gvx2)} սմ/վ<br>` +
+      `<span style="color:${onB2 ? '#2b6bb0' : '#6b6358'}">${onB2 ? 'Դիրքը՝ ժապավենի վրա' : 'Դիրքը՝ գետնի վրա'}</span>`;
+
+    const arrow = state.beltVx > 0 ? '→' : (state.beltVx < 0 ? '←' : '—');
+    document.getElementById('rb').innerHTML =
+      `V<sub>x</sub> = ${fmt(state.beltVx)} սմ/վ<br>` +
+      `ուղղ.: ${arrow}<br>` +
+      `հանդիպումներ: ${state.meetings.length}`;
+  }
+
+  function updatePlayBtnLabel() {
+    if (state.paused) {
+      playBtn.textContent = state.time > 0 ? '▶ Շարունակել' : '▶ Սկսել';
+    } else {
+      playBtn.textContent = '⏸ Դադար';
+    }
+  }
+
+  // ---------- Main loop ----------
+  let lastTime = performance.now();
+  function loop(now) {
+    const dt = Math.min((now - lastTime) / 1000, 0.05);
+    lastTime = now;
+    if (!state.paused) update(dt);
+    draw();
+    updateReadout();
+    updatePlayBtnLabel();
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>

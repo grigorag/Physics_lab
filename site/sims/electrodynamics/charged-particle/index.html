@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="hy">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Լիցքավորված մասնիկի շարժումը մագնիսական դաշտում · Ֆիզիկայի Լաբորատորիաներ</title>
+  <link rel="icon" href="../../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../../assets/css/main.css">
+  <script type="module" src="../../../assets/js/core/shell.js"></script>
+  <script type="module" src="./main.js"></script>
+</head>
+<body data-sim="charged-particle" data-section="electrodynamics">
+  <header data-shell="header"></header>
+
+  <main class="page">
+    <header class="sim-head">
+      <h1 class="sim-title">Լիցքավորված մասնիկի շարժումը մագնիսական դաշտում</h1>
+      <p class="sim-subtitle">Լորենցի ուժ</p>
+    </header>
+
+    <div class="sim-layout">
+      <section class="stage">
+        <div class="canvas-wrap canvas-wrap--grab">
+          <canvas id="cv" aria-label="Լիցքավորված մասնիկի շարժումը մագնիսական դաշտում"></canvas>
+          <ul class="legend legend--tl">
+            <li><i class="legend__line" style="--c: var(--purple)"></i>հետագիծ</li>
+            <li><i class="legend__dot" style="--c: var(--coral)"></i>արագություն v</li>
+            <li><i class="legend__dot" style="--c: var(--amber)"></i>ուժ F</li>
+            <li><i class="legend__dot" style="--c: var(--teal)"></i>B դաշտ (↑ Y-առանցք)</li>
+          </ul>
+          <span class="canvas-hint">Քաշել՝ պտտելու համար · scroll՝ Մեծ/Փոքր</span>
+        </div>
+      </section>
+
+      <aside class="panel">
+        <section class="group">
+          <h2 class="group__title">Մագնիսական դաշտ</h2>
+          <div class="field">
+            <label class="field__label" for="Bfield">B (Տլ)</label>
+            <output class="field__value" for="Bfield"></output>
+            <input type="range" id="Bfield" min="0.5" max="4" value="1.5" step="0.1">
+          </div>
+        </section>
+
+        <section class="group">
+          <h2 class="group__title">Մասնիկ</h2>
+          <div class="field">
+            <span class="field__label" id="chargeLabel">Լիցք q</span>
+            <div class="segmented" id="charge" role="group" aria-labelledby="chargeLabel">
+              <button data-value="1" aria-pressed="true">e</button>
+              <button data-value="2">2e</button>
+              <button data-value="4">4e</button>
+              <button data-value="-1">−e</button>
+              <button data-value="-2">−2e</button>
+            </div>
+          </div>
+          <div class="field">
+            <label class="field__label" for="massSlider">Զանգված (m<sub>e</sub>)</label>
+            <output class="field__value" for="massSlider"></output>
+            <input type="range" id="massSlider" min="1" max="8" value="1" step="1">
+          </div>
+          <div class="field">
+            <label class="field__label" for="vPerp">V<sub>⊥</sub> (արագ. ⊥B)</label>
+            <output class="field__value" for="vPerp"></output>
+            <input type="range" id="vPerp" min="0.5" max="5" value="3" step="0.5">
+          </div>
+          <div class="field">
+            <label class="field__label" for="vPar">V<sub>∥</sub> (արագ. ∥B)</label>
+            <output class="field__value" for="vPar"></output>
+            <input type="range" id="vPar" min="0" max="3" value="1" step="0.5">
+          </div>
+        </section>
+
+        <section class="group">
+          <h2 class="group__title">Ցուցադրում</h2>
+          <div class="field">
+            <label class="field__label" for="trailLen">Հետագծի երկ.</label>
+            <output class="field__value" for="trailLen"></output>
+            <input type="range" id="trailLen" min="30" max="600" value="300" step="30">
+          </div>
+        </section>
+
+        <section class="group">
+          <div class="btn-row">
+            <button class="btn" id="playBtn"></button>
+            <button class="btn" id="resetBtn">↺ Վերագործարկել</button>
+          </div>
+        </section>
+
+        <section class="group">
+          <h2 class="group__title">Ֆիզիկական մեծություններ</h2>
+          <dl class="stats">
+            <div class="stat"><dt>Լարմորի շառ.</dt><dd id="rLarmor">—</dd></div>
+            <div class="stat"><dt>ω ցիկ.հաճ․</dt><dd id="omegaC">—</dd></div>
+            <div class="stat"><dt>T պարբ.</dt><dd id="periodC">—</dd></div>
+            <div class="stat"><dt>Պարույրի քայլ</dt><dd id="pitchC">—</dd></div>
+          </dl>
+        </section>
+      </aside>
+    </div>
+  </main>
+
+  <footer data-shell="footer"></footer>
+</body>
+</html>

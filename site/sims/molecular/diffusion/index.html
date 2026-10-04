@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="hy">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Դիֆուզիա և բրոունյան շարժում · Ֆիզիկայի Լաբորատորիաներ</title>
+  <link rel="icon" href="../../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../../assets/css/main.css">
+  <script type="module" src="../../../assets/js/core/shell.js"></script>
+  <script type="module" src="./main.js"></script>
+</head>
+<body data-sim="diffusion" data-section="molecular">
+  <header data-shell="header"></header>
+
+  <main class="page">
+    <header class="sim-head">
+      <h1 class="sim-title">Դիֆուզիա և բրոունյան շարժում</h1>
+    </header>
+
+    <div class="tabs" role="tablist" id="tabs">
+      <button role="tab" data-tab="brownian" aria-controls="panel-brownian" aria-selected="true">Բրոունյան շարժում</button>
+      <button role="tab" data-tab="diffusion" aria-controls="panel-diffusion">Դիֆուզիա․ Երկու գազերի խառնում</button>
+    </div>
+
+    <!-- ===== Brownian motion ===== -->
+    <div id="panel-brownian" role="tabpanel">
+      <div class="sim-layout">
+        <section class="stage">
+          <div class="canvas-wrap">
+            <canvas id="sim" aria-label="Բրոունյան շարժման սիմուլյացիա"></canvas>
+          </div>
+        </section>
+
+        <aside class="panel">
+          <section class="group" aria-label="Սիմուլյացիայի ցուցումներ">
+            <dl class="stats">
+              <div class="stat"><dt>Մասնիկի արագություն</dt><dd id="speedVal">0.00</dd></div>
+              <div class="stat"><dt>Անցած ճանապարհ</dt><dd id="pathVal">0</dd></div>
+              <div class="stat"><dt>Դիտարկման ժամանակ</dt><dd id="timeVal">0.0 վ</dd></div>
+            </dl>
+            <canvas class="chart" id="msd" aria-label="Միջին քառակուսի շեղման գրաֆիկ"></canvas>
+            <p class="chart-caption">Մասնիկի միջին քառակուսի շեղումը մեկնարկից՝ ժամանակի ընթացքում</p>
+          </section>
+
+          <section class="group" aria-label="Սիմուլյացիայի պարամետրեր">
+            <div class="field">
+              <label class="field__label" for="tempSlider">Ջերմաստիճան</label>
+              <output class="field__value" for="tempSlider"></output>
+              <input type="range" id="tempSlider" min="1" max="10" step="0.1" value="4">
+            </div>
+            <div class="field">
+              <label class="field__label" for="countSlider">Մոլեկուլների քանակ</label>
+              <output class="field__value" for="countSlider"></output>
+              <input type="range" id="countSlider" min="20" max="200" step="10" value="120">
+            </div>
+            <div class="field">
+              <label class="field__label" for="massSlider">Մասնիկի զանգված</label>
+              <output class="field__value" for="massSlider"></output>
+              <input type="range" id="massSlider" min="10" max="200" step="5" value="45">
+            </div>
+            <label class="check"><input type="checkbox" id="trailToggle" checked> Ցուցադրել մասնիկի հետքը</label>
+          </section>
+
+          <section class="group">
+            <div class="btn-row">
+              <button class="btn" id="pauseBtn"></button>
+              <button class="btn" id="resetBtn">Սկսել նորից</button>
+            </div>
+          </section>
+        </aside>
+      </div>
+
+      <section class="explain">
+        <h2>Ինչ է կատարվում այստեղ</h2>
+        <p>Յուրաքանչյուր կապույտ կետ գազի մոլեկուլ է։ Այն անկանոն շարժվում է՝ բախվելով անոթի պատերին, մյուս մոլեկուլներին և կենտրոնում գտնվող խոշոր մասնիկին։ Հարվածները մասնիկի վրա բոլոր կողմերից են և այնքան հաճախ ու քաոսային կերպով, որ ցանկացած առանձին պահի դրանք կատարյալ հավասարակշռված չեն լինում, ինչի հետևանքով մասնիկը փոխում է իր արագության ուղղությունն ու մոդուլը։</p>
+        <p>Ոսկեգույն հետքը ցույց է տալիս մասնիկի ուղին վերջին ժամանակահատվածում՝ նկատելի է, որ այն ուղիղ չէ, այլ քաոսային բեկյալ։ Աջ կողմի գրաֆիկը մասնիկի միջին քառակուսի շեղումն է. որքան բարձր է ջերմաստիճանը, այնքան արագ են շարժվում մոլեկուլները և ուժեղ հարվածում մասնիկին, հետևաբար մասնիկն ավելի արագ է  միջինում հեռանում իր մեկնարկային կետից։ </p>
+      </section>
+    </div>
+
+    <!-- ===== Diffusion: two gases mixing ===== -->
+    <div id="panel-diffusion" role="tabpanel" hidden>
+      <div class="sim-layout">
+        <section class="stage">
+          <div class="canvas-wrap">
+            <canvas id="diffSim" aria-label="Երկու գազերի խառնման սիմուլյացիա"></canvas>
+          </div>
+          <canvas class="chart" id="diffChart" aria-label="Կոնցենտրացիայի գրաֆիկ"></canvas>
+          <p class="chart-caption">Յուրաքանչյուր գազի կոնցենտրացիան՝ ըստ հորիզոնական դիրքի (ձախից աջ)</p>
+        </section>
+
+        <aside class="panel">
+          <section class="group" aria-label="Սիմուլյացիայի պարամետրեր">
+            <div class="field">
+              <label class="field__label" for="diffTempSlider">Ջերմաստիճան</label>
+              <output class="field__value" for="diffTempSlider"></output>
+              <input type="range" id="diffTempSlider" min="1" max="10" step="0.1" value="4">
+            </div>
+            <div class="field">
+              <label class="field__label" for="diffCountSlider">Մասնիկներ մեկ գազում</label>
+              <output class="field__value" for="diffCountSlider"></output>
+              <input type="range" id="diffCountSlider" min="30" max="150" step="10" value="90">
+            </div>
+          </section>
+
+          <section class="group">
+            <button class="btn btn--primary btn--block" id="diffWallBtn">Հեռացնել միջնորմը</button>
+            <button class="btn btn--block" id="diffResetBtn">Վերականգնել միջնորմը</button>
+          </section>
+        </aside>
+      </div>
+
+      <section class="explain">
+        <h2>Ինչ է կատարվում այստեղ</h2>
+        <p>Սկզբում միջնորմը թույլ չի տալիս երկու գազերին խառնվել՝ կապույտ մոլեկուլները մնում են ձախ կեսում, նարնջագույնները՝ աջում։ Ներքևի գրաֆիկը ցույց է տալիս դրանց կոնցենտրացիայի բաշխումն ըստ հորիզոնական դիրքի։</p>
+        <p>Հենց միջնորմը հեռացվում է, ոչինչ հատուկ չի «խառնում» գազերը. մոլեկուլները պարզապես շարունակում են իրենց քաոսային շարժումը, ինչպես մինչ այդ։ Բայց քանի որ ձախից աջ գնալու հավանականությունը նույնն է, ինչ աջից ձախ, իսկ սկզբում կապույտ մոլեկուլներ ավելի շատ կային ձախում՝ ընդհանուր հաշվարկով ավելի շատ կապույտ մոլեկուլներ են անցնում աջ, քան հակառակը։ Ժամանակի ընթացքում երկու գույներն էլ հավասարաչափ բաշխվում են ողջ տարայով, և գրաֆիկի երկու սյունաշարերը միջինում հավասար գույներով են ներկվում։ Սա է դիֆուզիայի էությունը՝ ոչ թե ուժ, որ ստիպում է մոլեկուլներին հավասարաչափ բաշխման, այլ պարզապես պատահական շարժման վիճակագրական հետևանք։</p>
+      </section>
+    </div>
+  </main>
+
+  <footer data-shell="footer"></footer>
+</body>
+</html>

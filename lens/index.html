@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="hy">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Բարակ ոսպնյակում պատկերի ստացում</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Manrope:wght@400;500;600&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0b0e17;
+    --surface: #111521;
+    --surface2: #181d2e;
+    --border: rgba(120,140,200,0.13);
+    --border2: rgba(120,140,200,0.22);
+    --accent-purple: #7c6ff7;
+    --accent-teal: #2ecba1;
+    --accent-coral: #f0714a;
+    --accent-amber: #f5a623;
+    --text-primary: #e8eaf6;
+    --text-secondary: #7e88ab;
+    --text-muted: #4a5270;
+    --mono: 'JetBrains Mono', monospace;
+    --sans: 'Manrope', sans-serif;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text-primary);
+    font-family: var(--sans);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1.5rem 1rem;
+  }
+
+  header {
+    width: 100%;
+    max-width: 1000px;
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin-bottom: 1.25rem;
+    flex-wrap: wrap;
+  }
+  header h1 { font-size: 1.1rem; font-weight: 600; letter-spacing: -0.02em; }
+  header p  { font-size: 12px; color: var(--text-muted); font-family: var(--mono); }
+
+  .layout {
+    width: 100%;
+    max-width: 1000px;
+    display: grid;
+    grid-template-columns: 210px 1fr;
+    gap: 12px;
+    align-items: start;
+  }
+
+  .panel {
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: 12px;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+  }
+
+  .section-label {
+    font-size: 10px;
+    font-family: var(--mono);
+    color: var(--text-muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 0.4rem;
+  }
+
+  .ctrl { display: flex; flex-direction: column; gap: 5px; }
+  .ctrl-row { display: flex; align-items: center; justify-content: space-between; }
+  .ctrl-label { font-size: 12px; color: var(--text-secondary); font-family: var(--mono); }
+  .ctrl-value { font-size: 12px; font-weight: 500; color: var(--accent-purple); font-family: var(--mono); min-width: 44px; text-align: right; }
+
+  input[type=range] {
+    -webkit-appearance: none; appearance: none;
+    width: 100%; height: 3px;
+    background: var(--surface2); border-radius: 2px; outline: none; cursor: pointer;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 13px; height: 13px; border-radius: 50%;
+    background: var(--accent-purple); cursor: pointer;
+    border: 2px solid var(--bg); transition: transform 0.15s;
+  }
+  input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.25); }
+  input[type=range]::-moz-range-thumb {
+    width: 13px; height: 13px; border-radius: 50%;
+    background: var(--accent-purple); cursor: pointer; border: 2px solid var(--bg);
+  }
+
+  .divider { height: 0.5px; background: var(--border); }
+
+  .stats { display: flex; flex-direction: column; gap: 7px; }
+  .stat-row { display: flex; justify-content: space-between; align-items: center; }
+  .stat-label { font-size: 11px; color: var(--text-muted); font-family: var(--mono); }
+  .stat-val   { font-size: 11px; font-weight: 500; color: var(--text-primary); font-family: var(--mono); }
+
+  .formula-box {
+    background: var(--surface2);
+    border: 0.5px solid var(--border2);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.7;
+  }
+  .formula-box span { color: var(--accent-teal); font-weight: 500; }
+
+  .info-box {
+    background: rgba(124,111,247,0.07);
+    border: 0.5px solid rgba(124,111,247,0.25);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 11px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    font-family: var(--mono);
+  }
+  .info-box b { color: var(--accent-coral); font-weight: 500; }
+
+  .canvas-wrap {
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+    cursor: crosshair;
+    user-select: none;
+  }
+
+  canvas { display: block; width: 100%; }
+
+  .badge {
+    position: absolute;
+    top: 10px; right: 12px;
+    font-size: 10px;
+    font-family: var(--mono);
+    color: var(--text-muted);
+    display: flex; flex-direction: column; align-items: flex-end; gap: 3px;
+    pointer-events: none;
+  }
+  .badge-item { display: flex; align-items: center; gap: 5px; }
+  .badge-dot { width: 7px; height: 7px; border-radius: 50%; }
+  .badge-line { width: 14px; height: 2px; }
+
+  @media (max-width: 660px) {
+    .layout { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Բարակ ոսպնյակ</h1>
+  <p>պատկերի ստացման երկրաչափություն</p>
+</header>
+
+<div class="layout">
+
+  <!-- LEFT PANEL -->
+  <div class="panel">
+
+    <div>
+      <div class="section-label">Պարամետրեր</div>
+
+      <div class="ctrl" style="margin-bottom:10px;">
+        <div class="ctrl-row">
+          <span class="ctrl-label">Կիզակետ F</span>
+          <span class="ctrl-value" id="fOut">4.0</span>
+        </div>
+        <input type="range" id="fSlider" min="-8" max="8" value="4" step="0.5">
+      </div>
+
+      <div class="ctrl" style="margin-bottom:10px;">
+        <div class="ctrl-row">
+          <span class="ctrl-label">Առարկա d</span>
+          <span class="ctrl-value" id="dOut">-7.0</span>
+        </div>
+        <input type="range" id="dSlider" min="-18" max="0" value="-7" step="0.1">
+      </div>
+
+      <div class="ctrl">
+        <div class="ctrl-row">
+          <span class="ctrl-label">Բարձր. h</span>
+          <span class="ctrl-value" id="hOut">3.0</span>
+        </div>
+        <input type="range" id="hSlider" min="0.5" max="5" value="3" step="0.5">
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="stats">
+      <div class="section-label">Հաշվարկ</div>
+      <div class="stat-row">
+        <span class="stat-label">d առարկայի հեռ.</span>
+        <span class="stat-val" id="d1Val">7.00</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">|f| պատկերի հեռ.</span>
+        <span class="stat-val" id="d2Val">—</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">Խոշ. Г=H/h</span>
+        <span class="stat-val" id="magVal">—</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">1/d + 1/f</span>
+        <span class="stat-val" id="checkVal">—</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">1/F</span>
+        <span class="stat-val" id="fInvVal">—</span>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="formula-box">
+      <span>1/d + 1/f = 1/d</span><br>
+      բարակ ոսպնյակի բանաձև<br><br>
+      k = f/d<br>
+      խոշորացման գործ.
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="info-box" id="infoBox">
+      —
+    </div>
+
+  </div>
+
+  <!-- CANVAS -->
+  <div class="canvas-wrap" id="canvasWrap">
+    <canvas id="cv"></canvas>
+    <div class="badge">
+      <div class="badge-item">
+        <span>առարկա</span>
+        <div class="badge-dot" style="background:#f0714a;"></div>
+      </div>
+      <div class="badge-item">
+        <span>պատկեր</span>
+        <div class="badge-dot" style="background:#2ecba1;"></div>
+      </div>
+      <div class="badge-item">
+        <span>Ճառ. 1 (զուգ․ օպ․ առ․-ին)</span>
+        <div class="badge-line" style="background:#f5a623;"></div>
+      </div>
+      <div class="badge-item">
+        <span>Ճառ. 2 (կենտրոնական)</span>
+        <div class="badge-line" style="background:#7c6ff7;"></div>
+      </div>
+      <!--<div class="badge-item">
+        <span>ճառ. 3 (կենտ.)</span>
+        <div class="badge-line" style="background:#2ecba1; opacity:0.7;"></div>
+      </div>-->
+    </div>
+  </div>
+
+</div>
+
+<script>
+const cv = document.getElementById('cv');
+const ctx = cv.getContext('2d');
+const wrap = document.getElementById('canvasWrap');
+
+// World units -> canvas pixels
+// Origin at canvas center
+let W, H, SCALE, OX, OY;
+
+function resize() {
+  W = wrap.clientWidth;
+  H = Math.max(320, Math.round(W * 0.56));
+  cv.width  = W;
+  cv.height = H;
+  SCALE = W / 36;   // ~36 world units wide
+  OX = W / 2;
+  OY = H / 2;
+  draw();
+}
+
+function wx(x) { return OX + x * SCALE; }
+function wy(y) { return OY - y * SCALE; }
+function wlen(l) { return l * SCALE; }
+
+// -------- read sliders --------
+function getF()  { return parseFloat(document.getElementById('fSlider').value); }
+function getD()  { return parseFloat(document.getElementById('dSlider').value); }
+function getH()  { return parseFloat(document.getElementById('hSlider').value); }
+
+// -------- update labels --------
+function updateLabels() {
+  const f  = getF();
+  const d1 = getD();   // negative: object is left of lens
+  const h  = getH();
+
+  document.getElementById('fOut').textContent  = f.toFixed(1);
+  document.getElementById('dOut').textContent  = d1.toFixed(1);
+  document.getElementById('hOut').textContent  = h.toFixed(1);
+
+  const absD1 = Math.abs(d1);
+  // Thin lens: 1/d2 = 1/f - 1/|d1|   (using sign convention: d1>0 object dist, d2>0 image dist)
+  const invD2 = 1/f - 1/absD1;
+  document.getElementById('d1Val').textContent  = absD1.toFixed(2);
+  document.getElementById('fInvVal').textContent = (1/f).toFixed(4);
+
+  if (Math.abs(invD2) < 0.000001) {
+    document.getElementById('d2Val').textContent  = '∞';
+    document.getElementById('magVal').textContent = '∞';
+    document.getElementById('checkVal').textContent = (1/absD1).toFixed(4);
+    document.getElementById('infoBox').innerHTML = '<b>Պատկերը անվերջ հեռ.</b><br>Առարկան կիզակետում է։';
+    return;
+  }
+
+  const d2 = 1 / invD2;   // positive -> real image right; negative -> virtual left
+  const mag = -d2 / absD1; // negative -> inverted
+  const check = 1/absD1 + 1/Math.abs(d2);
+
+  document.getElementById('d2Val').textContent  = Math.abs(d2).toFixed(2) + (d2 > 0 ? '' : ' (կեղծ)');
+  document.getElementById('magVal').textContent = mag.toFixed(3);
+  document.getElementById('checkVal').textContent = check.toFixed(4);
+
+  let info = '';
+  if (d2 > 0) {
+    if (absD1 > 2*f) info = '<b>Իրական, շրջված, փոքրացված</b><br>Պատկերը՝ f-ի և 2f-ի միջև է։';
+    else if (absD1 === 2*f) info = '<b>Իրական, շրջված, հավասար</b><br>Պատկերը՝ 2f-ում է։';
+    else      info = '<b>Իրական, շրջված, խոշ-ված</b><br>Առ. f-ի և 2f-ի արանքում է։';
+  } else {
+	if(f > 0)  info = '<b>Կեղծ, ուղիղ, խոշ-ված</b><br>Առ. կիզ-ի ներսում է (|d₁|&lt;f)։';
+	else  info = '<b>Կեղծ, ուղիղ, փոքրացված</b>';
+  }
+  document.getElementById('infoBox').innerHTML = info;
+}
+
+// -------- drawing helpers --------
+function line(x1,y1,x2,y2,color,lw,dash) {
+  ctx.save();
+  ctx.strokeStyle = color;
+  ctx.lineWidth   = lw || 1;
+  if (dash) ctx.setLineDash(dash);
+  ctx.beginPath();
+  ctx.moveTo(wx(x1), wy(y1));
+  ctx.lineTo(wx(x2), wy(y2));
+  ctx.stroke();
+  ctx.restore();
+}
+
+function arrow(x1,y1,x2,y2,color,lw) {
+  ctx.save();
+  ctx.strokeStyle = color;
+  ctx.fillStyle   = color;
+  ctx.lineWidth   = lw || 1.5;
+  ctx.lineCap     = 'round';
+  ctx.beginPath();
+  ctx.moveTo(wx(x1), wy(y1));
+  ctx.lineTo(wx(x2), wy(y2));
+  ctx.stroke();
+  const angle = Math.atan2(wy(y1)-wy(y2), wx(x2)-wx(x1));
+  const as    = Math.max(5, 8);
+  const tx = wx(x2), ty = wy(y2);
+  ctx.beginPath();
+  ctx.moveTo(tx, ty);
+  ctx.lineTo(tx - as*Math.cos(angle - 0.38), ty + as*Math.sin(angle - 0.38));
+  ctx.lineTo(tx - as*Math.cos(angle + 0.38), ty + as*Math.sin(angle + 0.38));
+  ctx.closePath();
+  ctx.fill();
+  ctx.restore();
+}
+
+function dot(x,y,r,color,stroke) {
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(wx(x), wy(y), r, 0, Math.PI*2);
+  ctx.fillStyle = color;
+  ctx.fill();
+  if (stroke) { ctx.strokeStyle = stroke; ctx.lineWidth = 1.5; ctx.stroke(); }
+  ctx.restore();
+}
+
+function label(text, x, y, color, align, baseline, size) {
+  ctx.save();
+  ctx.fillStyle    = color || '#e8eaf6';
+  ctx.font         = `500 ${size||12}px 'JetBrains Mono', monospace`;
+  ctx.textAlign    = align    || 'left';
+  ctx.textBaseline = baseline || 'middle';
+  ctx.fillText(text, wx(x), wy(y));
+  ctx.restore();
+}
+
+function clampRay(x0,y0, dx,dy, margin) {
+  // extend ray until it hits canvas boundary (in world coords)
+  const xMax = OX/SCALE + margin;
+  const xMin = -OX/SCALE - margin;
+  const yMax = OY/SCALE + margin;
+  const yMin = -OY/SCALE - margin;
+  let t = Infinity;
+  if (dx > 0)  t = Math.min(t, (xMax-x0)/dx);
+  if (dx < 0)  t = Math.min(t, (xMin-x0)/dx);
+  if (dy > 0)  t = Math.min(t, (yMax-y0)/dy);
+  if (dy < 0)  t = Math.min(t, (yMin-y0)/dy);
+  return [x0+dx*t, y0+dy*t];
+}
+
+// -------- main draw --------
+function draw() {
+  ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = '#0b0e17';
+  ctx.fillRect(0, 0, W, H);
+
+  const f  = getF();
+  const d1 = getD();   // negative
+  const h  = getH();
+
+  const absD1 = Math.abs(d1);
+  const invD2 = 1/f - 1/absD1;
+  const d2    = Math.abs(invD2) < 0.0001 ? 1e9 : 1/invD2;
+  const hasImage = Math.abs(d2) < 900;
+
+  // Object tip in world coords: object is at x=d1 (negative), tip at y=h
+  const Sx = d1, Sy = 0;  // object base
+  const Tx = d1, Ty = h;  // object tip (top)
+
+  // Image tip: x = d2 (positive=right of lens, negative=virtual/left), y = -h*(d2/absD1)
+  const Ix = d2;
+  const Iy = hasImage ? -(d2/absD1)*h : 0;
+
+  // ---- GRID ----
+  ctx.save();
+  ctx.strokeStyle = 'rgba(120,140,200,0.06)';
+  ctx.lineWidth   = 0.5;
+  const worldW = OX/SCALE;
+  const worldH = OY/SCALE;
+  for (let x = -Math.ceil(worldW); x <= Math.ceil(worldW); x++) {
+    ctx.beginPath(); ctx.moveTo(wx(x), 0); ctx.lineTo(wx(x), H); ctx.stroke();
+  }
+  for (let y = -Math.ceil(worldH); y <= Math.ceil(worldH); y++) {
+    ctx.beginPath(); ctx.moveTo(0, wy(y)); ctx.lineTo(W, wy(y)); ctx.stroke();
+  }
+  ctx.restore();
+
+  // ---- OPTICAL AXIS ----
+  line(-worldW, 0, worldW, 0, 'rgba(120,140,200,0.35)', 1);
+
+  // ---- LENS (vertical line with arrows) ----
+  const lensTop    =  worldH * 0.88;
+  const lensBottom = -worldH * 0.88;
+  // Lens body
+  ctx.save();
+  ctx.strokeStyle = 'rgba(55,138,221,0.75)';
+  ctx.lineWidth   = 2.5;
+  ctx.beginPath();
+  ctx.moveTo(wx(0), wy(lensBottom));
+  ctx.lineTo(wx(0), wy(lensTop));
+  ctx.stroke();
+  ctx.restore();
+  // Lens arrows (double-convex style)
+  arrow(0, lensTop*0.55, 0, lensTop,    'rgba(55,138,221,0.9)', 2);
+  arrow(0, lensBottom*0.55, 0, lensBottom, 'rgba(55,138,221,0.9)', 2);
+
+  // ---- FOCAL POINTS ----
+  dot( f, 0, 5, '#7c6ff7', '#b0aaff');
+  dot(-f, 0, 5, '#7c6ff7', '#b0aaff');
+  label('F', f+0.15, 0.35, '#7c6ff7', 'left', 'middle', 11);
+  label('F', -f+0.15, 0.35, '#7c6ff7', 'left', 'middle', 11);
+
+  // 2F points
+  dot( 2*f, 0, 3, 'rgba(124,111,247,0.4)');
+  dot(-2*f, 0, 3, 'rgba(124,111,247,0.4)');
+  label('2F', 2*f+0.1, 0.35, 'rgba(124,111,247,0.5)', 'left', 'middle', 10);
+  label('2F', -2*f+0.1, 0.35, 'rgba(124,111,247,0.5)', 'left', 'middle', 10);
+
+  // Dashed focal lines
+  line(-worldW, 0, worldW, 0, 'rgba(120,140,200,0.12)', 0.5, [4,5]);
+
+  // ---- OBJECT ARROW ----
+  arrow(Sx, Sy, Tx, Ty, '#f0714a', 2.5);
+  dot(Sx, Sy, 5, '#f0714a', '#ffaa88');
+  label('S', Sx - 0.3, Ty + 0.45, '#f0714a', 'right', 'bottom', 12);
+
+  // ---- CONSTRUCTION RAYS from tip T ----
+  // RAY 1: parallel to axis → hits lens at (0, Ty) → refracts through F
+  // RAY 2: through optical center (0,0) → straight line
+  // RAY 3: through front focal point F' = (-f) → exits parallel to axis
+
+  // Colors
+  const C1 = '#f5a623'; // amber
+  const C2 = '#7c6ff7'; // purple
+  const C3 = 'rgba(46,203,161,0.75)'; // teal
+
+  // --- Ray 1: T → (0, Ty) → toward F on right ---
+  // Incoming: horizontal from T to lens
+  line(Tx, Ty, 0, Ty, C1, 1.5);
+  // Refracted: from (0,Ty) through (f, 0)
+  {
+    const dx = f - 0, dy = 0 - Ty;
+    const len = Math.sqrt(dx*dx+dy*dy);
+    const [ex,ey] = clampRay(0, Ty, dx/len, dy/len, 2);
+    line(0, Ty, ex, ey, C1, 1.5);
+  }
+
+  // --- Ray 2: through center (0,0) → straight line from T extended ---
+  {
+    const dx2 = 0 - Tx, dy2 = 0 - Ty;
+    const len = Math.sqrt(dx2*dx2+dy2*dy2);
+    // extend beyond center to canvas edge
+    const [ex,ey] = clampRay(0, 0, dx2/len, dy2/len, 2);
+    line(Tx, Ty, ex, ey, C2, 1.5);
+  }
+
+  // --- Ray 3: from T toward -F, then exits parallel ---
+  if (f > 0){
+    // from T to lens at y=Ty* (projected along line T→-F at x=0)
+    // slope from T to -f: (0-Ty)/(-f-Tx)
+    const slope3 = (0 - Ty) / (-f - Tx);
+    const yAtLens = Ty + slope3 * (0 - Tx); // y on lens
+    // incoming: T → (0, yAtLens)
+    line(Tx, Ty, 0, yAtLens, C3, 1.5);
+    // outgoing: horizontal from lens rightward
+    const [ex,ey] = clampRay(0, yAtLens, 1, 0, 2);
+    line(0, yAtLens, ex, ey, C3, 1.5);
+ }
+
+  // ---- IMAGE ----
+  if (hasImage) {
+    if (d2 > 0) {
+      // Real image
+      arrow(Ix, 0, Ix, Iy, '#2ecba1', 2.5);
+      dot(Ix, 0, 5, '#2ecba1', 'rgba(46,203,161,0.5)');
+      label("S'", Ix+0.15, Iy + (Iy<0?-0.5:0.5), '#2ecba1', 'left', 'middle', 12);
+
+      // Dashed verticals to axis
+      line(Ix, 0, Ix, Iy, 'rgba(46,203,161,0.15)', 0.7, [3,4]);
+    } else {
+      // Virtual image (left of lens)
+      ctx.save();
+      ctx.setLineDash([4, 5]);
+      ctx.strokeStyle = 'rgba(46,203,161,0.55)';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(wx(Ix), wy(0));
+      ctx.lineTo(wx(Ix), wy(Iy));
+      ctx.stroke();
+      ctx.restore();
+      dot(Ix, 0, 5, 'rgba(46,203,161,0.7)');
+      label("S'", Ix+0.15, Iy + (Iy<0?-0.5:0.5), 'rgba(46,203,161,0.8)', 'left', 'middle', 12);
+    }
+
+    // Image distance dashed line
+    line(Ix, -0.25, Ix, 0.25, 'rgba(46,203,161,0.4)', 1);
+  }
+
+  // ---- DISTANCES annotation ----
+  const annoY = -worldH * 0.78;
+  // d1 line
+  if (Math.abs(d1) > 0.5) {
+    ctx.save();
+    ctx.strokeStyle = 'rgba(240,113,74,0.45)';
+    ctx.lineWidth = 1; ctx.setLineDash([3,4]);
+    ctx.beginPath(); ctx.moveTo(wx(Sx), wy(annoY)); ctx.lineTo(wx(0), wy(annoY)); ctx.stroke();
+    ctx.restore();
+    label(`|d|=${absD1.toFixed(1)}`, (Sx)/2, annoY+0.2, 'rgba(240,113,74,0.65)', 'center', 'bottom', 10);
+  }
+  if (hasImage && Math.abs(d2) < 30) {
+    ctx.save();
+    ctx.strokeStyle = 'rgba(46,203,161,0.4)';
+    ctx.lineWidth = 1; ctx.setLineDash([3,4]);
+    ctx.beginPath(); ctx.moveTo(wx(0), wy(annoY)); ctx.lineTo(wx(Ix), wy(annoY)); ctx.stroke();
+    ctx.restore();
+    label(`|f|=${Math.abs(d2).toFixed(1)}`, Ix/2, annoY-0.6, 'rgba(46,203,161,0.65)', 'center', 'bottom', 10);
+  }
+
+  // ---- LENS LABEL ----
+  ctx.save();
+  ctx.fillStyle = 'rgba(55,138,221,0.55)';
+  ctx.font = "11px 'JetBrains Mono', monospace";
+  ctx.textAlign = 'center';
+  ctx.fillText('ոսպնյակ', wx(0), wy(lensTop) - 10);
+  ctx.fillText(`f = ${f.toFixed(1)}`, wx(0), wy(lensTop) - 24);
+  ctx.restore();
+
+  updateLabels();
+}
+
+// ---- DRAG object with mouse/touch ----
+let dragging = false;
+function worldX(clientX) {
+  const rect = wrap.getBoundingClientRect();
+  return (clientX - rect.left - OX) / SCALE;
+}
+function worldY(clientY) {
+  const rect = wrap.getBoundingClientRect();
+  return -(clientY - rect.top - OY) / SCALE;
+}
+function tryDrag(cx, cy) {
+  const wx_ = worldX(cx), wy_ = worldY(cy);
+  const slider = document.getElementById('dSlider');
+  // only allow dragging left of lens
+  if (wx_ < -0.5) {
+    const clamped = Math.max(-18, Math.min(-1.1, wx_));
+    slider.value = clamped.toFixed(2);
+    draw();
+  }
+}
+wrap.addEventListener('mousedown', e => { dragging = true; tryDrag(e.clientX, e.clientY); });
+wrap.addEventListener('mousemove', e => { if (dragging) tryDrag(e.clientX, e.clientY); });
+wrap.addEventListener('mouseup',   () => dragging = false);
+wrap.addEventListener('mouseleave',() => dragging = false);
+wrap.addEventListener('touchstart', e => { dragging = true; tryDrag(e.touches[0].clientX, e.touches[0].clientY); }, {passive:true});
+wrap.addEventListener('touchmove',  e => { if (dragging) tryDrag(e.touches[0].clientX, e.touches[0].clientY); }, {passive:true});
+wrap.addEventListener('touchend',   () => dragging = false);
+
+['fSlider','dSlider','hSlider'].forEach(id => {
+  document.getElementById(id).addEventListener('input', draw);
+});
+
+window.addEventListener('resize', resize);
+resize();
+</script>
+</body>
+</html>

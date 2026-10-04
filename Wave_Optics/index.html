@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta author="Grigor Aghababyan">
+<title>Ալիքային օպտիկայի վիրտուալ լաբորատորիա</title>
+<style>
+  :root{
+    --bg:#0b1020; --panel:#141b30; --panel2:#1b2440; --ink:#e8eefc;
+    --muted:#9fb0d0; --accent:#4dd2ff; --accent2:#ffb84d; --line:#2a3658;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:radial-gradient(1200px 600px at 50% -100px, #16204000, #0b1020 60%) , var(--bg);
+    color:var(--ink); font-family:"Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+  }
+  header{ text-align:center; padding:22px 12px 8px; }
+  header h1{ margin:0; font-size:26px; letter-spacing:.5px; font-weight:600;}
+  header h1 .glyph{ color:var(--accent); }
+  header p{ margin:6px 0 0; color:var(--muted); font-size:14px;}
+  .tabs{ display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin:18px auto 14px; }
+  .tabs button{
+    background:var(--panel); color:var(--muted); border:1px solid var(--line);
+    padding:9px 20px; border-radius:999px; font-size:15px; cursor:pointer; transition:.15s;
+  }
+  .tabs button:hover{ color:var(--ink); border-color:var(--accent); }
+  .tabs button.active{ background:var(--accent); color:#04243a; border-color:var(--accent); font-weight:600; }
+  main{ max-width:1240px; margin:0 auto; padding:0 14px 40px; }
+  .tab{ display:none; }
+  .tab.active{ display:block; }
+  .lab{ display:grid; grid-template-columns:1fr 300px; gap:14px; align-items:start; }
+  @media (max-width:1100px){ .lab{ grid-template-columns:1fr; } }
+  .stage{ background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:10px; }
+  canvas{ display:block; width:100%; height:auto; border-radius:8px; background:#060a16; }
+  .controls{
+    background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:14px 16px;
+    font-size:13.5px;
+  }
+  .controls h3{ margin:2px 0 10px; font-size:15px; color:var(--accent); font-weight:600; }
+  .ctl{ margin-bottom:12px; }
+  .ctl label{ display:flex; justify-content:space-between; color:var(--muted); margin-bottom:4px; }
+  .ctl label b{ color:var(--ink); font-weight:600; font-variant-numeric:tabular-nums; }
+  input[type=range]{ width:100%; accent-color:var(--accent); }
+  select{ width:100%; background:var(--panel2); color:var(--ink); border:1px solid var(--line); border-radius:6px; padding:6px; }
+  .row{ display:flex; gap:10px; align-items:center; color:var(--muted); margin-bottom:10px; flex-wrap:wrap;}
+  .row input[type=checkbox]{ accent-color:var(--accent); }
+  .btns{ display:flex; gap:8px; flex-wrap:wrap; margin:4px 0 10px;}
+  .btns button{
+    background:var(--panel2); border:1px solid var(--line); color:var(--ink);
+    border-radius:8px; padding:6px 10px; cursor:pointer; font-size:12.5px;
+  }
+  .btns button:hover{ border-color:var(--accent); }
+  .note{
+    border-top:1px dashed var(--line); margin-top:12px; padding-top:10px;
+    color:var(--muted); font-size:12.5px; line-height:1.5;
+  }
+  .note em{ color:var(--accent2); font-style:normal; }
+  .readout{
+    background:var(--panel2); border:1px solid var(--line); border-radius:8px;
+    padding:8px 10px; margin-bottom:12px; font-size:12.5px; color:var(--muted);
+    line-height:1.6; font-variant-numeric:tabular-nums;
+  }
+  .readout b{ color:var(--accent2); }
+  footer{ text-align:center; color:#5b6a8c; font-size:12px; padding:10px 0 26px; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Ալիքային օպտիկայի վիրտուալ լաբորատորիա</h1>
+  <p>Ինտերակտիվ փորձեր: Ինտերֆերենց · Դիֆրակցիա · Բևեռացում · Դիսպերսիա</p>
+</header>
+
+<nav class="tabs">
+  <button data-tab="itf" class="active">Ինտերֆերենց</button>
+  <button data-tab="dif">Դիֆրակցիա</button>
+  <button data-tab="pol">Բևեռացում</button>
+  <button data-tab="dsp">Դիսպերսիա</button>
+</nav>
+
+<main>
+
+  <!-- ============ INTERFERENCE ============ -->
+  <section id="tab-itf" class="tab active">
+    <div class="lab">
+      <div class="stage"><canvas id="itf-canvas" width="880" height="520"></canvas></div>
+      <div class="controls">
+        <h3>Երկու կոհերենտ աղբյուրից ալիքների ինտերֆերենց</h3>
+        <div class="ctl">
+          <label>Ալիքի երկարություն λ <b id="itf-lambda-val"></b></label>
+          <input type="range" id="itf-lambda" min="16" max="60" step="1" value="34">
+        </div>
+        <div class="ctl">
+          <label>Աղբյուրների հեռավորություն d <b id="itf-sep-val"></b></label>
+          <input type="range" id="itf-sep" min="20" max="220" step="2" value="110">
+        </div>
+        <div class="ctl">
+          <label>Փուլերի տարբերություն Δφ <b id="itf-phase-val"></b></label>
+          <input type="range" id="itf-phase" min="0" max="360" step="5" value="0">
+        </div>
+        <div class="ctl">
+          <label>Անիմացիայի արագություն <b id="itf-speed-val"></b></label>
+          <input type="range" id="itf-speed" min="0" max="3" step="0.1" value="1">
+        </div>
+        <div class="row">
+          <label><input type="checkbox" id="itf-intensity"> Ժամանակային միջինացված ինտենսիվություն</label>
+        </div>
+        <div class="row">
+          <label><input type="checkbox" id="itf-pause"> Կանգ</label>
+        </div>
+        <div class="note">
+	  Երկու կոհերենտ կետային աղբյուրներ արձակում են շրջանաձև ալիքներ: Այնտեղ, որտեղ ալեկատարը հանդիպում են ալեկատարին (ընթացքների տարբերությունը = <em>mλ</em>), ալիքներն իրար ուժեղացնում են՝ կառուցողական ինտերֆերենցիա: Այնտեղ, որտեղ ալեկատարը հանդիպում է ալեփոսին (ընթացքների տարբերություն = <em>(m+½)λ</em>, ալիքներն իրար թուլացնում են՝ դեստրուկտիվ ինտերֆերենցիա, որը տեսանելի է որպես հանգիստ մութ «հանգուցային գծեր»: Միացրեք ըստ ժամանակի միջինացված ինտենսիվությունը՝ ստացիոնար եզրային պատկերը տեսնելու համար:
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ DIFFRACTION ============ -->
+  <section id="tab-dif" class="tab">
+    <div class="lab">
+      <div class="stage"><canvas id="dif-canvas" width="880" height="520"></canvas></div>
+      <div class="controls">
+        <h3>Դիֆրակցիա՝ ճեղքերից</h3>
+        <div class="ctl">
+          <label>Ճեղքերի քանակը N <b id="dif-n-val"></b></label>
+          <input type="range" id="dif-n" min="1" max="4" step="1" value="2">
+        </div>
+        <div class="ctl">
+          <label>Ճեղքի լայնությունը a <b id="dif-a-val"></b></label>
+          <input type="range" id="dif-a" min="6" max="44" step="1" value="14">
+        </div>
+        <div class="ctl">
+          <label>Ճեղքերի հեռավորությունը d <b id="dif-d-val"></b></label>
+          <input type="range" id="dif-d" min="24" max="150" step="2" value="70">
+        </div>
+        <div class="ctl">
+          <label>Ալիքի երկարությունը <b id="dif-wl-val"></b></label>
+          <input type="range" id="dif-wl" min="380" max="700" step="5" value="540">
+        </div>
+        <div class="ctl">
+          <label>Անիմացիայի արագությունը <b id="dif-speed-val"></b></label>
+          <input type="range" id="dif-speed" min="0" max="3" step="0.1" value="1">
+        </div>
+        <div class="row">
+          <label><input type="checkbox" id="dif-intensity"> Ժամանակային միջինացված ինտենսիվություն</label>
+          <label><input type="checkbox" id="dif-pause"> Կանգ</label>
+        </div>
+        <div class="note">
+	Հարթ ալիքը հասնում է նեղ ճեղքեր ունեցող արգելապատնեշի։ Հյույգենսի սկզբունքի համաձայն՝ ճեղքի յուրաքանչյուր կետ հանդիսանում է նոր՝ երկրորդային ալիքի աղբյուր, ուստի ալիքը շեղվում է դեպի ստվերի շրջան։ Մեկ ճեղքով դուք ստանում եք [sinα/α]² ալիքային ծրարը, մի քանի ճեղքերով այդ ծրարի ներսում հայտնվում են արտահայտված ինտերֆերենցիոն գծեր։ Աջ կողմում գտնվող սպիտակ կորը էկրանին չափված ինտենսիվությունն է։ Նեղ ճեղքեր → ավելի լայն տարածում. երկար ալիքի երկարություններ → ավելի հեռու ինտերֆերենցիոն գծեր։
+          
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ POLARIZATION ============ -->
+  <section id="tab-pol" class="tab">
+    <div class="lab">
+      <div class="stage"><canvas id="pol-canvas" width="880" height="440"></canvas></div>
+      <div class="controls">
+        <h3>Բևեռացում</h3>
+        <div class="ctl">
+          <label>Լույսի աղբյուր</label>
+          <select id="pol-src">
+            <option value="unpol" selected>Չբևեռացված լամպ</option>
+            <option value="pol">Բևեռացված լազեր (ուղղաձիգ, 0°)</option>
+          </select>
+        </div>
+        <div class="row"><label><input type="checkbox" id="pol-e1" checked> Բևեռացուցիչ 1</label></div>
+        <div class="ctl">
+          <label>P1 անկյուն <b id="pol-a1-val"></b></label>
+          <input type="range" id="pol-a1" min="0" max="180" step="1" value="0">
+        </div>
+        <div class="row"><label><input type="checkbox" id="pol-e2" checked> Բևեռացուցիչ 2</label></div>
+        <div class="ctl">
+          <label>P2 անկյուն <b id="pol-a2-val"></b></label>
+          <input type="range" id="pol-a2" min="0" max="180" step="1" value="40">
+        </div>
+        <div class="row"><label><input type="checkbox" id="pol-e3"> Բևեռացուցիչ 3</label></div>
+        <div class="ctl">
+          <label>P3 անկյուն <b id="pol-a3-val"></b></label>
+          <input type="range" id="pol-a3" min="0" max="180" step="1" value="90">
+        </div>
+        <div class="btns">
+          <button id="pol-preset-crossed">Փոխուղղահայաց/90°</button>
+          <button id="pol-preset-three">Մտցնել 45°</button>
+        </div>
+        <div class="readout" id="pol-readout"></div>
+        <div class="note">
+	Լույսը լայնական ալիք է։ E էլեկտրական դաշտը տատանվում է տարածման ուղղությանը ուղղահայաց հարթության մեջ։ Բևեռացուցիչը փոխանցում է միայն իր առանցքի երկայնքով ուղղված բաղադրիչը։ Իդեալական բևեռացուցիչը փոխանցում է չբևեռացված լույսի <em>50%</em>-ը։ Բևեռացված լույսի ինտենսիվությունը ըստ Մալուսի օրենքի՝ <em>I = I₀ cos²θ</em>։ Փորձեք փոխուղղահայաց զույգը (լույս չկա), ապա դրանց միջև տեղադրեք 45° ֆիլտր. զարմանալիորեն լույսը կրկին անցնում է։
+          </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ DISPERSION ============ -->
+  <section id="tab-dsp" class="tab">
+    <div class="lab">
+      <div class="stage"><canvas id="dsp-canvas" width="880" height="470"></canvas></div>
+      <div class="controls">
+        <h3>Լույսի դիսպերսիան պրիզմայից</h3>
+        <div class="ctl">
+          <label>Միջավայր</label>
+          <select id="dsp-mat">
+            <option value="crown" selected>Crown ապակի (~1.52)</option>
+            <option value="flint">Խիտ ֆլինտ ապակի (~1.8)</option>
+            <option value="water">Ջուր</option>
+            <option value="diamond">Ալմաստ</option>
+          </select>
+        </div>
+        <div class="ctl">
+          <label>Բեկող անկյուն A <b id="dsp-apex-val"></b></label>
+          <input type="range" id="dsp-apex" min="25" max="75" step="1" value="60">
+        </div>
+        <div class="ctl">
+          <label>Անկման անկյուն θᵢ <b id="dsp-inc-val"></b></label>
+          <input type="range" id="dsp-inc" min="15" max="80" step="1" value="50">
+        </div>
+        <div class="ctl">
+          <label>Դիսպերսիայի ընդլայնում <b id="dsp-ex-val"></b></label>
+          <input type="range" id="dsp-ex" min="1" max="8" step="0.5" value="3">
+        </div>
+        <div class="row">
+          <label><input type="checkbox" id="dsp-single"> Միագույն լույս</label>
+        </div>
+        <div class="ctl">
+          <label>Ալիքի երկարություն <b id="dsp-wl-val"></b></label>
+          <input type="range" id="dsp-wl" min="380" max="700" step="5" value="540">
+        </div>
+        <div class="readout" id="dsp-readout"></div>
+        <div class="note">
+	Միջավայրի բեկման ցուցիչը կախված է ալիքի երկարությունից (<em>Կոշի բանաձևով: n(λ) = A + B/λ²</em>). Կապույտ լույսը ավելի է դանդաղում և թեքվում ավելի շատ, քան կարմիրը: Ուստի, երբ լույսը երկու անգամ բեկվում է պրիզմայով անցնելիս, սպիտակ լույսը բաժանվում է սպեկտրի: Ֆլինտ ապակին և ալմաստը ավելի մեծ բեկման ցուցիչ ունեն, քան Crown ապակին կամ ջուրը: (Ընդլայնման անկյունը տեսանելիությունը ակնառու դարձնելու համար է, իսկ իրական անկյունները տեսնելու համար "Դիսպերսիայի ընդլայնում" կարգավորիչը պետք է դնել 1).
+          
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>Ալիքային օպտիկայի վիրտուալ լաբորատորիա, "Քվանտ" վարժարան, GA</footer>
+
+<script>
+"use strict";
+
+/* ---------- small helpers ---------- */
+const $ = id => document.getElementById(id);
+const RAD = Math.PI/180;
+const clamp = (v,a,b)=> v<a?a : v>b?b : v;
+
+function bindSlider(id, fmt){
+  const el = $(id), lbl = $(id+"-val");
+  const upd = ()=>{ if(lbl) lbl.textContent = fmt(parseFloat(el.value)); };
+  el.addEventListener("input", upd); upd();
+  return el;
+}
+function val(el){ return parseFloat(el.value); }
+
+/* wavelength (nm) -> [r,g,b] approximation */
+function wlRGB(w){
+  let r=0,g=0,b=0;
+  if(w>=380&&w<440){ r=-(w-440)/60; b=1; }
+  else if(w<490){ g=(w-440)/50; b=1; }
+  else if(w<510){ g=1; b=-(w-510)/20; }
+  else if(w<580){ r=(w-510)/70; g=1; }
+  else if(w<645){ r=1; g=-(w-645)/65; }
+  else if(w<=780){ r=1; }
+  let f=1;
+  if(w<420) f=0.35+0.65*(w-380)/40;
+  else if(w>700) f=0.35+0.65*(780-w)/80;
+  const gam=0.8;
+  return [Math.round(255*Math.pow(r*f,gam)),
+          Math.round(255*Math.pow(g*f,gam)),
+          Math.round(255*Math.pow(b*f,gam))];
+}
+
+/* ---------- shared wave-field renderer (used by interference & diffraction) ---------- */
+class WaveField{
+  constructor(canvas, scale){
+    this.canvas = canvas;
+    this.ctx = canvas.getContext("2d");
+    this.scale = scale;
+    this.w = Math.round(canvas.width*scale);
+    this.h = Math.round(canvas.height*scale);
+    this.off = document.createElement("canvas");
+    this.off.width = this.w; this.off.height = this.h;
+    this.octx = this.off.getContext("2d");
+    this.img = this.octx.createImageData(this.w, this.h);
+  }
+  /* sources: [{x,y,ph}] in full canvas coords.
+     opts: {intensity, color:[r,g,b], leftPlane: x|null} */
+  render(sources, lambda, t, opts){
+    const k = 2*Math.PI/lambda;
+    const N = sources.length;
+    const norm = 2.6/N;
+    const cosT = Math.cos(t), sinT = Math.sin(t);
+    const {intensity=false, color=[120,200,255], leftPlane=null} = opts||{};
+    const data = this.img.data;
+    const inv = 1/this.scale;
+    let p = 0;
+    for(let yi=0; yi<this.h; yi++){
+      const py = (yi+0.5)*inv;
+      for(let xi=0; xi<this.w; xi++){
+        const px = (xi+0.5)*inv;
+        let tt; // 0..1 display value
+        if(leftPlane!==null && px<leftPlane){
+          if(intensity) tt = 0.75;
+          else tt = (Math.cos(k*px - t)+1)/2;
+        }else{
+          let re=0, im=0;
+          for(let s=0; s<N; s++){
+            const dx = px-sources[s].x, dy = py-sources[s].y;
+            const r = Math.sqrt(dx*dx+dy*dy);
+            const att = Math.sqrt(lambda/Math.max(r,lambda));
+            const a = k*r + sources[s].ph;
+            re += Math.cos(a)*att;
+            im += Math.sin(a)*att;
+          }
+          if(intensity){
+            const A = Math.hypot(re,im)*norm;
+            tt = clamp(A*A*1.45, 0, 1);
+          }else{
+            const v = (re*cosT + im*sinT)*norm;
+            tt = clamp((v+1)/2, 0, 1);
+          }
+        }
+        const sh = 0.06 + 0.94*Math.pow(tt, 1.15);
+        data[p++] = color[0]*sh;
+        data[p++] = color[1]*sh;
+        data[p++] = color[2]*sh;
+        data[p++] = 255;
+      }
+    }
+    this.octx.putImageData(this.img, 0, 0);
+    this.ctx.imageSmoothingEnabled = true;
+    this.ctx.drawImage(this.off, 0,0, this.canvas.width, this.canvas.height);
+  }
+}
+
+/* =====================================================================
+   TAB 1 — INTERFERENCE
+===================================================================== */
+const ITF = (()=>{
+  const cv = $("itf-canvas"), W = cv.width, H = cv.height;
+  const field = new WaveField(cv, 0.25);
+  const sLam   = bindSlider("itf-lambda", v=>v.toFixed(0)+" px");
+  const sSep   = bindSlider("itf-sep",    v=>v.toFixed(0)+" px");
+  const sPhase = bindSlider("itf-phase",  v=>v.toFixed(0)+"°");
+  const sSpeed = bindSlider("itf-speed",  v=>"×"+v.toFixed(1));
+  let tAcc = 0;
+
+  function draw(dt){
+    if(!$("itf-pause").checked) tAcc += dt*4.2*val(sSpeed);
+    const lam = val(sLam), d = val(sSep), dphi = val(sPhase)*RAD;
+    const srcX = 170;
+    const sources = [
+      {x:srcX, y:H/2 - d/2, ph:0},
+      {x:srcX, y:H/2 + d/2, ph:dphi}
+    ];
+    field.render(sources, lam, tAcc, {
+      intensity: $("itf-intensity").checked,
+      color: [125, 195, 255]
+    });
+    const ctx = field.ctx;
+    for(const s of sources){
+      const pul = 4 + 1.5*Math.sin(tAcc + s.ph);
+      ctx.beginPath(); ctx.arc(s.x, s.y, pul, 0, 7);
+      ctx.fillStyle = "#ffd86b"; ctx.fill();
+      ctx.strokeStyle = "#00000088"; ctx.stroke();
+    }
+    ctx.fillStyle = "#cfe2ffcc"; ctx.font = "13px sans-serif";
+    ctx.fillText("S₁", srcX-26, H/2 - d/2 + 4);
+    ctx.fillText("S₂", srcX-26, H/2 + d/2 + 4);
+  }
+  return {draw};
+})();
+
+/* =====================================================================
+   TAB 2 — DIFFRACTION
+===================================================================== */
+const DIF = (()=>{
+  const cv = $("dif-canvas"), W = cv.width, H = cv.height;
+  const field = new WaveField(cv, 0.25);
+  const sN  = bindSlider("dif-n",  v=>v.toFixed(0));
+  const sA  = bindSlider("dif-a",  v=>v.toFixed(0)+" px");
+  const sD  = bindSlider("dif-d",  v=>v.toFixed(0)+" px");
+  const sWL = bindSlider("dif-wl", v=>v.toFixed(0)+" nm");
+  const sSpeed = bindSlider("dif-speed", v=>"×"+v.toFixed(1));
+  let tAcc = 0;
+  const barrierX = 190;
+
+  function slitCenters(N, d){
+    const cs = [];
+    for(let i=0;i<N;i++) cs.push(H/2 + (i-(N-1)/2)*d);
+    return cs;
+  }
+
+  function draw(dt){
+    if(!$("dif-pause").checked) tAcc += dt*4.2*val(sSpeed);
+    const N = val(sN), a = val(sA), wl = val(sWL);
+    const d = Math.max(val(sD), a+6);
+    const lam = wl*0.055;                 // visual scale: nm -> px
+    const color = wlRGB(wl);
+
+    // Huygens wavelet sources sampled across each slit
+    const sources = [];
+    const perSlit = clamp(Math.round(a/(lam/3)), 3, 9);
+    for(const cy of slitCenters(N,d)){
+      for(let j=0;j<perSlit;j++){
+        const y = cy - a/2 + (j+0.5)*(a/perSlit);
+        sources.push({x:barrierX+3, y, ph:0});
+      }
+    }
+
+    field.render(sources, lam, tAcc, {
+      intensity: $("dif-intensity").checked,
+      color,
+      leftPlane: barrierX
+    });
+    const ctx = field.ctx;
+
+    // barrier with slit gaps
+    ctx.fillStyle = "#7d8db3";
+    const gaps = slitCenters(N,d).map(cy=>[cy-a/2, cy+a/2]).sort((p,q)=>p[0]-q[0]);
+    let yPrev = 0;
+    for(const [g0,g1] of gaps){
+      ctx.fillRect(barrierX-5, yPrev, 10, g0-yPrev);
+      yPrev = g1;
+    }
+    ctx.fillRect(barrierX-5, yPrev, 10, H-yPrev);
+
+    // intensity on the screen (right edge), via steady-state phasor sum
+    const k = 2*Math.PI/lam, scrX = W-14;
+    const prof = [];
+    let maxI = 1e-9;
+    for(let y=0; y<=H; y+=3){
+      let re=0, im=0;
+      for(const s of sources){
+        const dx = scrX-s.x, dy = y-s.y;
+        const r = Math.sqrt(dx*dx+dy*dy);
+        const att = Math.sqrt(lam/Math.max(r,lam));
+        re += Math.cos(k*r)*att; im += Math.sin(k*r)*att;
+      }
+      const I = re*re+im*im;
+      prof.push(I); if(I>maxI) maxI = I;
+    }
+    // screen strip
+    for(let i=0;i<prof.length;i++){
+      const In = prof[i]/maxI;
+      ctx.fillStyle = `rgb(${color[0]*In|0},${color[1]*In|0},${color[2]*In|0})`;
+      ctx.fillRect(W-12, i*3, 12, 3);
+    }
+    // intensity curve
+    ctx.beginPath();
+    for(let i=0;i<prof.length;i++){
+      const x = W-20 - (prof[i]/maxI)*120;
+      const y = i*3;
+      if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+    }
+    ctx.strokeStyle = "rgba(255,255,255,0.85)"; ctx.lineWidth = 1.5; ctx.stroke();
+    ctx.fillStyle = "#cfe2ffcc"; ctx.font = "12px sans-serif";
+    ctx.fillText("screen intensity →", W-160, 16);
+  }
+  return {draw};
+})();
+
+/* =====================================================================
+   TAB 3 — POLARIZATION
+===================================================================== */
+const POL = (()=>{
+  const cv = $("pol-canvas"), ctx = cv.getContext("2d");
+  const W = cv.width, H = cv.height, cy = H/2 + 10;
+  bindSlider("pol-a1", v=>v.toFixed(0)+"°");
+  bindSlider("pol-a2", v=>v.toFixed(0)+"°");
+  bindSlider("pol-a3", v=>v.toFixed(0)+"°");
+  let tAcc = 0;
+
+  $("pol-preset-crossed").addEventListener("click", ()=>{
+    $("pol-e1").checked = true; $("pol-e2").checked = true; $("pol-e3").checked = false;
+    setSlider("pol-a1", 0); setSlider("pol-a2", 90);
+  });
+  $("pol-preset-three").addEventListener("click", ()=>{
+    $("pol-e1").checked = true; $("pol-e2").checked = true; $("pol-e3").checked = true;
+    setSlider("pol-a1", 0); setSlider("pol-a2", 45); setSlider("pol-a3", 90);
+  });
+  function setSlider(id, v){
+    $(id).value = v;
+    $(id).dispatchEvent(new Event("input"));
+  }
+
+  /* project E-vector (perpendicular to beam) into screen coords.
+     angle: 0 = vertical transmission axis. */
+  function proj(angRad, mag){
+    const Ey = Math.cos(angRad)*mag, Ez = Math.sin(angRad)*mag;
+    return {dx: 0.55*Ez, dy: -Ey + 0.30*Ez};
+  }
+
+  function drawPolarizer(x, angRad, label, pct){
+    ctx.save();
+    ctx.translate(x, cy);
+    // disk
+    ctx.beginPath();
+    ctx.ellipse(0, 0, 26, 92, 0, 0, Math.PI*2);
+    ctx.fillStyle = "rgba(110,150,255,0.10)";
+    ctx.strokeStyle = "rgba(140,170,255,0.8)";
+    ctx.lineWidth = 1.5;
+    ctx.fill(); ctx.stroke();
+    // hash lines parallel to axis
+    ctx.strokeStyle = "rgba(140,170,255,0.35)";
+    ctx.lineWidth = 1;
+    for(let kOff=-60; kOff<=60; kOff+=20){
+      if(kOff===0) continue;
+      const off = proj(angRad+Math.PI/2, kOff);
+      const len = 80*Math.sqrt(Math.max(0, 1-(kOff/92)*(kOff/92)));
+      const e = proj(angRad, len);
+      ctx.beginPath();
+      ctx.moveTo(off.dx-e.dx, off.dy-e.dy);
+      ctx.lineTo(off.dx+e.dx, off.dy+e.dy);
+      ctx.stroke();
+    }
+    // main transmission axis
+    const e = proj(angRad, 84);
+    ctx.beginPath();
+    ctx.moveTo(-e.dx, -e.dy); ctx.lineTo(e.dx, e.dy);
+    ctx.strokeStyle = "#8fd0ff"; ctx.lineWidth = 2.5; ctx.stroke();
+    ctx.restore();
+    ctx.fillStyle = "#cfe2ff"; ctx.font = "13px sans-serif"; ctx.textAlign = "center";
+    ctx.fillText(label, x, cy+118);
+    ctx.fillStyle = "#ffb84d";
+    ctx.fillText(pct, x, cy+136);
+    ctx.textAlign = "left";
+  }
+
+  function drawEArrows(x0, x1, I, polRad, unpol){
+    const A0 = 46*Math.sqrt(Math.max(I,0));
+    for(let x = x0+26; x < x1-26; x += 36){
+      let a, mag;
+      if(unpol){
+        a = x*0.9 + tAcc*1.6;                       // direction wanders
+        mag = A0*Math.sin(tAcc*5 + x*2.3);
+      }else{
+        a = polRad;
+        mag = A0*Math.cos(tAcc*5 - x*0.045);
+      }
+      if(Math.abs(mag) < 1) continue;
+      const e = proj(a, mag);
+      ctx.beginPath();
+      ctx.moveTo(x, cy);
+      ctx.lineTo(x+e.dx, cy+e.dy);
+      ctx.strokeStyle = "rgba(255,220,130,0.9)";
+      ctx.lineWidth = 2;
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(x+e.dx, cy+e.dy, 2.4, 0, 7);
+      ctx.fillStyle = "#ffe9a8"; ctx.fill();
+    }
+  }
+
+  function draw(dt){
+    tAcc += dt;
+    ctx.clearRect(0,0,W,H);
+    ctx.fillStyle = "#060a16"; ctx.fillRect(0,0,W,H);
+
+    const srcPolarized = $("pol-src").value === "pol";
+    const filters = [];
+    if($("pol-e1").checked) filters.push({x:300, ang:val($("pol-a1"))});
+    if($("pol-e2").checked) filters.push({x:510, ang:val($("pol-a2"))});
+    if($("pol-e3").checked) filters.push({x:720, ang:val($("pol-a3"))});
+
+    // propagate state through the filters
+    let I = 1, pol = srcPolarized ? 0 : null;
+    const segs = [];
+    let xPrev = 70;
+    const stageInfo = [];
+    for(const f of filters){
+      segs.push({x0:xPrev, x1:f.x, I, pol});
+      if(pol===null){ I *= 0.5; pol = f.ang; }
+      else { I *= Math.cos((f.ang-pol)*RAD)**2; pol = f.ang; }
+      stageInfo.push({ang:f.ang, I});
+      xPrev = f.x;
+    }
+    segs.push({x0:xPrev, x1:W-30, I, pol});
+
+    // beam glow + core
+    for(const s of segs){
+      if(s.I < 1e-4) continue;
+      ctx.strokeStyle = `rgba(255,225,150,${0.10+0.30*s.I})`;
+      ctx.lineWidth = 4 + 12*Math.sqrt(s.I);
+      ctx.beginPath(); ctx.moveTo(s.x0, cy); ctx.lineTo(s.x1, cy); ctx.stroke();
+      ctx.strokeStyle = `rgba(255,240,200,${0.35+0.6*s.I})`;
+      ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(s.x0, cy); ctx.lineTo(s.x1, cy); ctx.stroke();
+    }
+    // E-field arrows
+    for(const s of segs){
+      if(s.I < 1e-3) continue;
+      drawEArrows(s.x0, s.x1, s.I, (s.pol||0)*RAD, s.pol===null);
+    }
+
+    // source
+    ctx.beginPath(); ctx.arc(58, cy, 14, 0, 7);
+    ctx.fillStyle = "#ffd86b"; ctx.fill();
+    ctx.strokeStyle = "#aa8030"; ctx.stroke();
+    ctx.fillStyle = "#cfe2ff"; ctx.font = "13px sans-serif"; ctx.textAlign = "center";
+    ctx.fillText(srcPolarized ? "laser (0°)" : "lamp", 58, cy+118);
+    ctx.fillText("I₀ = 100%", 58, cy+136);
+    ctx.textAlign = "left";
+
+    // polarizers
+    filters.forEach((f,i)=>{
+      drawPolarizer(f.x, f.ang*RAD, `P${i+1}  ${f.ang.toFixed(0)}°`,
+                    (stageInfo[i].I*100).toFixed(1)+"%");
+    });
+
+    // detector
+    const If = segs[segs.length-1].I;
+    ctx.fillStyle = "#1b2440"; ctx.strokeStyle = "#2a3658";
+    ctx.fillRect(W-26, cy-95, 18, 190); ctx.strokeRect(W-26, cy-95, 18, 190);
+    const bh = 186*If;
+    ctx.fillStyle = "#ffb84d";
+    ctx.fillRect(W-24, cy+93-bh, 14, bh);
+    ctx.fillStyle = "#ffe9a8"; ctx.font = "bold 14px sans-serif"; ctx.textAlign = "center";
+    ctx.fillText((If*100).toFixed(1)+"%", W-17, cy-104);
+    ctx.textAlign = "left";
+
+    // sidebar readout
+    let txt = srcPolarized
+      ? "Աղբյուրը: բևեռացված 0° — I₀"
+      : "Աղբյուրը: չբևեռացված — I₀";
+    stageInfo.forEach((st,i)=>{
+      txt += `<br> P${i+1} (${st.ang.toFixed(0)}°): -ից հետո<b>${(st.I*100).toFixed(1)}%</b>`;
+    });
+    txt += `<br>Ընդունիչ: <b>${(If*100).toFixed(1)}% of I₀</b>`;
+    $("pol-readout").innerHTML = txt;
+  }
+  return {draw};
+})();
+
+/* =====================================================================
+   TAB 4 — DISPERSION
+===================================================================== */
+const DSP = (()=>{
+  const cv = $("dsp-canvas"), ctx = cv.getContext("2d");
+  const W = cv.width, H = cv.height;
+  const sApex = bindSlider("dsp-apex", v=>v.toFixed(0)+"°");
+  const sInc  = bindSlider("dsp-inc",  v=>v.toFixed(0)+"°");
+  const sEx   = bindSlider("dsp-ex",   v=>"×"+v.toFixed(1));
+  const sWl   = bindSlider("dsp-wl",   v=>v.toFixed(0)+" nm");
+
+  // Cauchy coefficients: n = A + B/λ² (λ in nm, B in nm²)
+  const MATS = {
+    crown:   {A:1.5046, B:4200,  name:"Crown ապակի (~1.52)"},
+    flint:   {A:1.7533, B:10900, name:"Խիտ ֆլինտ ապակի (~1.8)"},
+    water:   {A:1.3241, B:3100,  name:"Ջուր"},
+    diamond: {A:2.3867, B:10500, name:"Ալմաստ"},
+  };
+  function nOf(mat, wl, ex){
+    const nd = mat.A + mat.B/(589*589);
+    const n  = mat.A + mat.B/(wl*wl);
+    return nd + ex*(n-nd);
+  }
+
+  const dot = (a,b)=>a.x*b.x+a.y*b.y;
+  const sub = (a,b)=>({x:a.x-b.x, y:a.y-b.y});
+  const scl = (a,s)=>({x:a.x*s, y:a.y*s});
+  const add = (a,b)=>({x:a.x+b.x, y:a.y+b.y});
+  const nrm = a=>{ const l=Math.hypot(a.x,a.y); return {x:a.x/l, y:a.y/l}; };
+  const cross = (a,b)=>a.x*b.y - a.y*b.x;
+
+  /* refract unit dir d at surface with unit normal n opposing d; eta = n1/n2 */
+  function refract(d, n, eta){
+    const c = -dot(d,n);
+    const s2 = eta*eta*(1-c*c);
+    if(s2 > 1) return null; // total internal reflection
+    return nrm(add(scl(d,eta), scl(n, eta*c - Math.sqrt(1-s2))));
+  }
+  function reflect(d, n){
+    return sub(d, scl(n, 2*dot(d,n)));
+  }
+  /* ray (o,d) vs segment a-b: returns {t,p,u} or null */
+  function raySeg(o, d, a, b){
+    const e = sub(b,a), w = sub(a,o);
+    const den = cross(d,e);
+    if(Math.abs(den) < 1e-9) return null;
+    const t = cross(w,e)/den, u = cross(w,d)/den;
+    if(t < 1e-6 || u < -1e-6 || u > 1+1e-6) return null;
+    return {t, p:add(o, scl(d,t)), u};
+  }
+
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    ctx.fillStyle = "#060a16"; ctx.fillRect(0,0,W,H);
+
+    const mat  = MATS[$("dsp-mat").value];
+    const A    = val(sApex)*RAD;
+    const thI  = val(sInc)*RAD;
+    const ex   = val(sEx);
+    const single = $("dsp-single").checked;
+
+    // prism geometry
+    const baseY = 385, topY = 120, cx = 400;
+    const hw = Math.tan(A/2)*(baseY-topY);
+    const T  = {x:cx, y:topY}, BL = {x:cx-hw, y:baseY}, BR = {x:cx+hw, y:baseY};
+
+    // draw prism
+    ctx.beginPath();
+    ctx.moveTo(T.x,T.y); ctx.lineTo(BL.x,BL.y); ctx.lineTo(BR.x,BR.y); ctx.closePath();
+    ctx.fillStyle = "rgba(120,170,255,0.10)";
+    ctx.strokeStyle = "rgba(160,200,255,0.85)";
+    ctx.lineWidth = 1.5;
+    ctx.fill(); ctx.stroke();
+
+    // screen
+    const scrTop = {x:W-42, y:40}, scrBot = {x:W-42, y:H-40};
+    ctx.strokeStyle = "#7d8db3"; ctx.lineWidth = 5;
+    ctx.beginPath(); ctx.moveTo(scrTop.x,scrTop.y); ctx.lineTo(scrBot.x,scrBot.y); ctx.stroke();
+    ctx.fillStyle = "#9fb0d0"; ctx.font = "12px sans-serif";
+    ctx.fillText("screen", W-70, 28);
+
+    // entry geometry: hit midpoint of left face
+    const M = scl(add(T,BL), 0.5);
+    const fL = nrm(sub(BL,T));                          // along left face
+    const nOutL = {x:-fL.y, y:fL.x};                    // outward normal (left/up)
+    const inward = scl(nOutL,-1);
+    // incident direction: inward normal rotated by -θi (beam arrives from the lower left)
+    const ca = Math.cos(thI), sa = -Math.sin(thI);
+    const dirIn = nrm({x: inward.x*ca - inward.y*sa, y: inward.x*sa + inward.y*ca});
+
+    // incident white ray from left edge to M
+    const Lback = (M.x-25)/Math.max(dirIn.x, 0.05);
+    const start = sub(M, scl(dirIn, Lback));
+    ctx.strokeStyle = "rgba(255,255,255,0.95)"; ctx.lineWidth = 2.5;
+    ctx.beginPath(); ctx.moveTo(start.x,start.y); ctx.lineTo(M.x,M.y); ctx.stroke();
+    // normal at entry (dashed)
+    ctx.setLineDash([5,5]); ctx.strokeStyle = "rgba(160,180,220,0.5)"; ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(M.x - nOutL.x*55, M.y - nOutL.y*55);
+    ctx.lineTo(M.x + nOutL.x*55, M.y + nOutL.y*55);
+    ctx.stroke(); ctx.setLineDash([]);
+
+    const faces = [
+      {a:T, b:BR, nOut: nrm({x:(BR.y-T.y), y:-(BR.x-T.x)})}, // right face
+      {a:BL, b:BR, nOut: {x:0, y:1}},                        // base
+    ];
+
+    const wls = single ? [val(sWl)]
+                       : Array.from({length:65}, (_,i)=>380+i*5);
+    ctx.globalCompositeOperation = "lighter";
+    let dev589 = null, tirCount = 0;
+
+    for(const wl of wls){
+      const n = nOf(mat, wl, ex);
+      const d1 = refract(dirIn, nOutL, 1/n);
+      if(!d1) continue;
+      // find exit face
+      let hit = null, face = null;
+      for(const f of faces){
+        const h = raySeg(M, d1, f.a, f.b);
+        if(h && (!hit || h.t < hit.t)){ hit = h; face = f; }
+      }
+      if(!hit) continue;
+      const [r,g,b] = wlRGB(wl);
+      const alpha = single ? 0.95 : 0.30;
+      ctx.strokeStyle = `rgba(${r},${g},${b},${alpha})`;
+      ctx.lineWidth = single ? 2.5 : 1.6;
+      ctx.beginPath(); ctx.moveTo(M.x,M.y); ctx.lineTo(hit.p.x,hit.p.y); ctx.stroke();
+
+      const d2 = refract(d1, scl(face.nOut,-1), n);
+      if(!d2){
+        tirCount++;
+        const dr = reflect(d1, face.nOut);
+        ctx.setLineDash([4,4]);
+        ctx.beginPath(); ctx.moveTo(hit.p.x,hit.p.y);
+        ctx.lineTo(hit.p.x+dr.x*60, hit.p.y+dr.y*60); ctx.stroke();
+        ctx.setLineDash([]);
+        continue;
+      }
+      // extend to screen (or canvas edge)
+      const hScr = raySeg(hit.p, d2, scrTop, scrBot);
+      const end = hScr ? hScr.p
+                       : add(hit.p, scl(d2, 900));
+      ctx.beginPath(); ctx.moveTo(hit.p.x,hit.p.y); ctx.lineTo(end.x,end.y); ctx.stroke();
+      if(hScr){
+        ctx.fillStyle = `rgba(${r},${g},${b},${single?1:0.6})`;
+        ctx.fillRect(scrTop.x-2, hScr.p.y-2.5, 9, 5);
+      }
+      if(Math.abs(wl-590) < 3 || single){
+        dev589 = Math.acos(clamp(dot(dirIn,d2),-1,1))/RAD;
+      }
+    }
+    ctx.globalCompositeOperation = "source-over";
+
+    // labels
+    ctx.fillStyle = "#9fb0d0"; ctx.font = "12px sans-serif";
+    ctx.fillText(`A = ${(A/RAD).toFixed(0)}°`, T.x-18, T.y-10);
+    ctx.fillText(`θᵢ = ${(thI/RAD).toFixed(0)}°`, M.x-110, M.y-14);
+    ctx.fillText("white light", start.x+4, start.y-8);
+
+    // readout
+    const nF = nOf(mat,486,1), nD = nOf(mat,589,1), nC = nOf(mat,656,1);
+    let txt = `${mat.name}<br>` +
+      `n(486 nm) = <b>${nF.toFixed(4)}</b><br>` +
+      `n(589 nm) = <b>${nD.toFixed(4)}</b><br>` +
+      `n(656 nm) = <b>${nC.toFixed(4)}</b>`;
+    txt += dev589!==null
+      ? `<br>Շեղում δ ≈ <b>${dev589.toFixed(1)}°</b>`
+      : `<br>Beam: <b>total internal reflection</b>`;
+    if(tirCount && dev589!==null) txt += `<br>(some λ totally internally reflected)`;
+    $("dsp-readout").innerHTML = txt;
+  }
+  return {draw};
+})();
+
+/* ---------- tab switching + main loop ---------- */
+const MODULES = {itf:ITF, dif:DIF, pol:POL, dsp:DSP};
+let activeTab = "itf";
+
+function selectTab(name){
+  if(!MODULES[name]) return;
+  activeTab = name;
+  document.querySelectorAll(".tabs button").forEach(b=>b.classList.toggle("active", b.dataset.tab===name));
+  document.querySelectorAll(".tab").forEach(s=>s.classList.toggle("active", s.id==="tab-"+name));
+}
+document.querySelectorAll(".tabs button").forEach(btn=>{
+  btn.addEventListener("click", ()=>{ selectTab(btn.dataset.tab); location.hash = btn.dataset.tab; });
+});
+if(location.hash) selectTab(location.hash.slice(1));
+
+let tPrev = performance.now();
+function loop(tNow){
+  const dt = Math.min((tNow-tPrev)/1000, 0.05);
+  tPrev = tNow;
+  MODULES[activeTab].draw(dt);
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>
