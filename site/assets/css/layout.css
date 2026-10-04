@@ -52,8 +52,22 @@
   color: var(--text-3);
   min-width: 0;
   flex: 1;
+  overflow: hidden;
 }
-.crumbs a { color: var(--text-2); white-space: nowrap; transition: color var(--ease); }
+/* Both crumbs may shrink with an ellipsis so long section names never run
+   under the header actions on narrow screens. */
+.crumbs a,
+.crumbs [aria-current] { min-width: 0; }
+.crumbs a {
+  flex: 0 1 auto;
+  color: var(--text-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: color var(--ease);
+}
+.crumbs [aria-current] { flex: 1 1 auto; }
+.crumbs__sep { flex: none; }
 .crumbs a:hover { color: var(--accent); }
 .crumbs [aria-current] {
   color: var(--text);

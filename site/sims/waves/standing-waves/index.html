@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="hy">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Կանգուն ալիքներ և ռեզոնանս · Ֆիզիկայի Լաբորատորիաներ</title>
+  <link rel="icon" href="../../../assets/img/favicon.svg" type="image/svg+xml">
+  <script src="../../../assets/js/theme-init.js"></script>
+  <link rel="stylesheet" href="../../../assets/css/main.css">
+  <link rel="stylesheet" href="./sim.css">
+  <script type="module" src="../../../assets/js/core/shell.js"></script>
+  <script type="module" src="./main.js"></script>
+</head>
+<body data-sim="standing-waves" data-section="waves">
+  <header data-shell="header"></header>
+
+  <main class="page">
+    <header class="sim-head">
+      <h1 class="sim-title">Կանգուն ալիքներ և ռեզոնանս</h1>
+      <p class="sim-subtitle">լարի և օդի սյան սեփական տատանումները</p>
+    </header>
+
+    <div class="tabs" role="tablist" id="tabs">
+      <button role="tab" data-tab="string" aria-controls="panel-string" aria-selected="true">Լար</button>
+      <button role="tab" data-tab="pipe" aria-controls="panel-pipe">Օդի սյուն</button>
+      <button role="tab" data-tab="resonance" aria-controls="panel-resonance">Ռեզոնանսային կոր</button>
+    </div>
+
+    <!-- ===== String ===== -->
+    <div id="panel-string" role="tabpanel">
+      <div class="sim-layout">
+        <section class="stage">
+          <div class="canvas-wrap">
+            <canvas id="sScene" aria-label="Երկու ծայրում ամրացված լար, որը տատանում է վիբրատորը"></canvas>
+          </div>
+          <p class="chart-caption"><b>Հ</b>՝ հանգույց (լարի այդ կետը չի տատանվում), <b>Փ</b>՝ փնջվածք (տատանման ամպլիտուդն առավելագույնն է)։ Բաց գունավոր շերտը լարի «լղոզված» պատկերն է, որ աչքը տեսնում է արագ տատանումների ժամանակ։ Ուղղաձիգ շեղումները խոշորացված են (մասշտաբը՝ վերևի աջ անկյունում)։</p>
+          <canvas class="chart" id="sSpectrum" aria-label="Լարի տատանման ամպլիտուդի կախումը վիբրատորի հաճախությունից"></canvas>
+          <p class="chart-caption">Ամպլիտուդը կտրուկ աճում է, երբ վիբրատորի հաճախությունը մոտ է լարի սեփական հաճախություններից որևէ մեկին (f<sub>n</sub>)։</p>
+        </section>
+
+        <aside class="panel">
+          <section class="group" aria-label="Չափումներ">
+            <dl class="stats">
+              <div class="stat"><dt>Ալիքի արագություն v = √(T/μ)</dt><dd id="sV">—</dd></div>
+              <div class="stat"><dt>Ալիքի երկարություն λ = v/f</dt><dd id="sLambda">—</dd></div>
+              <div class="stat"><dt>Կիսաալիքների թիվը 2L/λ</dt><dd id="sHalf">—</dd></div>
+              <div class="stat"><dt>Ամենամոտ սեփական հաճախություն</dt><dd id="sNear">—</dd></div>
+              <div class="stat"><dt>Առավելագույն ամպլիտուդ</dt><dd id="sAmp">—</dd></div>
+              <div class="stat"><dt>Հանգույցներ / փնջվածքներ</dt><dd id="sNodes">—</dd></div>
+            </dl>
+          </section>
+
+          <section class="group">
+            <h2 class="group__title">Վիբրատոր</h2>
+            <div class="field">
+              <label class="field__label" for="sF">Հաճախություն f</label>
+              <output class="field__value" for="sF"></output>
+              <input type="range" id="sF" min="1" max="330" step="0.1" value="150">
+            </div>
+            <div class="btn-row btn-row--steps">
+              <button class="btn" id="sMinus1" aria-label="Հաճախությունը փոքրացնել 1 Հց-ով">−1</button>
+              <button class="btn" id="sMinus01" aria-label="Հաճախությունը փոքրացնել 0.1 Հց-ով">−0.1</button>
+              <button class="btn" id="sPlus01" aria-label="Հաճախությունը մեծացնել 0.1 Հց-ով">+0.1</button>
+              <button class="btn" id="sPlus1" aria-label="Հաճախությունը մեծացնել 1 Հց-ով">+1</button>
+            </div>
+            <p class="hint">Սեփական հաճախությունները (հարմոնիկներ). սեղմեք՝ վիբրատորը դրանցից մեկին լարելու համար։ Ընդգծված է f-ին ամենամոտը։</p>
+            <div class="harm-grid" id="sHarm" role="group" aria-label="Հարմոնիկներ 1–6">
+              <button class="btn">f₁</button>
+              <button class="btn">f₂</button>
+              <button class="btn">f₃</button>
+              <button class="btn">f₄</button>
+              <button class="btn">f₅</button>
+              <button class="btn">f₆</button>
+            </div>
+          </section>
+
+          <section class="group">
+            <h2 class="group__title">Լար</h2>
+            <div class="field">
+              <label class="field__label" for="sT">Լարման ուժ T</label>
+              <output class="field__value" for="sT"></output>
+              <input type="range" id="sT" min="10" max="200" step="1" value="100">
+            </div>
+            <div class="field">
+              <label class="field__label" for="sMu">Գծային խտություն μ</label>
+              <output class="field__value" for="sMu"></output>
+              <input type="range" id="sMu" min="0.001" max="0.05" step="0.001" value="0.01">
+            </div>
+            <div class="field">
+              <label class="field__label" for="sL">Երկարություն L</label>
+              <output class="field__value" for="sL"></output>
+              <input type="range" id="sL" min="0.4" max="2" step="0.05" value="1">
+            </div>
+            <div class="field">
+              <label class="field__label" for="sBeta">Մարման գործակից β</label>
+              <output class="field__value" for="sBeta"></output>
+              <input type="range" id="sBeta" min="0.5" max="10" step="0.1" value="2">
+            </div>
+            <p class="hint">Գծային խտությունը լարի 1 մ երկարության զանգվածն է (10 գ/մ = 0.01 կգ/մ)։ Վիբրատորը լարին ազդում է F₀ = 0.4 Ն ամպլիտուդով պարբերական ուժով։</p>
+          </section>
+
+          <section class="group">
+            <div class="formula">
+              <b>v = √(T/μ)</b>, &nbsp;<b>λ = v/f</b><br>
+              <b>L = n·λ/2</b> &nbsp;(n = 1, 2, 3, …)<br>
+              <b>f<sub>n</sub> = n·v/(2L) = n·f<sub>1</sub></b>
+            </div>
+          </section>
+        </aside>
+      </div>
+
+      <section class="explain">
+        <h2>Կանգուն ալիքներ լարում</h2>
+        <p>Վիբրատորից լարով տարածվող ալիքն անդրադառնում է ամրացված ծայրերից։ Հակադիր ուղղություններով տարածվող միևնույն հաճախությամբ ալիքների վերադրումից առաջանում է կանգուն ալիք. լարի որոշ կետեր՝ <em>հանգույցները</em>, ընդհանրապես չեն տատանվում, իսկ դրանց միջև գտնվող <em>փնջվածքներում</em> տատանման ամպլիտուդն առավելագույնն է։ Հարևան հանգույցների միջև հեռավորությունը λ/2 է։</p>
+        <p>Քանի որ լարի երկու ծայրն էլ հանգույցներ են, լարի երկարության վրա պետք է տեղավորվի ամբողջ թվով կիսաալիք՝ L = n·λ/2։ Այստեղից ստացվում են լարի սեփական հաճախությունները՝ <em>f<sub>n</sub> = n·v/(2L)</em>, որտեղ v = √(T/μ)։ Երբ վիբրատորի հաճախությունը համընկնում է դրանցից որևէ մեկի հետ, առաջանում է ռեզոնանս, և ամպլիտուդը կտրուկ մեծանում է. մնացած հաճախությունների դեպքում լարը գրեթե չի տատանվում (այս փորձն առաջինն իրականացրել է Մելդեն)։</p>
+        <p>Փորձեք. f<sub>3</sub>-ի մոտ ±0.1 Հց կոճակներով դանդաղ փոխեք հաճախությունը և հետևեք ամպլիտուդին։ Քառապատկեք լարման ուժը (25 Ն → 100 Ն) և համոզվեք, որ բոլոր սեփական հաճախությունները կրկնապատկվում են։ Մեծացրեք մարումը. ռեզոնանսային գագաթները դառնում են ավելի ցածր և լայն։</p>
+      </section>
+    </div>
+
+    <!-- ===== Air column ===== -->
+    <div id="panel-pipe" role="tabpanel" hidden>
+      <div class="sim-layout">
+        <section class="stage">
+          <div class="canvas-wrap">
+            <canvas id="pScene" aria-label="Օդի սյուն խողովակում և օդի մասնիկների տատանումները"></canvas>
+          </div>
+          <p class="chart-caption">Կետերը օդի մասնիկներն են. դրանք տատանվում են խողովակի երկայնքով։ Կապույտ կորերը ցույց են տալիս մասնիկների տեղափոխման ամպլիտուդը խողովակի տարբեր տեղերում, դեղին ընդհատ կորերը՝ ճնշման փոփոխության ամպլիտուդը։ <b>Հ</b> և <b>Փ</b> տառերը տեղափոխման հանգույցներն ու փնջվածքներն են։</p>
+          <canvas class="chart" id="pSpectrum" aria-label="Օդի սյան տատանման ամպլիտուդի կախումը հաճախությունից"></canvas>
+          <p class="chart-caption">Ամպլիտուդը՝ ռեզոնանսային արժեքի նկատմամբ. գագաթները խողովակի սեփական հաճախություններն են։</p>
+        </section>
+
+        <aside class="panel">
+          <section class="group" aria-label="Չափումներ">
+            <dl class="stats">
+              <div class="stat"><dt>Ձայնի արագություն v</dt><dd id="pV">—</dd></div>
+              <div class="stat"><dt>Ալիքի երկարություն λ = v/f</dt><dd id="pLambda">—</dd></div>
+              <div class="stat"><dt>Քառորդ ալիքների թիվը 4L/λ</dt><dd id="pQuarter">—</dd></div>
+              <div class="stat"><dt>Ամենամոտ սեփական հաճախություն</dt><dd id="pNear">—</dd></div>
+              <div class="stat"><dt>Ամպլիտուդ (ռեզոնանսայինի %)</dt><dd id="pAmp">—</dd></div>
+              <div class="stat"><dt>Հանգույցներ / փնջվածքներ</dt><dd id="pNodes">—</dd></div>
+            </dl>
+          </section>
+
+          <section class="group">
+            <h2 class="group__title">Խողովակ</h2>
+            <div class="segmented" id="pType" role="group" aria-label="Խողովակի տեսակը">
+              <button data-value="open">Երկու ծայրը բաց</button>
+              <button data-value="closed" aria-pressed="true">Մի ծայրը փակ</button>
+            </div>
+            <div class="field">
+              <label class="field__label" for="pL">Երկարություն L</label>
+              <output class="field__value" for="pL"></output>
+              <input type="range" id="pL" min="0.2" max="2" step="0.01" value="0.85">
+            </div>
+            <div class="field">
+              <label class="field__label" for="pTemp">Օդի ջերմաստիճան t</label>
+              <output class="field__value" for="pTemp"></output>
+              <input type="range" id="pTemp" min="-20" max="40" step="1" value="20">
+            </div>
+          </section>
+
+          <section class="group">
+            <h2 class="group__title">Ձայնի աղբյուր</h2>
+            <div class="field">
+              <label class="field__label" for="pF">Հաճախություն f</label>
+              <output class="field__value" for="pF"></output>
+              <input type="range" id="pF" min="1" max="1300" step="0.1" value="100">
+            </div>
+            <div class="btn-row btn-row--steps">
+              <button class="btn" id="pMinus10" aria-label="Հաճախությունը փոքրացնել 10 Հց-ով">−10</button>
+              <button class="btn" id="pMinus1" aria-label="Հաճախությունը փոքրացնել 1 Հց-ով">−1</button>
+              <button class="btn" id="pPlus1" aria-label="Հաճախությունը մեծացնել 1 Հց-ով">+1</button>
+              <button class="btn" id="pPlus10" aria-label="Հաճախությունը մեծացնել 10 Հց-ով">+10</button>
+            </div>
+            <p class="hint">Սեփական հաճախությունները. մի ծայրը փակ խողովակում հնչում են միայն կենտ հարմոնիկները։</p>
+            <div class="harm-grid" id="pHarm" role="group" aria-label="Հարմոնիկներ">
+              <button class="btn">f₁</button>
+              <button class="btn">f₂</button>
+              <button class="btn">f₃</button>
+              <button class="btn">f₄</button>
+              <button class="btn">f₅</button>
+              <button class="btn">f₆</button>
+            </div>
+            <label class="check"><input type="checkbox" id="pPressure" checked><i class="swatch swatch--square" style="--c: var(--amber)"></i>Ճնշման ամպլիտուդ</label>
+            <button class="btn btn--block" id="pSound" aria-pressed="false">🔊 Լսել</button>
+            <p class="hint" id="pSoundHint">Ձայնի բարձրությունը ռեզոնանսի մոտ մեծանում է։</p>
+          </section>
+
+          <section class="group">
+            <div class="formula">
+              <b>v ≈ 331 + 0.6·t</b> (մ/վ, t՝ °C)<br>
+              երկու ծայրը բաց՝ <b>f<sub>n</sub> = n·v/(2L)</b>, n = 1, 2, 3, …<br>
+              մի ծայրը փակ՝ <b>f<sub>n</sub> = n·v/(4L)</b>, n = 1, 3, 5, …
+            </div>
+          </section>
+        </aside>
+      </div>
+
+      <section class="explain">
+        <h2>Կանգուն ձայնային ալիքներ օդի սյունում</h2>
+        <p>Խողովակում ձայնային ալիքը երկայնական է. օդի մասնիկները տատանվում են խողովակի առանցքի երկայնքով։ Դասագրքերում ընդունված ձևով մասնիկների տեղափոխման ամպլիտուդը պատկերված է լայնական կորերով։ Տեղափոխման հանգույցներում մասնիկներն անշարժ են, բայց հենց այնտեղ է ճնշումն ամենաշատը փոփոխվում, իսկ փնջվածքներում մասնիկները տատանվում են ամենամեծ ամպլիտուդով, և ճնշումը գրեթե չի փոխվում։</p>
+        <p>Խողովակի բաց ծայրում օդը կարող է ազատ շարժվել, ուստի այնտեղ տեղափոխման փնջվածք է, իսկ փակ ծայրում՝ հանգույց։ Երկու ծայրը բաց խողովակի երկարության վրա տեղավորվում է ամբողջ թվով կիսաալիք՝ <em>f<sub>n</sub> = n·v/(2L)</em>։ Մի ծայրը փակ խողովակի երկարության վրա պետք է տեղավորվի կենտ թվով քառորդ ալիք՝ <em>f<sub>n</sub> = n·v/(4L)</em>, n = 1, 3, 5, …, ուստի հնչում են միայն կենտ հարմոնիկները, իսկ հիմնական տոնը նույն երկարության բաց խողովակի համեմատ երկու անգամ ցածր հաճախություն ունի։</p>
+        <p>Ձայնի արագությունն օդում կախված է ջերմաստիճանից (v ≈ 331 + 0.6·t մ/վ), ուստի տաք սենյակում փողային գործիքներն ավելի բարձր են հնչում։ Հաճախությունն անփոփոխ թողեք և փոխեք խողովակի երկարությունը՝ ռեզոնանսային խողովակով հենց այսպես են չափում ձայնի արագությունը։ Սեղմեք «Լսել». ռեզոնանսի մոտ ձայնն ուժեղանում է։</p>
+      </section>
+    </div>
+
+    <!-- ===== Resonance curve ===== -->
+    <div id="panel-resonance" role="tabpanel" hidden>
+      <div class="sim-layout">
+        <section class="stage">
+          <div class="canvas-wrap">
+            <canvas id="rScene" aria-label="Զսպանակավոր ճոճանակ, որին ազդում է պարբերական ուժ, և նրա շեղման գրաֆիկը"></canvas>
+          </div>
+          <p class="chart-caption">Էքսցենտրիկը տեղաշարժում է զսպանակի վերին ծայրը, և բեռի վրա ազդում է F = F₀·cos ωt պարբերական ուժ։ Աջում՝ բեռի շեղումը x(t) (կապույտ) և ուժը F(t) (դեղին). նոր արժեքները ձախից են, նույն մասշտաբով, ինչ բեռը։</p>
+          <canvas class="chart" id="rCurves" aria-label="Ռեզոնանսային կոր և փուլային շեղման կախումը հաճախությունից"></canvas>
+          <p class="chart-caption">Հոծ կոր՝ ընթացիկ մարման դեպքում, ընդհատ կորեր՝ երկու և չորս անգամ մեծ մարման դեպքում։ Կարմիր կետը ստիպող ուժի ընթացիկ հաճախությունն է։</p>
+        </section>
+
+        <aside class="panel">
+          <section class="group" aria-label="Չափումներ">
+            <dl class="stats">
+              <div class="stat"><dt>Սեփական հաճախություն f₀</dt><dd id="rF0v">—</dd></div>
+              <div class="stat"><dt>Հարաբերություն f/f₀</dt><dd id="rRatio">—</dd></div>
+              <div class="stat"><dt>Կայունացած ամպլիտուդ A</dt><dd id="rAmp">—</dd></div>
+              <div class="stat"><dt>Չափված ամպլիտուդ</dt><dd id="rAmpM">—</dd></div>
+              <div class="stat"><dt>Փուլային շեղում φ (x-ը՝ F-ից)</dt><dd id="rPhase">—</dd></div>
+              <div class="stat"><dt>Բարորակություն Q = ω₀/(2γ)</dt><dd id="rQ">—</dd></div>
+            </dl>
+          </section>
+
+          <section class="group">
+            <h2 class="group__title">Ստիպող ուժ</h2>
+            <div class="field">
+              <label class="field__label" for="rF">Հաճախություն f</label>
+              <output class="field__value" for="rF"></output>
+              <input type="range" id="rF" min="0.05" max="5" step="0.01" value="0.8">
+            </div>
+            <button class="btn btn--block" id="rToF0"><span>↪ f = f₀ (ռեզոնանս)</span></button>
+            <div class="field">
+              <label class="field__label" for="rF0">Ուժի ամպլիտուդ F₀</label>
+              <output class="field__value" for="rF0"></output>
+              <input type="range" id="rF0" min="0.1" max="2" step="0.05" value="0.5">
+            </div>
+          </section>
+
+          <section class="group">
+            <h2 class="group__title">Ճոճանակ</h2>
+            <div class="field">
+              <label class="field__label" for="rK">Զսպանակի կոշտություն k</label>
+              <output class="field__value" for="rK"></output>
+              <input type="range" id="rK" min="5" max="100" step="1" value="40">
+            </div>
+            <div class="field">
+              <label class="field__label" for="rM">Բեռի զանգված m</label>
+              <output class="field__value" for="rM"></output>
+              <input type="range" id="rM" min="0.2" max="2" step="0.1" value="1">
+            </div>
+            <div class="field">
+              <label class="field__label" for="rGamma">Մարման գործակից γ</label>
+              <output class="field__value" for="rGamma"></output>
+              <input type="range" id="rGamma" min="0.02" max="3" step="0.01" value="0.15">
+            </div>
+            <div class="btn-row">
+              <button class="btn" id="rPlay"></button>
+              <button class="btn" id="rReset">↺ Սկսել նորից</button>
+            </div>
+          </section>
+
+          <section class="group">
+            <div class="formula">
+              ẍ + 2γẋ + ω₀²x = (F₀/m)·cos ωt<br>
+              <b>ω₀ = √(k/m)</b>, &nbsp;f₀ = ω₀/2π<br>
+              <b>A = (F₀/m) / √((ω₀² − ω²)² + (2γω)²)</b><br>
+              tg φ = 2γω / (ω₀² − ω²)
+            </div>
+          </section>
+
+          <section class="group">
+            <div class="callout">
+              <b>Ճոճանակ.</b> Ճոճանակին հրում ենք հենց նրա սեփական պարբերությամբ, ուստի թույլ հրումներով էլ մեծ ճոճք ենք ստանում։<br>
+              <b>Կամուրջ.</b> Զինվորական շարքը կամրջով անցնելիս «կոտրում է» քայլը, որպեսզի ոտքերի պարբերական հարվածները ռեզոնանսով չուժեղացնեն կամրջի տատանումները։<br>
+              <b>Ռադիոընդունիչ.</b> Կայանը «բռնելիս» ընդունիչի տատանողական կոնտուրի սեփական հաճախությունը համընկեցնում ենք կայանի հաճախությանը. ռեզոնանսի շնորհիվ ուժեղանում է միայն այդ կայանի ազդանշանը։
+            </div>
+          </section>
+        </aside>
+      </div>
+
+      <section class="explain">
+        <h2>Ստիպողական տատանումներ և ռեզոնանս</h2>
+        <p>Եթե տատանողական համակարգի վրա ազդում է պարբերական արտաքին ուժ, որոշ ժամանակ անց համակարգը սկսում է տատանվել ուժի հաճախությամբ՝ անկախ իր սեփական հաճախությունից։ Այդ <em>ստիպողական տատանումների</em> ամպլիտուդը կախված է նրանից, թե որքան մոտ է ուժի հաճախությունը f համակարգի սեփական հաճախությանը՝ f₀ = (1/2π)·√(k/m)։</p>
+        <p>Երբ f ≈ f₀, ամպլիտուդը կտրուկ աճում է. սա <em>ռեզոնանսն</em> է։ Որքան փոքր է մարումը, այնքան բարձր և նեղ է ռեզոնանսային կորը։ Այն բնութագրում է բարորակությունը՝ Q = ω₀/(2γ). ռեզոնանսի ժամանակ ամպլիտուդը մոտավորապես Q անգամ մեծ է F₀/k ստատիկ շեղումից։ Շեղումը ուժից ուշանում է φ փուլով, որը ցածր հաճախություններում մոտ է 0-ի, ռեզոնանսում հավասար է 90°-ի, իսկ բարձր հաճախություններում մոտենում է 180°-ի։</p>
+        <p>Փորձեք. սեղմեք «f = f₀» և հետևեք, թե ինչպես է ամպլիտուդն աստիճանաբար աճում մինչև կայունացած արժեքը։ Եթե ուժի հաճախությունը մի փոքր տարբերվի f₀-ից, սկզբում կնկատեք զարկեր՝ սեփական և ստիպողական տատանումների գումարումը, որոնք մարման շնորհիվ աստիճանաբար անհետանում են։ Համեմատեք փոքր և մեծ γ-ի դեպքերը։</p>
+      </section>
+    </div>
+  </main>
+  <footer data-shell="footer"></footer>
+</body>
+</html>

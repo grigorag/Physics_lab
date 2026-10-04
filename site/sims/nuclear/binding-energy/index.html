@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="hy">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Միջուկի կապի էներգիա · Ֆիզիկայի Լաբորատորիաներ</title>
+  <link rel="icon" href="../../../assets/img/favicon.svg" type="image/svg+xml">
+  <script src="../../../assets/js/theme-init.js"></script>
+  <link rel="stylesheet" href="../../../assets/css/main.css">
+  <link rel="stylesheet" href="./sim.css">
+  <script type="module" src="../../../assets/js/core/shell.js"></script>
+  <script type="module" src="./main.js"></script>
+</head>
+<body data-sim="binding-energy" data-section="nuclear">
+  <header data-shell="header"></header>
+
+  <main class="page">
+    <header class="sim-head">
+      <h1 class="sim-title">Միջուկի կապի էներգիա</h1>
+      <p class="sim-subtitle">զանգվածի դեֆեկտ, միջուկների բաժանում և սինթեզ</p>
+    </header>
+
+    <div class="tabs" role="tablist" id="tabs">
+      <button role="tab" data-tab="defect" aria-controls="panel-defect" aria-selected="true">Զանգվածի դեֆեկտ</button>
+      <button role="tab" data-tab="curve" aria-controls="panel-curve">Տեսակարար կապի էներգիայի կորը</button>
+      <button role="tab" data-tab="reaction" aria-controls="panel-reaction">Ռեակցիայի էներգիան</button>
+    </div>
+
+    <!-- ===== 1. Mass defect ===== -->
+    <div id="panel-defect" role="tabpanel">
+      <div class="sim-layout">
+        <section class="stage">
+          <div class="canvas-wrap">
+            <canvas id="balanceCv" aria-label="Կշեռք. ձախ նժարին միջուկն է, աջին՝ նույն պրոտոններն ու նեյտրոնները առանձին"></canvas>
+            <ul class="legend legend--tl">
+              <li><i class="legend__dot" style="--c: var(--red)"></i>պրոտոն p</li>
+              <li><i class="legend__dot" style="--c: var(--text-3)"></i>նեյտրոն n</li>
+            </ul>
+            <span class="canvas-hint">Կշեռքի թեքությունը մեծացված է</span>
+          </div>
+          <div class="callout">
+            Ձախ նժարին միջուկն է, աջին՝ նույն <b>Z</b> պրոտոնները և <b>N</b> նեյտրոնները՝ իրարից անջատված։
+            Առանձին նուկլոնների զանգվածների գումարն ավելի մեծ է, քան միջուկի զանգվածը․ տարբերությունը՝
+            <b>Δm</b>, զանգվածի դեֆեկտն է։ Միջուկը նուկլոնների բաժանելու համար պետք է կատարել
+            <b>E = Δm·c²</b> աշխատանք․ դա միջուկի կապի էներգիան է։
+          </div>
+        </section>
+
+        <aside class="panel">
+          <section class="group">
+            <h2 class="group__title">Միջուկ</h2>
+            <div class="field">
+              <label class="field__label" for="nuc1">Իզոտոպ</label>
+              <select class="select" id="nuc1"></select>
+            </div>
+            <div class="btn-row">
+              <button class="btn" id="prevBtn">← Նախորդը</button>
+              <button class="btn" id="nextBtn">Հաջորդը →</button>
+            </div>
+          </section>
+
+          <section class="group">
+            <h2 class="group__title">Արդյունքներ</h2>
+            <dl class="stats">
+              <div class="stat"><dt>Միջուկ</dt><dd id="b-name">—</dd></div>
+              <div class="stat"><dt>Պրոտոններ Z</dt><dd id="b-Z">—</dd></div>
+              <div class="stat"><dt>Նեյտրոններ N</dt><dd id="b-N">—</dd></div>
+              <div class="stat"><dt>Զանգվածային թիվ A</dt><dd id="b-A">—</dd></div>
+              <div class="stat"><dt>Ատոմի զանգված M</dt><dd id="b-M">—</dd></div>
+              <div class="stat"><dt>Z·m<sub>H</sub> + N·m<sub>n</sub></dt><dd id="b-parts">—</dd></div>
+              <div class="stat"><dt>Զանգվածի դեֆեկտ Δm</dt><dd id="b-dm">—</dd></div>
+              <div class="stat"><dt>Հարաբերական դեֆեկտ</dt><dd id="b-rel">—</dd></div>
+              <div class="stat"><dt>Կապի էներգիա E</dt><dd id="b-E">—</dd></div>
+              <div class="stat"><dt>Նույնը ջոուլներով</dt><dd id="b-EJ">—</dd></div>
+              <div class="stat"><dt>Տեսակարար E/A</dt><dd id="b-eps">—</dd></div>
+            </dl>
+            <p class="hint">Օգտագործված են ատոմների զանգվածները, ուստի պրոտոնի փոխարեն վերցված է ջրածնի ատոմի զանգվածը m<sub>H</sub>․ էլեկտրոնների զանգվածները կրճատվում են։</p>
+          </section>
+
+          <section class="group">
+            <div class="formula">
+              <b>Δm = Z·m<sub>H</sub> + N·m<sub>n</sub> − M</b><br>
+              <b>E = Δm·c²</b><br>
+              1 ա.զ.մ.·c² = 931.494 ՄէՎ<br>
+              m<sub>H</sub> = 1.007825 ա.զ.մ.<br>
+              m<sub>n</sub> = 1.008665 ա.զ.մ.<br>
+              1 ՄէՎ = 1.602·10⁻¹³ Ջ
+            </div>
+          </section>
+        </aside>
+      </div>
+    </div>
+
+    <!-- ===== 2. The E/A curve ===== -->
+    <div id="panel-curve" role="tabpanel" hidden>
+      <div class="sim-layout">
+        <section class="stage">
+          <div class="canvas-wrap canvas-wrap--crosshair">
+            <canvas id="curveCv" aria-label="Տեսակարար կապի էներգիայի կախումը զանգվածային թվից"></canvas>
+            <ul class="legend legend--tr">
+              <li><i class="legend__dot" style="--c: var(--green)"></i>չափված արժեքներ</li>
+              <li><i class="legend__line" style="--c: var(--purple)"></i>Վայցզեկերի բանաձև</li>
+            </ul>
+          </div>
+        </section>
+
+        <aside class="panel">
+          <section class="group">
+            <h2 class="group__title">Միջուկ</h2>
+            <div class="field">
+              <label class="field__label" for="nuc2">Իզոտոպ</label>
+              <select class="select" id="nuc2"></select>
+            </div>
+            <p class="hint">Կամ սեղմեք գրաֆիկի որևէ կետի վրա։</p>
+            <dl class="stats">
+              <div class="stat"><dt>Միջուկ</dt><dd id="c-name">—</dd></div>
+              <div class="stat"><dt>Զանգվածային թիվ A</dt><dd id="c-A">—</dd></div>
+              <div class="stat"><dt>Կապի էներգիա E</dt><dd id="c-E">—</dd></div>
+              <div class="stat"><dt>Տեսակարար E/A</dt><dd id="c-eps">—</dd></div>
+              <div class="stat"><dt>Մինչև առավելագույնը</dt><dd id="c-gap">—</dd></div>
+            </dl>
+            <div class="callout" id="c-note">—</div>
+          </section>
+
+          <section class="group">
+            <h2 class="group__title">Ցուցադրել</h2>
+            <label class="check"><input type="checkbox" id="showCurve" checked> Վայցզեկերի բանաձևի կորը</label>
+            <label class="check"><input type="checkbox" id="allLabels"> Բոլոր միջուկների անունները</label>
+          </section>
+
+          <section class="group">
+            <div class="formula">
+              <b>E = a<sub>v</sub>A − a<sub>s</sub>A<sup>2/3</sup> − a<sub>c</sub>Z²/A<sup>1/3</sup> − a<sub>a</sub>(A − 2Z)²/A ± δ</b><br>
+              a<sub>v</sub> = 15.75, a<sub>s</sub> = 17.8, a<sub>c</sub> = 0.711,<br>
+              a<sub>a</sub> = 23.7 ՄէՎ, δ = 11.18/√A ՄէՎ<br>
+              կայունության գիծ՝ Z ≈ A/(2 + 0.015·A<sup>2/3</sup>)
+            </div>
+            <p class="hint">Կորը կիսաէմպիրիկ բանաձևի միջին ընթացքն է (զույգման անդամն այստեղ միջինացված է)։ Ամենաթեթև միջուկների համար բանաձևը ճշգրիտ չէ, ուստի կորն սկսվում է A = 6-ից։</p>
+          </section>
+        </aside>
+      </div>
+    </div>
+
+    <!-- ===== 3. Reaction energy ===== -->
+    <div id="panel-reaction" role="tabpanel" hidden>
+      <div class="sim-layout">
+        <section class="stage">
+          <div class="canvas-wrap">
+            <canvas id="rxCv" aria-label="Ռեակցիան տեսակարար կապի էներգիայի կորի վրա"></canvas>
+          </div>
+          <div class="readouts">
+            <div class="readout">
+              <div class="readout__title">Մինչև ռեակցիան, ա.զ.մ.</div>
+              <div id="rx-left">—</div>
+            </div>
+            <div class="readout">
+              <div class="readout__title">Ռեակցիայից հետո, ա.զ.մ.</div>
+              <div id="rx-right">—</div>
+            </div>
+          </div>
+          <p class="chart-caption">Սլաքները ցույց են տալիս, թե ինչպես է փոխվում մեկ նուկլոնին բաժին ընկնող կապի էներգիան։ Նեյտրոնը կորի վրա չի նշված։</p>
+        </section>
+
+        <aside class="panel">
+          <section class="group">
+            <h2 class="group__title">Ռեակցիա</h2>
+            <div class="segmented" id="rxChoice" role="group" aria-label="Ռեակցիա">
+              <button data-value="dt" aria-pressed="true">D + T</button>
+              <button data-value="dd">D + D</button>
+              <button data-value="pp">4 <sup>1</sup>H</button>
+              <button data-value="fission"><sup>235</sup>U + n</button>
+            </div>
+            <div class="equation" id="rx-eq">—</div>
+            <button class="btn btn--block" id="replayBtn">↺ Կրկնել անիմացիան</button>
+          </section>
+
+          <section class="group">
+            <h2 class="group__title">Էներգիայի ելքը</h2>
+            <dl class="stats">
+              <div class="stat"><dt>Σm սկզբում</dt><dd id="rx-mIn">—</dd></div>
+              <div class="stat"><dt>Σm վերջում</dt><dd id="rx-mOut">—</dd></div>
+              <div class="stat"><dt>Զանգվածի նվազում Δm</dt><dd id="rx-dm">—</dd></div>
+              <div class="stat"><dt>Ռեակցիայի էներգիա Q</dt><dd id="rx-Q">—</dd></div>
+              <div class="stat"><dt>Q մեկ նուկլոնին</dt><dd id="rx-qn">—</dd></div>
+              <div class="stat"><dt>1 կգ վառելիքից</dt><dd id="rx-kg">—</dd></div>
+            </dl>
+            <div class="callout" id="rx-fuel">—</div>
+            <p class="hint" id="rx-note"></p>
+          </section>
+
+          <section class="group">
+            <div class="formula">
+              <b>Q = (Σm<sub>սկզբն</sub> − Σm<sub>վերջն</sub>)·c²</b><br>
+              1 ա.զ.մ.·c² = 931.494 ՄէՎ<br>
+              Q &gt; 0՝ էներգիա է անջատվում<br>
+              ածխի այրման ջերմություն՝ q ≈ 3·10⁷ Ջ/կգ
+            </div>
+          </section>
+        </aside>
+      </div>
+    </div>
+
+    <section class="explain">
+      <h2>Որտեղից է գալիս միջուկային էներգիան</h2>
+      <p>Միջուկը կազմված է պրոտոններից և նեյտրոններից (նուկլոններից), որոնց իրար մոտ են պահում միջուկային ուժերը։ Ճշգրիտ չափումները ցույց են տալիս, որ միջուկի զանգվածը միշտ <em>փոքր է</em> այն կազմող նուկլոնների զանգվածների գումարից։ Այդ տարբերությունը՝ <em>զանգվածի դեֆեկտը</em> (Δm), Էյնշտեյնի E = mc² առնչությամբ համապատասխանում է <em>կապի էներգիային</em>՝ այն էներգիային, որն անհրաժեշտ է միջուկն առանձին նուկլոնների բաժանելու համար։ Օրինակ՝ հելիում-4-ի համար Δm ≈ 0.0304 ա.զ.մ., իսկ E ≈ 28.3 ՄէՎ։</p>
+      <p>Միջուկի ամրությունը բնութագրում է <em>տեսակարար կապի էներգիան</em>՝ մեկ նուկլոնին բաժին ընկնող կապի էներգիան (E/A)։ Այն ամենամեծն է երկաթի և նիկելի մոտ (≈8.8 ՄէՎ/նուկլոն) և փոքրանում է ինչպես թեթև, այնպես էլ ծանր միջուկների համար։ Ուստի էներգիա կարելի է ստանալ երկու ճանապարհով․ միացնելով թեթև միջուկները (<em>սինթեզ</em>, ինչպես Արեգակում) կամ բաժանելով ծանր միջուկները (<em>բաժանում</em>, ինչպես ատոմային էլեկտրակայաններում)։ Երկու դեպքում էլ նուկլոններն անցնում են ավելի ամուր կապված վիճակի, արդյունքների զանգվածը փոքրանում է, և պակասած զանգվածին համապատասխան էներգիան անջատվում է։</p>
+      <p>Փորձեք․ «Զանգվածի դեֆեկտ» ներդիրում համեմատեք <sup>2</sup>H, <sup>4</sup>He, <sup>56</sup>Fe և <sup>235</sup>U միջուկների E/A-ն։ Կորի վրա գտեք, թե որ միջուկների համար է սինթեզը ձեռնտու, և որոնց համար՝ բաժանումը։ «Ռեակցիայի էներգիան» ներդիրում համեմատեք մեկ նուկլոնին ընկնող էներգիան սինթեզի և բաժանման դեպքերում և հաշվեք, թե քանի տոննա ածուխ է «թաքնված» մեկ կիլոգրամ միջուկային վառելիքում։</p>
+    </section>
+  </main>
+
+  <footer data-shell="footer"></footer>
+</body>
+</html>

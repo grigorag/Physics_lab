@@ -1,0 +1,19 @@
+/* Capacitor — sim-specific layout (tokens only). */
+
+/* The two charts one under the other. */
+.charts {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--sp-3);
+}
+.charts > .chart { min-width: 0; }
+
+/* Scene canvases: tapping the switch must not be eaten by page scrolling. */
+.canvas-wrap > canvas { touch-action: manipulation; }
+
+/* Change relative to the reference state, next to a value. */
+.ratio {
+  margin-left: 0.7em;
+  font-size: var(--fs-2xs);
+  color: var(--text-3);
+}

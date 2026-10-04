@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="hy">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Երկվորյակների պարադոքսը · Ֆիզիկայի Լաբորատորիաներ</title>
+  <link rel="icon" href="../../../assets/img/favicon.svg" type="image/svg+xml">
+  <script src="../../../assets/js/theme-init.js"></script>
+  <link rel="stylesheet" href="../../../assets/css/main.css">
+  <link rel="stylesheet" href="./sim.css">
+  <script type="module" src="../../../assets/js/core/shell.js"></script>
+  <script type="module" src="./main.js"></script>
+</head>
+<body data-sim="twin-paradox" data-section="relativity">
+  <header data-shell="header"></header>
+
+  <main class="page">
+    <header class="sim-head">
+      <h1 class="sim-title">Երկվորյակների պարադոքսը</h1>
+      <p class="sim-subtitle">Տիեզերական ճամփորդություն և վերադարձ</p>
+    </header>
+
+    <div class="sim-layout">
+      <section class="stage">
+        <div class="canvas-wrap">
+          <canvas id="cv" aria-label="Երկիրը, աստղը, հրթիռը և երկու երկվորյակների տարիքը"></canvas>
+        </div>
+
+        <div class="transport">
+          <button class="btn btn--primary" id="playBtn"></button>
+          <div class="field">
+            <label class="field__label" for="time">Ժամանակը Երկրի ժամացույցով</label>
+            <output class="field__value" for="time"></output>
+            <input type="range" id="time" min="0" max="1000" step="1" value="0">
+          </div>
+          <p class="hint" id="phase"></p>
+        </div>
+
+        <div class="st-row">
+          <div class="st-chart">
+            <canvas class="chart" id="chart" aria-label="Տարածաժամանակի դիագրամ Երկրի հաշվարկման համակարգում"></canvas>
+            <p class="chart-caption">Տարածաժամանակի դիագրամ Երկրի հաշվարկման համակարգում. հորիզոնական առանցքը հեռավորությունն է, ուղղաձիգը՝ ժամանակը։ Առանցքների մասշտաբները տարբեր են, ուստի լուսային ազդանշանների գծերը պարտադիր չէ, որ 45° թեքություն ունենան։</p>
+          </div>
+
+          <div class="st-side">
+            <div class="readout">
+              <div class="readout__title"><i class="swatch" style="--c: var(--blue)"></i>Երկվորյակ A՝ Երկրում</div>
+              <div id="cardA"></div>
+            </div>
+            <div class="readout">
+              <div class="readout__title"><i class="swatch" style="--c: var(--coral)"></i>Երկվորյակ B՝ հրթիռում</div>
+              <div id="cardB"></div>
+            </div>
+            <ul class="legend">
+              <li><i class="legend__line" style="--c: var(--blue)"></i>Երկրի (A) աշխարհագիծը և ազդանշանները</li>
+              <li><i class="legend__line" style="--c: var(--coral)"></i>հրթիռի (B) աշխարհագիծը և ազդանշանները</li>
+              <li><i class="legend__line" style="--c: var(--purple)"></i>B-ի միաժամանակության գծերը</li>
+              <li><i class="legend__dot" style="--c: var(--text-2)"></i>ազդանշանն ընդունվել է</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <aside class="panel">
+        <section class="group">
+          <h2 class="group__title">Ճամփորդություն</h2>
+          <div class="field">
+            <label class="field__label" for="dest">Նպատակակետ</label>
+            <select class="select" id="dest">
+              <option value="4.37" selected>Կենտավրոսի Ալֆա — 4.37 լ.տ.</option>
+              <option value="8.6">Սիրիուս — 8.6 լ.տ.</option>
+              <option value="25">Վեգա — 25 լ.տ.</option>
+              <option value="custom">Այլ հեռավորություն…</option>
+            </select>
+          </div>
+          <div class="field" id="distField" hidden>
+            <label class="field__label" for="dist">Հեռավորություն D</label>
+            <output class="field__value" for="dist"></output>
+            <input type="range" id="dist" min="1" max="50" step="0.5" value="3">
+          </div>
+          <div class="field">
+            <label class="field__label" for="beta">Հրթիռի արագություն v</label>
+            <output class="field__value" for="beta"></output>
+            <input type="range" id="beta" min="0.1" max="0.99" step="0.01" value="0.8">
+          </div>
+          <div class="field">
+            <label class="field__label" for="age">Երկվորյակների տարիքը մեկնելիս</label>
+            <output class="field__value" for="age"></output>
+            <input type="range" id="age" min="10" max="40" step="1" value="20">
+          </div>
+          <div class="field">
+            <span class="field__label" id="speedLabel">Անիմացիայի արագություն</span>
+            <div class="segmented" id="speed" role="group" aria-labelledby="speedLabel">
+              <button data-value="0.5">×0.5</button>
+              <button data-value="1" aria-pressed="true">×1</button>
+              <button data-value="2">×2</button>
+            </div>
+          </div>
+          <div class="btn-row">
+            <button class="btn" id="resetBtn">↺ Սկզբից</button>
+          </div>
+        </section>
+
+        <section class="group">
+          <h2 class="group__title">Լուսային ազդանշաններ</h2>
+          <label class="check"><input type="checkbox" id="sigEarth" checked> Ազդանշաններ Երկրից</label>
+          <label class="check"><input type="checkbox" id="sigRocket" checked> Ազդանշաններ հրթիռից</label>
+          <label class="check"><input type="checkbox" id="simul"> B-ի միաժամանակության գծերը</label>
+          <p class="hint">Յուրաքանչյուր երկվորյակ <b>իր ժամացույցով</b> <b id="stepTxt">տարին մեկ անգամ</b> լուսային ազդանշան է ուղարկում մյուսին։</p>
+        </section>
+
+        <section class="group">
+          <h2 class="group__title">Չափումներ</h2>
+          <dl class="stats">
+            <div class="stat"><dt>Լորենցի գործակից γ</dt><dd id="sGamma">—</dd></div>
+            <div class="stat"><dt>Երկրում անցած ժամանակը T</dt><dd id="sT">—</dd></div>
+            <div class="stat"><dt>Հրթիռում անցած ժամանակը τ</dt><dd id="sTau">—</dd></div>
+            <div class="stat"><dt>Տարիքների տարբերությունը</dt><dd id="sDiff">—</dd></div>
+            <div class="stat"><dt>Տարիքը հանդիպելիս (A / B)</dt><dd id="sAges">—</dd></div>
+            <div class="stat"><dt>Հեռավորությունը հրթիռի համակարգում D/γ</dt><dd id="sDc">—</dd></div>
+            <div class="stat"><dt>Ազդանշանների ընդունման պարբերությունը հեռանալիս</dt><dd id="sKout">—</dd></div>
+            <div class="stat"><dt>Ազդանշանների ընդունման պարբերությունը մոտենալիս</dt><dd id="sKin">—</dd></div>
+            <div class="stat"><dt>Ուղարկել է A / ստացել է B</dt><dd id="sAB">—</dd></div>
+            <div class="stat"><dt>Ուղարկել է B / ստացել է A</dt><dd id="sBA">—</dd></div>
+          </dl>
+          <div class="callout"><b>Ինչո՞ւ իրավիճակը համաչափ չէ։</b> A-ն ամբողջ ընթացքում մնում է նույն իներցիալ հաշվարկման համակարգում։ B-ն շրջադարձի պահին անցնում է մի իներցիալ համակարգից մյուսը. նա արգելակում է ու նորից արագանում և այդ արագացումը զգում է, իսկ A-ն ոչինչ չի զգում։ Ուստի երկվորյակները հավասարազոր չեն, և ավելի երիտասարդ է մնում հենց B-ն։</div>
+        </section>
+
+        <section class="group">
+          <div class="formula">
+            <b>γ = 1 / √(1 − v²/c²)</b><br>
+            Լորենցի գործակից<br>
+            <b>T = 2D / v</b><br>
+            ճամփորդության տևողությունը Երկրում<br>
+            <b>τ = T / γ</b><br>
+            ճամփորդի սեփական ժամանակը<br>
+            <b>D′ = D / γ</b><br>
+            հեռավորությունը հրթիռի համակարգում<br>
+            <b>T<sub>ընդ</sub> = T₀·√((1 ± β) / (1 ∓ β))</b><br>
+            Դոպլերի էֆեկտ. T₀ պարբերությամբ ուղարկված ազդանշանների ընդունման պարբերությունը հեռանալիս (վերին նշաններ) և մոտենալիս (ստորին նշաններ), β = v/c
+          </div>
+        </section>
+      </aside>
+    </div>
+
+    <section class="explain">
+      <h2>Ո՞վ է ավելի երիտասարդ մնում</h2>
+      <p>Երկու երկվորյակներից A-ն մնում է Երկրում, իսկ B-ն հրթիռով <em>v</em> արագությամբ թռչում է դեպի <em>D</em> հեռավորության վրա գտնվող աստղը, այնտեղ շրջվում և նույն արագությամբ վերադառնում է։ Երկրի ժամացույցով ճամփորդությունը տևում է T = 2D/v։ Շարժվող ժամացույցն ավելի դանդաղ է ընթանում, ուստի հրթիռում անցնում է ընդամենը τ = T/γ ժամանակ, և վերադարձած B-ն ավելի երիտասարդ է, քան A-ն։ B-ի տեսանկյունից էլ ամեն ինչ համաձայնեցված է. նրա համակարգում մինչև աստղը եղած հեռավորությունը կրճատված է՝ D/γ, և այն անցնելու համար իսկապես ավելի քիչ ժամանակ է պետք։</p>
+      <p>«Պարադոքսն» այն հարցն է, թե ինչու B-ն չի կարող պնդել, որ հենց ինքն է անշարժ, իսկ Երկիրն է հեռացել ու վերադարձել, և ուրեմն ավելի երիտասարդ պիտի լինի A-ն։ Պատասխանը. երկվորյակների դերերը նույնը չեն։ A-ն մշտապես մեկ իներցիալ հաշվարկման համակարգում է, իսկ B-ն շրջադարձի պահին փոխում է համակարգը։ Միացրեք <em>միաժամանակության գծերը</em>. շրջադարձից անմիջապես առաջ և անմիջապես հետո B-ի «հիմա»-ն Երկրի վրա համապատասխանում է Երկրի ժամացույցի բոլորովին տարբեր ցուցմունքների. հենց այս «թռիչքն» է լրացնում պակասող տարիները։</p>
+      <p>Ամենից համոզիչը ազդանշանները հաշվելն է։ Յուրաքանչյուր երկվորյակ իր ժամացույցով տարին մեկ լույսի ազդանշան է ուղարկում։ Հեռանալիս ազդանշաններն ընդունվում են ավելի հազվադեպ, մոտենալիս՝ ավելի հաճախ (Դոպլերի էֆեկտ), ընդ որում՝ երկուսի համար էլ նույն գործակիցներով։ Սակայն B-ն «հաճախ» ռեժիմին անցնում է անմիջապես շրջադարձի պահին՝ ճանապարհի կեսին, իսկ A-ն՝ շատ ավելի ուշ, երբ շրջադարձի պահին ուղարկված լույսը հասնում է Երկիր։ Փորձեք. ընտրեք «Այլ հեռավորություն», D = 3 լ.տ. և v = 0.6c. B-ն կստանա 2 + 8 = 10 ազդանշան, իսկ A-ն՝ 4 + 4 = 8. երկուսն էլ համաձայն են, որ Երկրում անցել է 10 տարի, իսկ հրթիռում՝ 8։ Ապա մեծացրեք արագությունը մինչև 0.99c և տեսեք, թե որքան քիչ է ծերանում ճամփորդը։</p>
+    </section>
+  </main>
+
+  <footer data-shell="footer"></footer>
+</body>
+</html>

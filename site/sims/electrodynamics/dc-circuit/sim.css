@@ -1,0 +1,47 @@
+/* DC circuits — small additions on top of the shared components. */
+
+/* Legend row under the schematic (the schematic fills the canvas, so the
+   legend does not float over it). */
+.dc-legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 16px;
+  margin: 0;
+  padding: 8px 12px;
+  list-style: none;
+  border-top: 1px solid var(--border);
+  font-size: var(--fs-2xs);
+  color: var(--text-2);
+}
+.dc-legend li { display: flex; align-items: center; gap: 7px; }
+.dc-legend__hint { color: var(--text-3); margin-left: auto; }
+.dc-arrow {
+  width: 0;
+  height: 0;
+  border-left: 9px solid var(--coral);
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  flex: none;
+}
+.dc-grad {
+  width: 34px;
+  height: 6px;
+  border-radius: 3px;
+  background: linear-gradient(to right, var(--blue), var(--red));
+  flex: none;
+}
+
+.dc-chart { display: flex; flex-direction: column; gap: var(--sp-2); }
+
+.dc-checks { line-height: 1.7; font-variant-numeric: tabular-nums; }
+.dc-checks .ok { color: var(--green); font-weight: 700; }
+.dc-checks .muted { color: var(--text-3); }
+
+@media (max-width: 600px) {
+  .dc-legend__hint { margin-left: 0; }
+}
+
+/* Element cards: two per row even on phones. */
+#cards { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+#cards .readout__title .sym { text-transform: none; letter-spacing: 0; }

@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="hy">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Արքիմեդի օրենքը · Ֆիզիկայի Լաբորատորիաներ</title>
+  <link rel="icon" href="../../../assets/img/favicon.svg" type="image/svg+xml">
+  <script src="../../../assets/js/theme-init.js"></script>
+  <link rel="stylesheet" href="../../../assets/css/main.css">
+  <link rel="stylesheet" href="./sim.css">
+  <script type="module" src="../../../assets/js/core/shell.js"></script>
+  <script type="module" src="./main.js"></script>
+</head>
+<body data-sim="archimedes" data-section="mechanics">
+  <header data-shell="header"></header>
+
+  <main class="page">
+    <header class="sim-head">
+      <h1 class="sim-title">Արքիմեդի օրենքը</h1>
+      <p class="sim-subtitle">արքիմեդյան ուժ, մարմինների լողալը</p>
+    </header>
+
+    <div class="tabs" role="tablist" id="tabs">
+      <button role="tab" data-tab="weigh" aria-controls="panel-weigh" aria-selected="true">Ուժաչափով կշռում</button>
+      <button role="tab" data-tab="float" aria-controls="panel-float">Լողալու պայմանը</button>
+    </div>
+
+    <!-- ===== Weighing in a liquid ===== -->
+    <div id="panel-weigh" role="tabpanel">
+      <div class="sim-layout">
+        <section class="stage">
+          <div class="canvas-wrap canvas-wrap--grab">
+            <canvas id="wScene" aria-label="Ուժաչափից կախված մարմինը հորդանոթի հեղուկում"></canvas>
+            <span class="canvas-hint">Քաշեք մարմինը վերև կամ ներքև</span>
+          </div>
+          <div class="callout" id="wNote" aria-live="polite"></div>
+        </section>
+
+        <aside class="panel">
+          <section class="group" aria-label="Չափումներ">
+            <dl class="stats">
+              <div class="stat"><dt>Մարմնի կշիռը օդում P</dt><dd id="wP">—</dd></div>
+              <div class="stat"><dt>Ուժաչափի ցուցմունքը հեղուկում P′</dt><dd id="wPp">—</dd></div>
+              <div class="stat"><dt>Արքիմեդյան ուժ F<sub>Ա</sub> = P − P′</dt><dd id="wFa">—</dd></div>
+              <div class="stat"><dt>Ընկղմված մասի ծավալը V<sub>ընկ</sub></dt><dd id="wVs">—</dd></div>
+              <div class="stat"><dt>Արտամղված հեղուկի կշիռը</dt><dd id="wPd">—</dd></div>
+            </dl>
+          </section>
+
+          <section class="group">
+            <h2 class="group__title">Մարմինը</h2>
+            <div class="field">
+              <label class="field__label" for="wMat">Նյութ</label>
+              <select class="select" id="wMat"></select>
+            </div>
+            <div class="field">
+              <label class="field__label" for="wVol">Ծավալ V</label>
+              <output class="field__value" for="wVol"></output>
+              <input type="range" id="wVol" min="50" max="500" step="10" value="200">
+            </div>
+          </section>
+
+          <section class="group">
+            <h2 class="group__title">Հեղուկը և ընկղմումը</h2>
+            <div class="field">
+              <label class="field__label" for="wLiq">Հեղուկ</label>
+              <select class="select" id="wLiq"></select>
+            </div>
+            <div class="field">
+              <label class="field__label" for="wDepth">Մարմնի ստորին նիստի խորությունը</label>
+              <output class="field__value" for="wDepth"></output>
+              <input type="range" id="wDepth" min="-0.5" max="12" step="0.05" value="3">
+            </div>
+            <div class="btn-row">
+              <button class="btn" id="wUp">Օդում</button>
+              <button class="btn" id="wHalf">Կեսը</button>
+              <button class="btn" id="wFull">Ամբողջովին</button>
+            </div>
+            <p class="hint">Հորդանոթը լցված է մինչև հորդման խողովակը. ընկղմվող մարմնի դուրս մղած հեղուկը հոսում է բաժակի մեջ։</p>
+            <label class="check"><input type="checkbox" id="wVec" checked><span><i class="swatch" style="--c: var(--red)"></i>&nbsp;<i class="swatch" style="--c: var(--teal)"></i>&nbsp;<i class="swatch" style="--c: var(--blue)"></i></span>Ուժերի վեկտորներ</label>
+          </section>
+
+          <section class="group">
+            <div class="formula">
+              <b>P = ρgV</b>, &nbsp;<b>P′ = P − F<sub>Ա</sub></b><br>
+              <b>F<sub>Ա</sub> = ρ<sub>հ</sub>·g·V<sub>ընկ</sub></b><br>
+              F<sub>Ա</sub> = արտամղված հեղուկի կշիռը<br>
+              g = 9.8 Ն/կգ
+            </div>
+          </section>
+        </aside>
+      </div>
+
+      <section class="explain">
+        <h2>Ինչո՞ւ է հեղուկում մարմինը «թեթևանում»</h2>
+        <p>Հեղուկի մեջ ընկղմված մարմնի վրա, բացի ծանրության ուժից, ազդում է նաև դեպի վերև ուղղված <em>արքիմեդյան ուժը</em>։ Այն առաջանում է այն պատճառով, որ հեղուկի ճնշումը մեծանում է խորության հետ, և մարմնի ստորին նիստը ներքևից ավելի ուժեղ է «հրվում», քան վերին նիստը՝ վերևից։ Ուժաչափը չափում է թելի ձգման ուժը՝ <em>P′ = P − F<sub>Ա</sub></em>, ուստի հեղուկում նրա ցուցմունքը փոքր է, քան օդում։</p>
+        <p>Արքիմեդի օրենքը ասում է. հեղուկի մեջ ընկղմված մարմնի վրա ազդող արքիմեդյան ուժը հավասար է նրա դուրս մղած հեղուկի կշռին՝ <em>F<sub>Ա</sub> = ρ<sub>հ</sub>·g·V<sub>ընկ</sub></em>։ Սա երևում է փորձում. որքան շատ հեղուկ է մարմինը դուրս մղում դեպի բաժակ, այնքան ուժաչափի ցուցմունքը նվազում է, և բաժակի հեղուկի կշիռը միշտ հավասար է ցուցմունքի նվազմանը։</p>
+        <p>Ինչ փորձել. 1) իջեցրեք մարմինը աստիճանաբար և դիտեք, որ ցուցմունքը նվազում է գծայնորեն՝ ընկղմված ծավալին համեմատ։ 2) Երբ մարմինն ամբողջովին ընկղմվի, ցուցմունքն այլևս չի փոխվում, որքան էլ խորը իջեցնեք. արքիմեդյան ուժը կախված չէ խորությունից։ 3) Վերցրեք նույն ծավալով, բայց տարբեր նյութից մարմիններ. F<sub>Ա</sub>-ն նույնն է, իսկ P-ն՝ տարբեր։ 4) Փոխեք հեղուկը. գլիցերինում F<sub>Ա</sub>-ն ավելի մեծ է, քան կերոսինում։</p>
+      </section>
+    </div>
+
+    <!-- ===== Floating condition ===== -->
+    <div id="panel-float" role="tabpanel" hidden>
+      <div class="sim-layout">
+        <section class="stage">
+          <div class="canvas-wrap canvas-wrap--grab">
+            <canvas id="fScene" aria-label="Մարմնի ընկղմումը հեղուկի մեջ"></canvas>
+            <span class="canvas-hint">Քաշեք մարմինը և բաց թողեք</span>
+          </div>
+          <div class="callout" id="fOutcome" aria-live="polite"></div>
+        </section>
+
+        <aside class="panel">
+          <section class="group" aria-label="Չափումներ">
+            <dl class="stats">
+              <div class="stat"><dt>Մարմնի խտությունը ρ</dt><dd id="fRhoB">—</dd></div>
+              <div class="stat"><dt>Հեղուկի խտությունը ρ<sub>հ</sub></dt><dd id="fRhoL">—</dd></div>
+              <div class="stat"><dt>Զանգված m = ρV</dt><dd id="fMass">—</dd></div>
+              <div class="stat"><dt>Կշիռ P = mg</dt><dd id="fWeight">—</dd></div>
+              <div class="stat"><dt>Առավելագույն արքիմեդյան ուժ ρ<sub>հ</sub>gV</dt><dd id="fFmax">—</dd></div>
+              <div class="stat"><dt>Ընկղմված մասը հավասարակշռության դեպքում</dt><dd id="fFrac">—</dd></div>
+              <div class="stat"><dt>Հեղուկի մակարդակի բարձրացում Δh</dt><dd id="fRise">—</dd></div>
+            </dl>
+          </section>
+
+          <section class="group">
+            <h2 class="group__title">Մարմինը</h2>
+            <div class="field">
+              <label class="field__label" for="fMat">Նյութ</label>
+              <select class="select" id="fMat"></select>
+            </div>
+            <div id="fDensBox" hidden>
+              <div class="field">
+                <label class="field__label" for="fRho">Խտություն ρ</label>
+                <output class="field__value" for="fRho"></output>
+                <input type="range" id="fRho" min="100" max="12000" step="10" value="1000">
+              </div>
+            </div>
+            <div class="field">
+              <label class="field__label" for="fVol">Ծավալ V</label>
+              <output class="field__value" for="fVol"></output>
+              <input type="range" id="fVol" min="50" max="500" step="10" value="200">
+            </div>
+          </section>
+
+          <section class="group">
+            <h2 class="group__title">Հեղուկը</h2>
+            <div class="field">
+              <label class="field__label" for="fLiq">Հեղուկ</label>
+              <select class="select" id="fLiq"></select>
+            </div>
+            <div class="btn-row">
+              <button class="btn btn--primary" id="fDrop">↓ Գցել նորից</button>
+            </div>
+            <div class="field">
+              <span class="field__label" id="fSpeedLabel">Անիմացիայի արագություն</span>
+              <div class="segmented" id="fSpeed" role="group" aria-labelledby="fSpeedLabel">
+                <button data-value="1" aria-pressed="true">×1</button>
+                <button data-value="0.5">×0.5</button>
+                <button data-value="0.25">×0.25</button>
+              </div>
+            </div>
+            <label class="check"><input type="checkbox" id="fVec" checked><span><i class="swatch" style="--c: var(--red)"></i>&nbsp;<i class="swatch" style="--c: var(--blue)"></i>&nbsp;<i class="swatch" style="--c: var(--amber)"></i></span>Ուժերի վեկտորներ</label>
+          </section>
+
+          <section class="group">
+            <div class="formula">
+              <b>ρ &lt; ρ<sub>հ</sub></b> — լողում է<br>
+              <b>ρ = ρ<sub>հ</sub></b> — կախված է հեղուկի մեջ<br>
+              <b>ρ &gt; ρ<sub>հ</sub></b> — սուզվում է<br><br>
+              Լողալիս՝ <b>F<sub>Ա</sub> = mg</b>,<br>
+              <b>V<sub>ընկ</sub> / V = ρ / ρ<sub>հ</sub></b>
+            </div>
+          </section>
+        </aside>
+      </div>
+
+      <section class="explain">
+        <h2>Երբ է մարմինը լողում</h2>
+        <p>Հեղուկի մեջ ամբողջովին ընկղմված մարմնի վրա ազդում են ծանրության ուժը՝ <em>mg = ρVg</em>, և արքիմեդյան ուժը՝ <em>F<sub>Ա</sub> = ρ<sub>հ</sub>Vg</em>։ Նրանց հարաբերությունը որոշվում է միայն խտությունների հարաբերությամբ։ Եթե <em>ρ &gt; ρ<sub>հ</sub></em>, ծանրության ուժը մեծ է, և մարմինը սուզվում է մինչև հատակը (այնտեղ նրա վրա ազդում է նաև հատակի նորմալ ռեակցիայի ուժը՝ N)։ Եթե <em>ρ &lt; ρ<sub>հ</sub></em>, մարմինը բարձրանում է մակերևույթ և լողում՝ մասամբ դուրս մնալով հեղուկից։</p>
+        <p>Լողացող մարմնի ընկղմված մասի ծավալն այնպիսին է, որ արքիմեդյան ուժը հավասարվում է կշռին՝ ρ<sub>հ</sub>·g·V<sub>ընկ</sub> = ρ·g·V։ Այստեղից՝ <em>V<sub>ընկ</sub> / V = ρ / ρ<sub>հ</sub></em>։ Սոճին ջրում լողում է 50 %-ով ընկղմված, սառույցը՝ 90 %-ով, իսկ երկաթե մարմինը սնդիկի վրա՝ մոտ 57 %-ով։ Երբ ρ = ρ<sub>հ</sub>, մարմինը կարող է «կախված» մնալ հեղուկի ցանկացած խորության վրա։</p>
+        <p>Գցեք մարմինը և դիտեք. նա մի քանի անգամ «ճոճվում է» հավասարակշռության դիրքի շուրջը, իսկ հեղուկի մածուցիկությունը մարում է այդ տատանումները։ Ընկղմվող մարմինը բարձրացնում է նաև հեղուկի մակարդակը։ Փորձեք «ընտրովի խտությամբ» մարմին. երբ ρ = ρ<sub>հ</sub>, մարմինը կանգ է առնում հեղուկի ներսում, եթե այն բաց թողնեք մակերևույթից ցածր։ Դանդաղեցրեք անիմացիան, որպեսզի հստակ տեսնեք տատանումները։</p>
+      </section>
+    </div>
+  </main>
+
+  <footer data-shell="footer"></footer>
+</body>
+</html>

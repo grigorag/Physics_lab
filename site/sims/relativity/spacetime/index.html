@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="hy">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Տարածաժամանակի դիագրամ · Ֆիզիկայի Լաբորատորիաներ</title>
+  <link rel="icon" href="../../../assets/img/favicon.svg" type="image/svg+xml">
+  <script src="../../../assets/js/theme-init.js"></script>
+  <link rel="stylesheet" href="../../../assets/css/main.css">
+  <link rel="stylesheet" href="./sim.css">
+  <script type="module" src="../../../assets/js/core/shell.js"></script>
+  <script type="module" src="./main.js"></script>
+</head>
+<body data-sim="spacetime" data-section="relativity">
+  <header data-shell="header"></header>
+
+  <main class="page">
+    <header class="sim-head">
+      <h1 class="sim-title">Տարածաժամանակի դիագրամ</h1>
+      <p class="sim-subtitle">Մինկովսկու դիագրամ և Լորենցի ձևափոխություններ</p>
+    </header>
+
+    <div class="sim-layout">
+      <section class="stage">
+        <div class="canvas-wrap canvas-wrap--crosshair">
+          <canvas id="cv" aria-label="Տարածաժամանակի դիագրամ. S և S′ համակարգերի առանցքները, լուսային կոնը և իրադարձությունները"></canvas>
+          <ul class="legend legend--tl">
+            <li><i class="legend__line" style="--c: var(--text-2)"></i>S համակարգի առանցքներ և ցանց</li>
+            <li><i class="legend__line" style="--c: var(--red)"></i>S′ համակարգի առանցքներ և ցանց</li>
+            <li><i class="legend__line" style="--c: var(--amber)"></i>լույսի աշխարհագծեր (լուսային կոն)</li>
+            <li><i class="legend__line" style="--c: var(--purple)"></i>տրամաչափման հիպերբոլներ</li>
+            <li><i class="legend__dot" style="--c: var(--teal)"></i>իրադարձություն</li>
+          </ul>
+          <span class="canvas-hint">Կրկնակի սեղմում՝ նոր իրադարձություն · քաշեք՝ տեղափոխելու համար</span>
+        </div>
+
+        <div class="readouts readouts--st">
+          <div class="readout">
+            <div class="readout__title"><i class="swatch" style="--c: var(--teal)"></i><span id="evTitle">Իրադարձություն</span></div>
+            <div id="evInfo"></div>
+          </div>
+          <div class="readout">
+            <div class="readout__title"><span id="pairTitle">Իրադարձությունների զույգ</span></div>
+            <div id="pairInfo"></div>
+          </div>
+        </div>
+      </section>
+
+      <aside class="panel">
+        <section class="group">
+          <div class="field">
+            <span class="field__label" id="viewLabel">Դիագրամը կառուցել</span>
+            <div class="segmented" id="view" role="group" aria-labelledby="viewLabel">
+              <button data-value="S" aria-pressed="true">S համակարգում</button>
+              <button data-value="Sp">S′ համակարգում</button>
+            </div>
+          </div>
+          <div class="field">
+            <label class="field__label" for="beta">S′-ի արագությունը S-ի նկատմամբ, β = v/c</label>
+            <output class="field__value" for="beta"></output>
+            <input type="range" id="beta" min="-0.95" max="0.95" step="0.01" value="0.6">
+          </div>
+          <dl class="stats">
+            <div class="stat"><dt>Լորենցի գործակից γ</dt><dd id="sGamma">—</dd></div>
+            <div class="stat"><dt>S′-ի առանցքների թեքությունը</dt><dd id="sAngle">—</dd></div>
+          </dl>
+          <div class="field">
+            <label class="field__label" for="zoom">Դիագրամի չափը (կիսաբարձրություն)</label>
+            <output class="field__value" for="zoom"></output>
+            <input type="range" id="zoom" min="3" max="10" step="0.5" value="5">
+          </div>
+        </section>
+
+        <section class="group">
+          <h2 class="group__title">Ցուցադրում</h2>
+          <label class="check"><input type="checkbox" id="showCone" checked> Լուսային կոն</label>
+          <label class="check"><input type="checkbox" id="showGrid" checked> S′ համակարգի ցանց</label>
+          <label class="check"><input type="checkbox" id="showHyp"> Տրամաչափման հիպերբոլներ</label>
+          <label class="check"><input type="checkbox" id="showProj" checked> Պրոյեկցիաներ առանցքների վրա</label>
+        </section>
+
+        <section class="group">
+          <h2 class="group__title">Իրադարձություններ</h2>
+          <div class="btn-row">
+            <button class="btn btn--primary" id="addBtn">+ Իրադարձություն</button>
+            <button class="btn" id="delBtn">Ջնջել ընտրվածը</button>
+          </div>
+          <div class="sel-row">
+            <div class="field">
+              <label class="field__label" for="sel1">Ընտրված</label>
+              <select class="select" id="sel1"></select>
+            </div>
+            <div class="field">
+              <label class="field__label" for="sel2">Երկրորդը (զույգ)</label>
+              <select class="select" id="sel2"></select>
+            </div>
+          </div>
+          <label class="check"><input type="checkbox" id="snap" checked> Կպչել ցանցին (0.25 քայլով)</label>
+          <button class="btn btn--block" id="clearBtn">Մաքրել բոլորը</button>
+          <p class="hint">Երկրորդ իրադարձությունը կարելի է ընտրել նաև դիագրամի վրա՝ <b>Shift</b> ստեղնը սեղմած։ Առավելագույնը 8 իրադարձություն։</p>
+        </section>
+
+        <section class="group">
+          <h2 class="group__title">Պատրաստի օրինակներ</h2>
+          <div class="preset-list" id="presets">
+            <button class="btn btn--block" data-preset="simul">Միաժամանակ իրադարձություններ</button>
+            <button class="btn btn--block" data-preset="place">Նույն տեղում</button>
+            <button class="btn btn--block" data-preset="light">Լուսային ազդանշան</button>
+            <button class="btn btn--block" data-preset="rod">Շարժվող ձող</button>
+          </div>
+          <div class="callout" id="note"></div>
+        </section>
+
+        <section class="group">
+          <div class="formula">
+            <b>x′ = γ(x − βct)</b><br>
+            <b>ct′ = γ(ct − βx)</b><br>
+            Լորենցի ձևափոխություններ<br>
+            <b>γ = 1 / √(1 − β²)</b>,&nbsp; β = v/c<br>
+            <b>s² = (cΔt)² − Δx² = (cΔt′)² − Δx′²</b><br>
+            ինտերվալը նույնն է բոլոր իներցիալ համակարգերում<br><br>
+            x-ը՝ լուսավայրկյաններով (լ.վ), t-ն՝ վայրկյաններով.<br>1 լ.վ ≈ 300 000 կմ, c = 1 լ.վ/վ
+          </div>
+        </section>
+      </aside>
+    </div>
+
+    <section class="explain">
+      <h2>Ինչպես կարդալ Մինկովսկու դիագրամը</h2>
+      <p>Դիագրամի յուրաքանչյուր կետ <em>իրադարձություն</em> է. այն տեղի է ունենում որոշակի x կետում՝ որոշակի t պահին։ Հորիզոնական առանցքով տեղադրված է կոորդինատը, ուղղաձիգով՝ ct-ն, ուստի լույսի ճառագայթի աշխարհագիծը 45° թեքությամբ ուղիղ է։ Սկզբնակետով անցնող երկու այդպիսի ուղիղները կազմում են <em>լուսային կոնը</em>. նրա վերին մասը սկզբնակետի իրադարձության ապագան է, ստորինը՝ անցյալը, իսկ կոնից դուրս գտնվող իրադարձությունների հետ («այլուր») սկզբնակետը չի կարող կապվել ոչ մի ազդանշանով, քանի որ դրա համար լույսից արագ ազդանշան կպահանջվեր։</p>
+      <p>S-ի նկատմամբ v = βc արագությամբ շարժվող S′ համակարգի ct′ առանցքը նրա սկզբնակետի աշխարհագիծն է (x = βct), իսկ x′ առանցքը այն իրադարձությունների բազմությունն է, որոնք S′-ում միաժամանակ են t′ = 0 պահի հետ (ct = βx)։ Երկու առանցքներն էլ նույն անկյունով թեքվում են դեպի լույսի աշխարհագիծը։ Թեք առանցքների վրա միավոր հատվածն ավելի երկար է գծված. նրա ծայրը գտնվում է x² − (ct)² = ±1 հիպերբոլի վրա, որը բոլոր համակարգերի համար նույնն է։ Իրադարձության կոորդինատները տվյալ համակարգում կարդում են՝ առանցքներին զուգահեռ պրոյեկտող գծեր տանելով։ Անցեք «S′ համակարգում» տեսքին. այժմ ուղղանկյուն են S′-ի առանցքները, իսկ S-ինը թեքված են հակառակ կողմ. անցման ընթացքում իրադարձությունները սահում են հիպերբոլներով, իսկ լուսային կոնը մնում է անշարժ։</p>
+      <p>Փորձեք. «Միաժամանակ իրադարձություններ» օրինակում A-ն և B-ն S-ում ունեն նույն t-ն, բայց տարբեր t′. միաժամանակությունը հարաբերական է։ «Նույն տեղում» օրինակը ցույց է տալիս ժամանակի դանդաղումը, իսկ «Շարժվող ձող»-ը՝ երկարության կրճատումը. S-ում անշարժ ձողը S′-ի նկատմամբ շարժվում է, և նրա երկարությունը S′-ում ծայրերի աշխարհագծերի միջև x′ առանցքի հատվածն է։ Ընտրեք իրադարձությունների զույգ և համոզվեք, որ s² ինտերվալը երկու համակարգերում նույնն է։ Եթե s² &gt; 0 (ժամանականման ինտերվալ), իրադարձությունների հերթականությունը բոլոր համակարգերում նույնն է, իսկ եթե s² &lt; 0 (տարածանման ինտերվալ), β-ն փոխելով կարելի է հերթականությունը շրջել. տեղափոխեք B-ն կոնից դուրս և ներս ու հետևեք Δt′-ի նշանին։</p>
+    </section>
+  </main>
+
+  <footer data-shell="footer"></footer>
+</body>
+</html>

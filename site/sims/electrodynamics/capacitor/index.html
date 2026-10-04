@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="hy">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Կոնդենսատորի լիցքավորում և լիցքաթափում · Ֆիզիկայի Լաբորատորիաներ</title>
+  <link rel="icon" href="../../../assets/img/favicon.svg" type="image/svg+xml">
+  <script src="../../../assets/js/theme-init.js"></script>
+  <link rel="stylesheet" href="../../../assets/css/main.css">
+  <link rel="stylesheet" href="./sim.css">
+  <script type="module" src="../../../assets/js/core/shell.js"></script>
+  <script type="module" src="./main.js"></script>
+</head>
+<body data-sim="capacitor" data-section="electrodynamics">
+  <header data-shell="header"></header>
+
+  <main class="page">
+    <header class="sim-head">
+      <h1 class="sim-title">Կոնդենսատորի լիցքավորում և լիցքաթափում</h1>
+      <p class="sim-subtitle">RC շղթա</p>
+    </header>
+
+    <div class="tabs" role="tablist" id="tabs">
+      <button role="tab" data-tab="rc" aria-controls="panel-rc" aria-selected="true">RC շղթա</button>
+      <button role="tab" data-tab="plates" aria-controls="panel-plates">Հարթ կոնդենսատոր</button>
+    </div>
+
+    <!-- ===== RC circuit ===== -->
+    <div id="panel-rc" role="tabpanel">
+      <div class="sim-layout">
+        <section class="stage">
+          <div class="canvas-wrap">
+            <canvas id="rcScene" aria-label="RC շղթայի սխեմա՝ աղբյուր, երկդիրք անջատիչ, ռեզիստոր, կոնդենսատոր, ամպերաչափ և վոլտաչափ"></canvas>
+            <span class="canvas-hint">Սեղմեք անջատիչի վրա՝ դիրքը փոխելու համար</span>
+          </div>
+          <div class="charts">
+            <canvas class="chart" id="rcChartU" aria-label="Կոնդենսատորի լարումը՝ կախված ժամանակից"></canvas>
+            <canvas class="chart" id="rcChartI" aria-label="Հոսանքի ուժը՝ կախված ժամանակից"></canvas>
+          </div>
+          <p class="chart-caption">Կետագծերը նշում են τ և 5τ պահերը՝ վերջին փոփոխությունից հետո։ τ ժամանակում լարումը հասնում է իր փոփոխության 63 %-ին։ Շոշափողը t = 0 պահին հատում է վերջնական մակարդակը հենց τ պահին։ Երբ I &gt; 0, կոնդենսատորը լիցքավորվում է, երբ I &lt; 0՝ լիցքաթափվում։</p>
+        </section>
+
+        <aside class="panel">
+          <section class="group" aria-label="Չափումներ">
+            <dl class="stats">
+              <div class="stat"><dt>Ժամանակի հաստատուն τ = RC</dt><dd id="rcTau">—</dd></div>
+              <div class="stat"><dt>Ժամանակը՝ անջատիչը փոխելուց հետո</dt><dd id="rcT">—</dd></div>
+              <div class="stat"><dt>Լարում կոնդենսատորի վրա U<sub>C</sub></dt><dd id="rcUc">—</dd></div>
+              <div class="stat"><dt>Լարում ռեզիստորի վրա U<sub>R</sub></dt><dd id="rcUr">—</dd></div>
+              <div class="stat"><dt>Հոսանքի ուժ I</dt><dd id="rcI">—</dd></div>
+              <div class="stat"><dt>Լիցք q = C·U<sub>C</sub></dt><dd id="rcQ">—</dd></div>
+              <div class="stat"><dt>Էներգիա W = CU<sub>C</sub>²/2</dt><dd id="rcW">—</dd></div>
+              <div class="stat"><dt>Ռեզիստորում անջատված ջերմություն Q</dt><dd id="rcHeat">—</dd></div>
+              <div class="stat"><dt>Ժամանակի մասշտաբ</dt><dd id="rcScale">—</dd></div>
+            </dl>
+          </section>
+
+          <section class="group">
+            <h2 class="group__title">Անջատիչ</h2>
+            <div class="segmented" id="rcSwitch" role="group" aria-label="Անջատիչի դիրք">
+              <button data-value="charge" aria-pressed="true">1 · Լիցքավորում</button>
+              <button data-value="discharge">2 · Լիցքաթափում</button>
+            </div>
+            <div class="btn-row">
+              <button class="btn" id="rcPlay"></button>
+              <button class="btn" id="rcReset">↺ Լիցքաթափել ամբողջությամբ</button>
+            </div>
+          </section>
+
+          <section class="group">
+            <h2 class="group__title">Պարամետրեր</h2>
+            <div class="field">
+              <label class="field__label" for="rcEps">Աղբյուրի էլեկտրաշարժ ուժ ε</label>
+              <output class="field__value" for="rcEps"></output>
+              <input type="range" id="rcEps" min="1" max="24" step="0.5" value="10">
+            </div>
+            <div class="field">
+              <label class="field__label" for="rcR">Դիմադրություն R</label>
+              <output class="field__value" for="rcR"></output>
+              <input type="range" id="rcR" min="2" max="5" step="0.01" value="4">
+            </div>
+            <div class="field">
+              <label class="field__label" for="rcC">Տարողություն C</label>
+              <output class="field__value" for="rcC"></output>
+              <input type="range" id="rcC" min="0" max="3" step="0.01" value="2">
+            </div>
+            <div class="field">
+              <label class="field__label" for="rcSpeed">Ժամանակի արագություն</label>
+              <output class="field__value" for="rcSpeed"></output>
+              <input type="range" id="rcSpeed" min="-2" max="2" step="0.05" value="0">
+            </div>
+            <label class="check"><input type="checkbox" id="rcAuto">Ավտոմատ՝ τ-ն ≈ 2 վ էկրանի վրա</label>
+            <p class="hint">R-ի և C-ի սահքերը լոգարիթմական են։ Շատ փոքր կամ շատ մեծ τ-ի դեպքում մոդելի ժամանակն արագացրեք կամ դանդաղեցրեք։</p>
+          </section>
+
+          <section class="group">
+            <h2 class="group__title">Գրաֆիկներ</h2>
+            <label class="check"><input type="checkbox" id="rcTangent" checked>Շոշափող t = 0 պահին</label>
+          </section>
+
+          <section class="group">
+            <div class="formula">
+              <b>τ = RC</b><br>
+              Լիցքավորում՝ <b>U<sub>C</sub> = ε(1 − e<sup>−t/τ</sup>)</b><br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;I = (ε/R)·e<sup>−t/τ</sup><br>
+              Լիցքաթափում՝ <b>U<sub>C</sub> = U<sub>0</sub>·e<sup>−t/τ</sup></b><br>
+              q = CU, &nbsp;W = CU²/2 = q²/(2C)<br>
+              ε = U<sub>R</sub> + U<sub>C</sub>
+            </div>
+          </section>
+        </aside>
+      </div>
+
+      <section class="explain">
+        <h2>Ինչպես է լիցքավորվում կոնդենսատորը ռեզիստորի միջով</h2>
+        <p>Երբ անջատիչը դնում ենք 1-ին դիրքի, աղբյուրը ռեզիստորի միջով միանում է կոնդենսատորին։ Սկզբում կոնդենսատորը լիցքավորված չէ, նրա լարումը զրո է, ուստի ամբողջ ԷլՇՈւ-ն ընկնում է ռեզիստորի վրա, և հոսանքը առավելագույնն է՝ I<sub>0</sub> = ε/R։ Թիթեղների վրա լիցք կուտակվելուն զուգընթաց U<sub>C</sub>-ն աճում է, ռեզիստորի վրա լարումը՝ U<sub>R</sub> = ε − U<sub>C</sub>, նվազում է, ուստի նվազում է նաև հոսանքը։ Արդյունքում լարումը աճում է էքսպոնենտով՝ U<sub>C</sub> = ε(1 − e<sup>−t/RC</sup>), իսկ հոսանքը նույն օրենքով մարում է։</p>
+        <p>Գործընթացի արագությունը որոշվում է ժամանակի հաստատունով՝ <em>τ = RC</em>։ τ ժամանակում լարումը հասնում է վերջնական արժեքի 63 %-ին (1 − 1/e ≈ 0.63), 3τ-ում՝ 95 %-ին, իսկ 5τ-ում՝ ավելի քան 99 %-ին, ուստի կոնդենսատորն այդ պահից գործնականում լիցքավորված է։ Երբ անջատիչը դնում ենք 2-րդ դիրքի, կոնդենսատորը լիցքաթափվում է նույն ռեզիստորի միջով՝ U<sub>C</sub> = U<sub>0</sub>·e<sup>−t/RC</sup>, և τ ժամանակում լարումը նվազում է մինչև սկզբնականի 37 %-ը։ Հոսանքի ուղղությունը փոխվում է հակառակի, ինչը երևում է շարժվող լիցքերից և I-ի նշանից։</p>
+        <p>Փորձեք. կրկնապատկեք R-ը կամ C-ն և համոզվեք, որ լիցքավորումը երկու անգամ դանդաղում է։ Փոխեք անջատիչի դիրքը գործընթացի կեսին՝ կոնդենսատորը շարունակում է այն լիցքից, որ ունի այդ պահին։ Դիտեք էներգիան․ լիցքավորման ժամանակ կոնդենսատորում կուտակվում է W = Cε²/2, ռեզիստորում էլ անջատվում է նույնքան ջերմություն՝ անկախ R-ի արժեքից, այնպես որ աղբյուրի կատարած աշխատանքի կեսը վերածվում է ջերմության։</p>
+      </section>
+    </div>
+
+    <!-- ===== Parallel-plate capacitor ===== -->
+    <div id="panel-plates" role="tabpanel" hidden>
+      <div class="sim-layout">
+        <section class="stage">
+          <div class="canvas-wrap">
+            <canvas id="plScene" aria-label="Հարթ կոնդենսատոր՝ թիթեղներ, դիէլեկտրիկ, լիցքեր և ուժագծեր"></canvas>
+            <span class="canvas-hint">Սեղմեք բանալու վրա՝ աղբյուրը միացնելու կամ անջատելու համար</span>
+          </div>
+          <p class="chart-caption">Ուժագծերի խտությունը համեմատական է E-ին, թիթեղների վրա լիցքերի թիվը՝ q-ին։ Գծագրի մասշտաբը պայմանական է․ իրականում թիթեղների չափերը բացը շատ անգամ գերազանցում են։</p>
+        </section>
+
+        <aside class="panel">
+          <section class="group" aria-label="Չափումներ">
+            <dl class="stats">
+              <div class="stat"><dt>Տարողություն C</dt><dd id="plC">—</dd></div>
+              <div class="stat"><dt>Լիցք q</dt><dd id="plQ">—</dd></div>
+              <div class="stat"><dt>Լարում U</dt><dd id="plU">—</dd></div>
+              <div class="stat"><dt>Լարվածություն E = U/d</dt><dd id="plE">—</dd></div>
+              <div class="stat"><dt>Էներգիա W = CU²/2</dt><dd id="plW">—</dd></div>
+            </dl>
+            <p class="hint">Փոքր գրությունը (×k) ցույց է տալիս փոփոխությունը համեմատման սկզբնակետի նկատմամբ։</p>
+            <button class="btn btn--block" id="plBase">Ընթացիկ վիճակը՝ սկզբնակետ</button>
+          </section>
+
+          <section class="group">
+            <h2 class="group__title">Կոնդենսատոր</h2>
+            <div class="field">
+              <label class="field__label" for="plArea">Թիթեղի մակերես S</label>
+              <output class="field__value" for="plArea"></output>
+              <input type="range" id="plArea" min="10" max="400" step="5" value="100">
+            </div>
+            <div class="field">
+              <label class="field__label" for="plGap">Թիթեղների հեռավորությունը d</label>
+              <output class="field__value" for="plGap"></output>
+              <input type="range" id="plGap" min="0.5" max="5" step="0.1" value="1">
+            </div>
+            <div class="field">
+              <label class="field__label" for="plDi">Դիէլեկտրիկ</label>
+              <select class="select" id="plDi">
+                <option value="1" selected>օդ (ε = 1)</option>
+                <option value="3.5">թուղթ (ε = 3.5)</option>
+                <option value="7">ապակի (ε = 7)</option>
+                <option value="81">ջուր (ε = 81)</option>
+              </select>
+            </div>
+          </section>
+
+          <section class="group">
+            <h2 class="group__title">Աղբյուր</h2>
+            <div class="segmented" id="plConn" role="group" aria-label="Կոնդենսատորի միացումը աղբյուրին">
+              <button data-value="on" aria-pressed="true">Միացված է</button>
+              <button data-value="off">Անջատված է</button>
+            </div>
+            <div class="field">
+              <label class="field__label" for="plVolt">Աղբյուրի լարում U</label>
+              <output class="field__value" for="plVolt"></output>
+              <input type="range" id="plVolt" min="1" max="50" step="1" value="10">
+            </div>
+            <div class="callout" id="plNote"></div>
+          </section>
+
+          <section class="group">
+            <div class="formula">
+              <b>C = ε<sub>0</sub>εS/d</b>, &nbsp;ε<sub>0</sub> = 8.85·10<sup>−12</sup> Ֆ/մ<br>
+              q = CU, &nbsp;E = U/d<br>
+              W = CU²/2 = q²/(2C)
+            </div>
+          </section>
+        </aside>
+      </div>
+
+      <section class="explain">
+        <h2>Հարթ կոնդենսատորի տարողությունը</h2>
+        <p>Հարթ կոնդենսատորը իրար զուգահեռ երկու թիթեղ է, որոնց միջև դիէլեկտրիկ է։ Նրա տարողությունը՝ C = ε<sub>0</sub>εS/d, ուղիղ համեմատական է թիթեղի մակերեսին և դիէլեկտրիկ թափանցելիությանը ու հակադարձ համեմատական է թիթեղների հեռավորությանը։ Օդային 100 սմ² թիթեղներով և 1 մմ բացով կոնդենսատորի տարողությունը ընդամենը մոտ 88.5 պՖ է, իսկ ապակու դեպքում՝ 7 անգամ ավելի։</p>
+        <p>Եթե կոնդենսատորը միացված է աղբյուրին, նրա լարումը հաստատուն է, և տարողության փոփոխության դեպքում փոխվում է լիցքը՝ q = CU։ Օրինակ՝ d-ն մեծացնելիս C-ն, q-ն, W-ն և E = U/d-ն նվազում են։ Եթե կոնդենսատորը լիցքավորելուց հետո անջատենք աղբյուրից, լիցքը մնում է հաստատուն, և փոխվում է լարումը՝ U = q/C։ Այդ դեպքում d-ն կրկնապատկելիս U-ն և W-ն կրկնապատկվում են (աշխատանք է կատարվում թիթեղները հեռացնելու վրա), իսկ E-ն չի փոխվում։</p>
+        <p>Փորձեք. անջատեք աղբյուրը և թիթեղների արանքում «մտցրեք» ապակի կամ ջուր․ լարումը և լարվածությունը կնվազեն ε անգամ, քանի որ դիէլեկտրիկը թուլացնում է դաշտը։ Ապա նորից միացրեք աղբյուրը և համեմատեք՝ այդ դեպքում լարումը նույնն է, բայց լիցքը ε անգամ ավելանում է։</p>
+      </section>
+    </div>
+  </main>
+
+  <footer data-shell="footer"></footer>
+</body>
+</html>

@@ -1,0 +1,9 @@
+/* Archimedes' principle: sim-specific tweaks (tokens only). */
+
+/* Short buttons share the row on the narrow panel. */
+.btn-row > .btn { flex: 1 1 auto; }
+
+/* The outcome callout takes its accent from the verdict. */
+#fOutcome[data-kind="floats"]    { --accent: var(--teal); }
+#fOutcome[data-kind="suspended"] { --accent: var(--amber); }
+#fOutcome[data-kind="sinks"]     { --accent: var(--coral); }

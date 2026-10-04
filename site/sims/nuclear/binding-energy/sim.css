@@ -1,0 +1,19 @@
+/* Nuclear binding energy — sim-specific bits (tokens only). */
+
+/* The reaction equation in the panel. */
+.equation {
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  font-family: var(--font-mono);
+  font-size: var(--fs-md);
+  font-weight: 600;
+  text-align: center;
+  color: var(--text);
+  line-height: 1.6;
+}
+
+/* Long nuclide names in the stats may wrap instead of overflowing. */
+#b-name, #c-name { white-space: normal; }
+

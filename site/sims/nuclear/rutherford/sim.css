@@ -1,0 +1,8 @@
+/* Rutherford's experiment — sim-specific tweaks (tokens only). */
+
+/* The model names are words, not values: use the text font. */
+#model1 > button,
+#model2 > button { font-family: var(--font-sans); }
+
+.chart-caption .swatch { margin: 0 4px 0 10px; }
+.chart-caption .swatch:first-child { margin-left: 0; }

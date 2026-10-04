@@ -1,0 +1,13 @@
+/* Maxwell distribution — sim-specific bits (tokens only). */
+
+/* Gradient swatch: the speed colour scale used in the box and the histogram. */
+.swatch--speed {
+  width: 22px;
+  background: linear-gradient(90deg, var(--blue), var(--teal), var(--amber), var(--red));
+}
+
+.chart-caption .swatch { margin: 0 4px 0 10px; vertical-align: -1px; }
+.chart-caption .swatch:first-child { margin-left: 0; }
+
+/* Mean value: v with an overline (the combining macron renders poorly in the mono font). */
+.vbar { text-decoration: overline; text-decoration-thickness: 1px; }

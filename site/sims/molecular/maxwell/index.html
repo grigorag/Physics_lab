@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="hy">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Մոլեկուլների բաշխումն ըստ արագությունների · Ֆիզիկայի Լաբորատորիաներ</title>
+  <link rel="icon" href="../../../assets/img/favicon.svg" type="image/svg+xml">
+  <script src="../../../assets/js/theme-init.js"></script>
+  <link rel="stylesheet" href="../../../assets/css/main.css">
+  <link rel="stylesheet" href="./sim.css">
+  <script type="module" src="../../../assets/js/core/shell.js"></script>
+  <script type="module" src="./main.js"></script>
+</head>
+<body data-sim="maxwell" data-section="molecular">
+  <header data-shell="header"></header>
+
+  <main class="page">
+    <header class="sim-head">
+      <h1 class="sim-title">Մոլեկուլների բաշխումն ըստ արագությունների</h1>
+      <p class="sim-subtitle">Մաքսվելի բաշխումը</p>
+    </header>
+
+    <div class="tabs" role="tablist" id="tabs">
+      <button role="tab" data-tab="model" aria-controls="panel-model" aria-selected="true">Մոդել՝ գազ անոթում (2D)</button>
+      <button role="tab" data-tab="theory" aria-controls="panel-theory">Տեսական բաշխում (3D)</button>
+    </div>
+
+    <!-- ===== 2D hard-disc gas ===== -->
+    <div id="panel-model" role="tabpanel">
+      <div class="sim-layout">
+        <section class="stage">
+          <div class="canvas-wrap">
+            <canvas id="box" aria-label="Մոլեկուլները անոթում՝ գունավորված ըստ արագության"></canvas>
+          </div>
+          <canvas class="chart" id="hist" aria-label="Մոլեկուլների արագությունների հիստոգրամը և տեսական կորը"></canvas>
+          <p class="chart-caption">
+            <i class="swatch swatch--square swatch--speed"></i>մոդելի հիստոգրամը (սյան գույնը՝ ըստ արագության, ինչպես անոթում)
+            <i class="swatch" style="--c: var(--text)"></i>տեսական կորը (2D)
+          </p>
+        </section>
+
+        <aside class="panel">
+          <section class="group" aria-label="Չափումներ">
+            <dl class="stats">
+              <div class="stat"><dt>Միջին արագություն <span class="vbar">v</span></dt><dd id="mMean">—</dd></div>
+              <div class="stat"><dt>Միջին քառակուսային արագություն v<sub>քմ</sub></dt><dd id="mRms">—</dd></div>
+              <div class="stat"><dt>Հարաբերություն <span class="vbar">v</span> / v<sub>քմ</sub></dt><dd id="mRatio">—</dd></div>
+              <div class="stat"><dt>Տեսությունը (2D)՝ √π / 2</dt><dd id="mRatioTh">0.886</dd></div>
+              <div class="stat"><dt>Լրիվ կինետիկ էներգիա E / E<sub>0</sub></dt><dd id="mEnergy">—</dd></div>
+              <div class="stat"><dt>Ժամանակ t</dt><dd id="mTime">—</dd></div>
+            </dl>
+            <p class="hint" id="relaxHint"></p>
+          </section>
+
+          <section class="group">
+            <h2 class="group__title">Սկզբնական վիճակ</h2>
+            <div class="segmented" id="startMode" role="group" aria-label="Սկզբնական վիճակ">
+              <button data-value="equal" aria-pressed="true">Բոլորը նույն արագությամբ</button>
+              <button data-value="thermal">Հավասարակշռված</button>
+            </div>
+            <div class="field">
+              <label class="field__label" for="nSlider">Մոլեկուլների թիվը N</label>
+              <output class="field__value" for="nSlider"></output>
+              <input type="range" id="nSlider" min="100" max="600" step="50" value="300">
+            </div>
+            <div class="field">
+              <label class="field__label" for="tSim">Ջերմաստիճան T</label>
+              <output class="field__value" for="tSim"></output>
+              <input type="range" id="tSim" min="100" max="1000" step="50" value="300">
+            </div>
+            <label class="check"><input type="checkbox" id="avg" checked> Հիստոգրամը միջինացնել ըստ ժամանակի (≈1 վ)</label>
+            <div class="btn-row">
+              <button class="btn" id="simPlay"></button>
+              <button class="btn" id="simReset">↺ Նորից սկսել</button>
+            </div>
+          </section>
+
+          <section class="group">
+            <p class="hint">Մոդելը <b>հարթ</b> է՝ սկավառակներ հարթության մեջ։ Երկչափ գազի հավասարակշռային բաշխումը մի փոքր տարբերվում է եռաչափից՝ f(v) = (mv/kT)·e<sup>−mv²/2kT</sup>, ուստի հիստոգրամի վրա գծված է հենց այս կորը։ Իրական (եռաչափ) գազի բաշխումը տե՛ս «Տեսական բաշխում (3D)» ներդիրում։ Արագությունները պայմանական միավորներով են։</p>
+            <div class="formula">
+              <b>f(v) = (mv/kT)·e<sup>−mv²/2kT</sup></b> (2D)<br>
+              v<sub>հ</sub> = √(kT/m)<br>
+              <span class="vbar">v</span> = √(πkT/2m)<br>
+              v<sub>քմ</sub> = √(2kT/m)<br>
+              <span class="vbar">v</span> / v<sub>քմ</sub> = √π / 2 ≈ 0.886
+            </div>
+          </section>
+        </aside>
+      </div>
+    </div>
+
+    <!-- ===== 3D Maxwell distribution ===== -->
+    <div id="panel-theory" role="tabpanel" hidden>
+      <div class="sim-layout">
+        <section class="stage">
+          <canvas class="chart" id="maxwell" aria-label="Մաքսվելի բաշխման կորը"></canvas>
+          <p class="chart-caption">
+            <i class="swatch" style="--c: var(--coral)"></i>ընտրված գազը
+            <i class="swatch" style="--c: var(--blue)"></i>պահված կորը
+            <i class="swatch swatch--square" style="--c: var(--amber)"></i>v &gt; v<sub>0</sub> մոլեկուլների բաժինը (մակերեսը)
+          </p>
+          <div class="callout" id="escapeNote">
+            <b>Ինչու՞ Երկիրը կորցրեց ջրածինը։</b> Երկրի ձգողությունից ազատվելու համար մոլեկուլին անհրաժեշտ է երկրորդ տիեզերական արագություն՝ 11.2 կմ/վ։ Մթնոլորտի վերին շերտերում ջերմաստիճանը հասնում է ≈1000–1500 Կ-ի։ Այնտեղ N₂-ի մոլեկուլների մեջ այդքան արագները գործնականում չկան, իսկ H₂-ի և He-ի մոտ դրանց բաժինը թեև փոքր է, բայց զրո չէ։ Միլիարդավոր տարիների ընթացքում հենց այդ արագ մոլեկուլներն են հեռացել տիեզերք, ուստի Երկրի մթնոլորտում ազատ ջրածին և հելիում գրեթե չկա։
+          </div>
+        </section>
+
+        <aside class="panel">
+          <section class="group" aria-label="Բնութագրական արագություններ">
+            <dl class="stats">
+              <div class="stat"><dt>Ամենահավանական արագություն v<sub>հ</sub></dt><dd id="tVp">—</dd></div>
+              <div class="stat"><dt>Միջին արագություն <span class="vbar">v</span></dt><dd id="tMean">—</dd></div>
+              <div class="stat"><dt>Միջին քառակուսային արագություն v<sub>քմ</sub></dt><dd id="tRms">—</dd></div>
+              <div class="stat"><dt>v &gt; v<sub>0</sub> մոլեկուլների բաժինը</dt><dd id="tFrac">—</dd></div>
+              <div class="stat"><dt>Կորի տակի մակերեսը ∫f(v)dv</dt><dd id="tArea">—</dd></div>
+            </dl>
+            <p class="hint" id="pinInfo"></p>
+          </section>
+
+          <section class="group">
+            <h2 class="group__title">Գազը և ջերմաստիճանը</h2>
+            <div class="field">
+              <label class="field__label" for="gas">Գազ</label>
+              <output class="field__value" id="gasM"></output>
+              <select class="select" id="gas">
+                <option value="H2">H₂ (ջրածին)</option>
+                <option value="He">He (հելիում)</option>
+                <option value="N2" selected>N₂ (ազոտ)</option>
+                <option value="O2">O₂ (թթվածին)</option>
+                <option value="Ar">Ar (արգոն)</option>
+                <option value="CO2">CO₂ (ածխաթթու գազ)</option>
+              </select>
+            </div>
+            <div class="field">
+              <label class="field__label" for="tReal">Ջերմաստիճան T</label>
+              <output class="field__value" for="tReal"></output>
+              <input type="range" id="tReal" min="50" max="1500" step="10" value="300">
+            </div>
+            <div class="field">
+              <label class="field__label" for="v0">Շեմային արագություն v<sub>0</sub></label>
+              <output class="field__value" for="v0"></output>
+              <input type="range" id="v0" min="0" max="15000" step="100" value="1000">
+            </div>
+            <div class="btn-row">
+              <button class="btn" id="escapeBtn"><span>v<sub>0</sub> = 11.2 կմ/վ</span></button>
+              <button class="btn" id="pinBtn">Պահել կորը</button>
+            </div>
+          </section>
+
+          <section class="group">
+            <div class="formula">
+              <b>f(v) = 4π·(M/2πRT)<sup>3/2</sup>·v²·e<sup>−Mv²/2RT</sup></b><br>
+              v<sub>հ</sub> = √(2RT/M)<br>
+              <span class="vbar">v</span> = √(8RT/πM)<br>
+              v<sub>քմ</sub> = √(3RT/M)<br>
+              R = 8.31 Ջ/(մոլ·Կ)
+            </div>
+          </section>
+        </aside>
+      </div>
+    </div>
+
+    <section class="explain">
+      <h2>Ինչ է կատարվում այստեղ</h2>
+      <p>Գազի մոլեկուլները շարժվում են տարբեր արագություններով, և յուրաքանչյուր բախումից հետո մոլեկուլի արագությունը փոխվում է։ Այնուամենայնիվ, հավասարակշռված գազում արագությունների <em>բաշխումը</em> մնում է նույնը. դանդաղ և շատ արագ մոլեկուլները քիչ են, մեծ մասն ունի ամենահավանական արագությանը մոտ արագություն։ Այս բաշխումը ստացել է Ջ. Մաքսվելը 1860 թվականին։ f(v) ֆունկցիան ցույց է տալիս, թե մոլեկուլների որ բաժինն է ընկնում v-ի մոտ միավոր լայնությամբ արագությունների միջակայքում, իսկ կորի տակի ամբողջ մակերեսը հավասար է 1-ի (100 %)։</p>
+      <p>«Մոդել» ներդիրում բոլոր մոլեկուլները սկզբում ունեն նույն արագությունը, և հիստոգրամը մեկ նեղ սյուն է։ Դիտեք, թե ինչպես առաձգական բախումները մի քանի վայրկյանում «քսում» են այն և ձևավորում հավասարակշռային բաշխումը, իսկ լրիվ կինետիկ էներգիան մնում է անփոփոխ։ <span class="vbar">v</span> / v<sub>քմ</sub> հարաբերությունը 1-ից իջնում է մինչև 0.886։ Փոքր N-ի դեպքում բախումներն ավելի հազվադեպ են, և հավասարակշռումը տևում է ավելի երկար։</p>
+      <p>«Տեսական բաշխում» ներդիրում ջերմաստիճանը բարձրացնելիս կորը շարժվում է դեպի մեծ արագությունները և ցածրանում՝ նրա տակի մակերեսը մնում է 1։ Թեթև գազերի (H₂, He) մոլեկուլներն այդ նույն ջերմաստիճանում շատ ավելի արագ են, քան ծանրերինը (v ∝ √(T/M))։ Պահեք կորը, ապա փոխեք ջերմաստիճանը կամ գազը և համեմատեք։ Շեմային արագությունը դրեք 11.2 կմ/վ և համեմատեք H₂-ը և N₂-ը 1500 Կ-ում։</p>
+    </section>
+  </main>
+
+  <footer data-shell="footer"></footer>
+</body>
+</html>

@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="hy">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Էլեկտրամագնիսական ինդուկցիա · Ֆիզիկայի Լաբորատորիաներ</title>
+  <link rel="icon" href="../../../assets/img/favicon.svg" type="image/svg+xml">
+  <script src="../../../assets/js/theme-init.js"></script>
+  <link rel="stylesheet" href="../../../assets/css/main.css">
+  <script type="module" src="../../../assets/js/core/shell.js"></script>
+  <script type="module" src="./main.js"></script>
+</head>
+<body data-sim="induction" data-section="electrodynamics">
+  <header data-shell="header"></header>
+
+  <main class="page">
+    <header class="sim-head">
+      <h1 class="sim-title">Էլեկտրամագնիսական ինդուկցիա</h1>
+      <p class="sim-subtitle">Ֆարադեյի օրենքը և Լենցի կանոնը</p>
+    </header>
+
+    <div class="tabs" role="tablist" id="tabs">
+      <button role="tab" data-tab="magnet" aria-controls="panel-magnet" aria-selected="true">Մագնիս և կոճ</button>
+      <button role="tab" data-tab="frame" aria-controls="panel-frame">Շրջանակը դաշտում</button>
+    </div>
+
+    <!-- ===== Magnet and coil ===== -->
+    <div id="panel-magnet" role="tabpanel">
+      <div class="sim-layout">
+        <section class="stage">
+          <div class="canvas-wrap canvas-wrap--grab">
+            <canvas id="mScene" aria-label="Մշտական մագնիս, կոճ և գալվանաչափ"></canvas>
+            <ul class="legend legend--tl">
+              <li><i class="legend__line" style="--c: var(--text-3)"></i>մագնիսի դաշտի ուժագծեր</li>
+              <li><i class="legend__dot" style="--c: var(--amber)"></i>ինդուկցիոն հոսանքի ուղղությունը</li>
+            </ul>
+            <span class="canvas-hint">Քաշեք մագնիսը աջ ու ձախ</span>
+          </div>
+          <canvas class="chart" id="mChart" aria-label="Մագնիսական հոսքի և ինդուկցիայի ԷլՇՈւ-ի գրաֆիկները՝ կախված ժամանակից"></canvas>
+          <p class="chart-caption">Վերևում՝ մեկ գալարով անցնող մագնիսական հոսքը, ներքևում՝ ինդուկցիայի ԷլՇՈւ-ն։ ε-ն զրո է այն պահերին, երբ Φ-ն առավելագույն կամ նվազագույն է, և ամենամեծն է, երբ Φ-ն ամենաարագ է փոխվում։</p>
+        </section>
+
+        <aside class="panel">
+          <section class="group" aria-label="Չափումներ">
+            <dl class="stats">
+              <div class="stat"><dt>Հոսքը մեկ գալարով Φ</dt><dd id="mPhi">—</dd></div>
+              <div class="stat"><dt>Հոսքի փոփոխման արագություն ΔΦ/Δt</dt><dd id="mRate">—</dd></div>
+              <div class="stat"><dt>Ինդուկցիայի ԷլՇՈւ ε</dt><dd id="mEmf">—</dd></div>
+              <div class="stat"><dt>Հոսանքի ուժ I = ε/R</dt><dd id="mI">—</dd></div>
+              <div class="stat"><dt>Հոսանքը (ձախից նայելիս)</dt><dd id="mDir">—</dd></div>
+            </dl>
+            <div class="callout" id="mLenz">—</div>
+          </section>
+
+          <section class="group">
+            <h2 class="group__title">Մագնիսի շարժումը</h2>
+            <label class="check"><input type="checkbox" id="mAuto"> Ինքնաշխատ տատանումներ</label>
+            <div class="field">
+              <label class="field__label" for="mFreq">Հաճախություն ν</label>
+              <output class="field__value" for="mFreq"></output>
+              <input type="range" id="mFreq" min="0.2" max="3" step="0.1" value="1">
+            </div>
+            <div class="field">
+              <label class="field__label" for="mAmp">Ամպլիտուդ A</label>
+              <output class="field__value" for="mAmp"></output>
+              <input type="range" id="mAmp" min="1" max="10" step="0.5" value="5">
+            </div>
+            <p class="hint" id="mAutoHint">Մագնիսը տատանվում է իր ներկայիս դիրքի շուրջը։ Քաշելիս ինքնաշխատ ռեժիմն անջատվում է։</p>
+          </section>
+
+          <section class="group">
+            <h2 class="group__title">Մագնիս և կոճ</h2>
+            <div class="field">
+              <label class="field__label" for="mTurns">Գալարների թիվը N</label>
+              <output class="field__value" for="mTurns"></output>
+              <input type="range" id="mTurns" min="50" max="500" step="50" value="200">
+            </div>
+            <div class="field">
+              <label class="field__label" for="mMoment">Մագնիսի մագնիսական մոմենտ p<sub>m</sub></label>
+              <output class="field__value" for="mMoment"></output>
+              <input type="range" id="mMoment" min="1" max="10" step="0.5" value="5">
+            </div>
+            <div class="field">
+              <label class="field__label" for="mRes">Շղթայի դիմադրություն R</label>
+              <output class="field__value" for="mRes"></output>
+              <input type="range" id="mRes" min="2" max="50" step="1" value="10">
+            </div>
+            <div class="btn-row">
+              <button class="btn" id="mFlip">⇄ Շրջել մագնիսը</button>
+              <button class="btn" id="mReset">↺ Սկզբնական դիրք</button>
+            </div>
+          </section>
+
+          <section class="group">
+            <div class="formula">
+              <b>ε = −N·ΔΦ/Δt</b> &nbsp;(Ֆարադեյի օրենք)<br>
+              <b>I = ε/R</b><br>
+              «−» նշանը Լենցի կանոնն է. ինդուկցիոն հոսանքի մագնիսական դաշտը հակազդում է հոսքի փոփոխությանը։<br>
+              1 Վբ = 1 Տլ·մ²
+            </div>
+          </section>
+        </aside>
+      </div>
+
+      <section class="explain">
+        <h2>Ֆարադեյի փորձը</h2>
+        <p>1831 թ. Մայքլ Ֆարադեյը հայտնաբերեց, որ փակ հաղորդիչ կոճում էլեկտրական հոսանք է առաջանում, երբ փոխվում է նրա միջով անցնող <em>մագնիսական հոսքը</em>՝ Φ = B·S·cos α։ Այս երևույթը կոչվում է <em>էլեկտրամագնիսական ինդուկցիա</em>, իսկ առաջացող հոսանքը՝ ինդուկցիոն հոսանք։ Կարևոր է ոչ թե դաշտի մեծությունը, այլ նրա փոփոխությունը. անշարժ մագնիսը, որքան էլ ուժեղ լինի, հոսանք չի առաջացնում։ Ինդուկցիայի ԷլՇՈւ-ն համեմատական է հոսքի փոփոխման արագությանը և գալարների թվին՝ <em>ε = −N·ΔΦ/Δt</em>։</p>
+        <p>Ինդուկցիոն հոսանքի ուղղությունը որոշվում է <em>Լենցի կանոնով</em>. ինդուկցիոն հոսանքն ունի այնպիսի ուղղություն, որ նրա մագնիսական դաշտը հակազդում է այն առաջացնող հոսքի փոփոխությանը։ Երբ մագնիսի N բևեռը մոտենում է կոճին, կոճի մոտակա ծայրը նույնպես դառնում է N բևեռ և վանում մագնիսը. երբ մագնիսը հեռանում է, այդ ծայրը դառնում է S և ձգում այն։ Այդ պատճառով մագնիսը շարժելու համար աշխատանք է պետք կատարել. հենց այդ աշխատանքն է փոխակերպվում հոսանքի էներգիայի (էներգիայի պահպանման օրենք)։</p>
+        <p>Քաշեք մագնիսը և հետևեք գալվանաչափի սլաքին. մոտեցնելիս և հեռացնելիս այն շեղվում է տարբեր կողմեր, իսկ որքան արագ եք շարժում, այնքան մեծ է շեղումը։ Շրջեք մագնիսը, կրկնապատկեք գալարների թիվը, միացրեք ինքնաշխատ ռեժիմը և փոխեք հաճախությունը. ε-ի ամպլիտուդը համեմատական է հաճախությանը։ Մոդելում մագնիսը փոխարինված է իր ծայրերի մոտ գտնվող երկու մագնիսական բևեռներով (երկարությունը՝ 10 սմ), իսկ կոճի շառավիղը 3 սմ է, երկարությունը՝ 8 սմ։</p>
+      </section>
+    </div>
+
+    <!-- ===== Rotating frame ===== -->
+    <div id="panel-frame" role="tabpanel" hidden>
+      <div class="sim-layout">
+        <section class="stage">
+          <div class="canvas-wrap">
+            <canvas id="fScene" aria-label="Համասեռ մագնիսական դաշտում պտտվող շրջանակ՝ փոփոխական հոսանքի գեներատոր"></canvas>
+            <ul class="legend legend--tl">
+              <li><i class="legend__line" style="--c: var(--text-3)"></i>մագնիսական ինդուկցիայի գծեր B</li>
+              <li><i class="legend__line" style="--c: var(--purple)"></i>շրջանակի նորմալը n</li>
+              <li><i class="legend__dot" style="--c: var(--amber)"></i>ինդուկցիայի ԷլՇՈւ-ի ուղղությունը</li>
+            </ul>
+          </div>
+          <canvas class="chart" id="fChart" aria-label="Մագնիսական հոսքի և ինդուկցիայի ԷլՇՈւ-ի գրաֆիկները՝ կախված ժամանակից"></canvas>
+          <p class="chart-caption">Φ(t)-ն և ε(t)-ն շեղված են քառորդ պարբերությամբ. ε-ն առավելագույնն է, երբ շրջանակի հարթությունը զուգահեռ է ուժագծերին (Φ = 0)։ Ժամանակն իրական է, իսկ բարձր հաճախությունների դեպքում պտույտը ցուցադրվում է դանդաղեցված։</p>
+        </section>
+
+        <aside class="panel">
+          <section class="group" aria-label="Չափումներ">
+            <dl class="stats">
+              <div class="stat"><dt>ԷլՇՈւ-ի ամպլիտուդ ε<sub>max</sub> = NBSω</dt><dd id="fEmax">—</dd></div>
+              <div class="stat"><dt>Գործող արժեք ε<sub>max</sub>/√2</dt><dd id="fEeff">—</dd></div>
+              <div class="stat"><dt>Պարբերություն T</dt><dd id="fT">—</dd></div>
+              <div class="stat"><dt>Հաճախություն ν</dt><dd id="fNu">—</dd></div>
+              <div class="stat"><dt>Անկյունային արագություն ω</dt><dd id="fOmega">—</dd></div>
+              <div class="stat"><dt>Անկյուն α = ωt</dt><dd id="fAngle">—</dd></div>
+              <div class="stat"><dt>Հոսք Φ = BS·cos α</dt><dd id="fPhi">—</dd></div>
+              <div class="stat"><dt>ԷլՇՈւ ε</dt><dd id="fEmf">—</dd></div>
+            </dl>
+          </section>
+
+          <section class="group">
+            <h2 class="group__title">Պարամետրեր</h2>
+            <div class="field">
+              <label class="field__label" for="fB">Մագնիսական ինդուկցիա B</label>
+              <output class="field__value" for="fB"></output>
+              <input type="range" id="fB" min="0.1" max="1" step="0.05" value="0.5">
+            </div>
+            <div class="field">
+              <label class="field__label" for="fS">Շրջանակի մակերես S</label>
+              <output class="field__value" for="fS"></output>
+              <input type="range" id="fS" min="20" max="200" step="10" value="100">
+            </div>
+            <div class="field">
+              <label class="field__label" for="fN">Գալարների թիվը N</label>
+              <output class="field__value" for="fN"></output>
+              <input type="range" id="fN" min="10" max="200" step="10" value="100">
+            </div>
+            <div class="field">
+              <label class="field__label" for="fFreq">Պտտման հաճախություն ν</label>
+              <output class="field__value" for="fFreq"></output>
+              <input type="range" id="fFreq" min="0.5" max="50" step="0.5" value="1">
+            </div>
+            <p class="hint" id="fSlowHint"></p>
+            <div class="btn-row">
+              <button class="btn" id="fPlay"></button>
+              <button class="btn" id="fReset">↺ Սկսել նորից</button>
+            </div>
+          </section>
+
+          <section class="group">
+            <div class="formula">
+              <b>Φ = B·S·cos ωt</b><br>
+              <b>ε = −N·ΔΦ/Δt = N·B·S·ω·sin ωt</b><br>
+              ε<sub>max</sub> = N·B·S·ω, &nbsp;ω = 2πν = 2π/T<br>
+              ε<sub>գործ</sub> = ε<sub>max</sub>/√2
+            </div>
+          </section>
+        </aside>
+      </div>
+
+      <section class="explain">
+        <h2>Փոփոխական հոսանքի գեներատոր</h2>
+        <p>Մագնիսական հոսքը կարելի է փոխել ոչ միայն մագնիսը շարժելով, այլև շրջանակը դաշտում պտտելով։ Եթե S մակերեսով շրջանակը ω անկյունային արագությամբ պտտվում է B ինդուկցիայով համասեռ դաշտում, ապա շրջանակի նորմալի և ուժագծերի միջև անկյունը α = ωt է, և հոսքը փոխվում է կոսինուսի օրենքով՝ <em>Φ = B·S·cos ωt</em>։ Ֆարադեյի օրենքից ստացվում է սինուսոիդային ԷլՇՈւ՝ <em>ε = N·B·S·ω·sin ωt</em>։ Այսպես են աշխատում էլեկտրակայանների գեներատորները։</p>
+        <p>Ուշադրություն դարձրեք փուլերին. երբ շրջանակի հարթությունը ուղղահայաց է ուժագծերին, հոսքն առավելագույնն է, բայց այդ պահին այն չի փոխվում, և ε = 0։ Երբ շրջանակի հարթությունը զուգահեռ է ուժագծերին, հոսքը զրո է, բայց ամենաարագ է փոխվում, և ԷլՇՈւ-ն առավելագույնն է։ Շրջանակի ծայրերը միացված են սահող օղակներին, որոնց վրայով սահում են խոզանակները. այդպես արտաքին շղթայում ստացվում է փոփոխական լարում, որը ցույց է տալիս վոլտաչափը։</p>
+        <p>Ստուգեք. N = 100, B = 0.5 Տլ, S = 100 սմ² = 0.01 մ², ν = 50 Հց դեպքում ε<sub>max</sub> = 100 · 0.5 · 0.01 · 2π · 50 ≈ 157 Վ, իսկ գործող արժեքը՝ ≈ 111 Վ։ Կրկնապատկեք հաճախությունը. կրկնապատկվում է և՛ ամպլիտուդը, և՛ տատանումների հաճախությունը։</p>
+      </section>
+    </div>
+  </main>
+
+  <footer data-shell="footer"></footer>
+</body>
+</html>

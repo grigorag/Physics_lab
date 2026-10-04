@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="hy">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ձայնային ալիքներ և զարկեր · Ֆիզիկայի Լաբորատորիաներ</title>
+  <link rel="icon" href="../../../assets/img/favicon.svg" type="image/svg+xml">
+  <script src="../../../assets/js/theme-init.js"></script>
+  <link rel="stylesheet" href="../../../assets/css/main.css">
+  <script type="module" src="../../../assets/js/core/shell.js"></script>
+  <script type="module" src="./main.js"></script>
+</head>
+<body data-sim="beats" data-section="waves">
+  <header data-shell="header"></header>
+
+  <main class="page">
+    <header class="sim-head">
+      <h1 class="sim-title">Ձայնային ալիքներ և զարկեր</h1>
+      <p class="sim-subtitle">տատանումների գումարում</p>
+    </header>
+
+    <div class="tabs" role="tablist" id="tabs">
+      <button role="tab" data-tab="sound" aria-controls="panel-sound" aria-selected="true">Ձայնային ալիք</button>
+      <button role="tab" data-tab="beats" aria-controls="panel-beats">Զարկեր</button>
+    </div>
+
+    <!-- ===== Tab 1: sound wave ===== -->
+    <div id="panel-sound" role="tabpanel">
+      <div class="sim-layout">
+        <section class="stage">
+          <div class="canvas-wrap">
+            <canvas id="sCv" aria-label="Բարձրախոսի թաղանթը, օդի մասնիկների տատանումները և շեղման ու ճնշման գրաֆիկները"></canvas>
+          </div>
+          <p class="chart-caption">
+            Թաղանթը մղում է օդը՝ առաջանում են
+            <i class="swatch" style="--c: var(--coral)"></i> խտացումներ և
+            <i class="swatch" style="--c: var(--blue)"></i> նոսրացումներ, որոնք շարժվում են աջ։
+            Դեղին նշված մասնիկները ալիքի հետ չեն տեղափոխվում, այլ միայն տատանվում են իրենց հավասարակշռության դիրքի շուրջը։
+            Գրաֆիկներում ուղղահայաց առանցքը ցույց է տալիս ամպլիտուդի ամբողջ թույլատրելի տիրույթը։
+          </p>
+          <p class="chart-caption">
+            Իրական տատանումները (20–2000 Հց) աչքով չեն երևում, ուստի անիմացիան դանդաղեցված է
+            <b id="sSlow">×1</b> անգամ։ Մասնիկների շեղումները խիստ ուռճացված են։
+          </p>
+        </section>
+
+        <aside class="panel">
+          <section class="group" aria-label="Չափումներ">
+            <dl class="stats">
+              <div class="stat"><dt>Հաճախություն f</dt><dd id="sStatF">—</dd></div>
+              <div class="stat"><dt>Պարբերություն T = 1/f</dt><dd id="sStatT">—</dd></div>
+              <div class="stat"><dt>Ալիքի երկարություն λ = v/f</dt><dd id="sStatLambda">—</dd></div>
+              <div class="stat"><dt>Ձայնի արագություն v</dt><dd id="sStatV">—</dd></div>
+              <div class="stat"><dt>Մոտակա նոտա</dt><dd id="sStatNote">—</dd></div>
+              <div class="stat"><dt>Անիմացիայի դանդաղեցում</dt><dd id="sStatSlow">—</dd></div>
+            </dl>
+          </section>
+
+          <section class="group">
+            <h2 class="group__title">Պարամետրեր</h2>
+            <div class="field">
+              <label class="field__label" for="sFreq">Հաճախություն f</label>
+              <output class="field__value" for="sFreq"></output>
+              <input type="range" id="sFreq" min="0" max="1000" step="1" value="671">
+            </div>
+            <div class="field">
+              <span class="field__label" id="sPresetLabel">Արագ ընտրություն</span>
+              <div class="segmented" id="sPreset" role="group" aria-labelledby="sPresetLabel">
+                <button data-value="100">100</button>
+                <button data-value="343">343</button>
+                <button data-value="440" aria-pressed="true">440</button>
+                <button data-value="1000">1000</button>
+              </div>
+            </div>
+            <div class="field">
+              <label class="field__label" for="sAmp">Ամպլիտուդ A</label>
+              <output class="field__value" for="sAmp"></output>
+              <input type="range" id="sAmp" min="5" max="100" step="1" value="60">
+            </div>
+            <div class="field">
+              <span class="field__label" id="sMediumLabel">Միջավայր</span>
+              <div class="segmented" id="sMedium" role="group" aria-labelledby="sMediumLabel">
+                <button data-value="air" aria-pressed="true">Օդ</button>
+                <button data-value="water">Ջուր</button>
+                <button data-value="steel">Պողպատ</button>
+              </div>
+            </div>
+            <p class="hint">Օդում v = 343 մ/վ, ջրում՝ 1480 մ/վ, պողպատում՝ 5100 մ/վ։ Հաճախությունը որոշվում է աղբյուրով և միջավայր անցնելիս չի փոխվում, փոխվում է միայն ալիքի երկարությունը։</p>
+          </section>
+
+          <section class="group">
+            <div class="btn-row">
+              <button class="btn" id="sPlay"></button>
+              <button class="btn" id="sListen" aria-pressed="false">🔊 Լսել</button>
+            </div>
+          </section>
+
+          <section class="group">
+            <h2 class="group__title">Գրաֆիկներ</h2>
+            <label class="check"><input type="checkbox" id="sShowXi" checked><i class="swatch swatch--square" style="--c: var(--purple)"></i>Մասնիկների շեղում ξ(x)</label>
+            <label class="check"><input type="checkbox" id="sShowP" checked><i class="swatch swatch--square" style="--c: var(--text)"></i>Ճնշում p(x)</label>
+            <label class="check"><input type="checkbox" id="sShowMarkers" checked><i class="swatch" style="--c: var(--amber)"></i>Նշված մասնիկներ</label>
+          </section>
+
+          <section class="group">
+            <div class="formula">
+              <b>λ = v / f</b>, &nbsp;<b>T = 1 / f</b>, &nbsp;v = λ·f<br>
+              ξ(x, t) = A·sin(ωt − kx), &nbsp;k = 2π/λ<br>
+              p ∼ −∂ξ/∂x ∼ cos(ωt − kx)
+            </div>
+            <div class="callout">
+              <b>Հաճախություն և ձայնի բարձրություն։</b> Որքան մեծ է f, այնքան ձայնը բարձր է.
+              <b>ամպլիտուդը</b> որոշում է ձայնի ուժգնությունը (որքան մեծ է A, այնքան ձայնը բարձր է հնչում)։
+              Մարդու ականջը լսում է 16 Հց – 20 կՀց տիրույթում. ավելի ցածր հաճախություններն
+              <b>ինֆրաձայն</b> են, ավելի բարձրները՝ <b>ուլտրաձայն</b>։
+              <br><span id="sPitchNote"></span>
+            </div>
+          </section>
+        </aside>
+      </div>
+
+      <section class="explain">
+        <h2>Ձայնը՝ երկայնական ալիք</h2>
+        <p>Ձայնի աղբյուրը տատանվող մարմին է, օրինակ՝ բարձրախոսի թաղանթը։ Առաջ շարժվելիս այն սեղմում է իր առջևի օդը՝ առաջանում է խտացում, հետ շարժվելիս օդը նոսրանում է։ Խտացումներն ու նոսրացումները հերթափոխվելով տարածվում են միջավայրով։ Օդի մասնիկները ալիքի հետ չեն տեղափոխվում. յուրաքանչյուրը ալիքի տարածման ուղղությամբ տատանվում է իր հավասարակշռության դիրքի շուրջը։ Այդպիսի ալիքը կոչվում է երկայնական։</p>
+        <p>Գրաֆիկները ցույց են տալիս, որ ճնշումը առավելագույնն է (խտացում) այնտեղ, որտեղ մասնիկների շեղումը զրո է, իսկ շեղման առավելագույնների մոտ ճնշումը նորմալ է. շեղումը և ճնշումը իրարից տեղաշարժված են քառորդ ալիքով։ Ալիքի արագությունը որոշվում է միջավայրով, հաճախությունը՝ աղբյուրով, իսկ ալիքի երկարությունը՝ <em>λ = v/f</em>։ Նույն հաճախության դեպքում ջրում ալիքն օդի համեմատ մոտ 4.3 անգամ երկար է, իսկ պողպատում՝ մոտ 15 անգամ։</p>
+        <p>Ընտրեք 343 Հց հաճախություն օդում. ալիքի երկարությունը կլինի ճիշտ 1 մ։ Փոխեք միջավայրը և հետևեք λ-ի փոփոխությանը, ապա փոխեք հաճախությունը և ամպլիտուդը ու սեղմեք «Լսել»՝ համոզվելու համար, որ հաճախությունը որոշում է ձայնի բարձրությունը, իսկ ամպլիտուդը՝ ուժգնությունը։</p>
+      </section>
+    </div>
+
+    <!-- ===== Tab 2: beats ===== -->
+    <div id="panel-beats" role="tabpanel" hidden>
+      <div class="sim-layout">
+        <section class="stage">
+          <div class="canvas-wrap">
+            <canvas id="bCv" aria-label="Երկու տատանումների և նրանց գումարի գրաֆիկները՝ կախված ժամանակից"></canvas>
+          </div>
+          <p class="chart-caption">
+            Վերևի երկու գրաֆիկները առանձին տոնեն են, ներքևինը՝ նրանց գումարը։
+            Ընդհատվող կորը գումարի ամպլիտուդի պարուրիչն է, ուղղահայաց կետագծերը՝ նրա առավելագույնները (ձայնի «զարկերը»)։
+            Փոխեք «Ժամանակային պատուհանը»՝ առանձին տատանումները կամ ամբողջ զարկերը տեսնելու համար։
+          </p>
+          <p class="chart-caption">
+            Ժամանակը դանդաղեցված է <b id="bSlow">×8</b> անգամ. պատուհանն անցնում է 8 վայրկյանում։ Ձայնը հնչում է իրական ժամանակով։
+          </p>
+        </section>
+
+        <aside class="panel">
+          <section class="group" aria-label="Չափումներ">
+            <dl class="stats">
+              <div class="stat"><dt>Առաջին տոնի հաճախություն f<sub>1</sub></dt><dd id="bStatF1">—</dd></div>
+              <div class="stat"><dt>Երկրորդ տոնի հաճախություն f<sub>2</sub></dt><dd id="bStatF2">—</dd></div>
+              <div class="stat"><dt>Միջին հաճախություն (f<sub>1</sub> + f<sub>2</sub>)/2</dt><dd id="bStatMean">—</dd></div>
+              <div class="stat"><dt>Զարկերի հաճախություն |f<sub>1</sub> − f<sub>2</sub>|</dt><dd id="bStatBeat">—</dd></div>
+              <div class="stat"><dt>Զարկերի պարբերություն T<sub>զ</sub></dt><dd id="bStatPeriod">—</dd></div>
+              <div class="stat"><dt>Առավելագույն ամպլիտուդ A<sub>1</sub> + A<sub>2</sub></dt><dd id="bStatMax">—</dd></div>
+              <div class="stat"><dt>Նվազագույն ամպլիտուդ |A<sub>1</sub> − A<sub>2</sub>|</dt><dd id="bStatMin">—</dd></div>
+            </dl>
+          </section>
+
+          <section class="group">
+            <h2 class="group__title">Պարամետրեր</h2>
+            <div class="field">
+              <label class="field__label" for="bF1">Հաճախություն f<sub>1</sub></label>
+              <output class="field__value" for="bF1"></output>
+              <input type="range" id="bF1" min="200" max="600" step="1" value="440">
+            </div>
+            <div class="field">
+              <label class="field__label" for="bDf">Տարբերություն Δf = f<sub>2</sub> − f<sub>1</sub></label>
+              <output class="field__value" for="bDf"></output>
+              <input type="range" id="bDf" min="-20" max="20" step="0.5" value="4">
+            </div>
+            <div class="field">
+              <label class="field__label" for="bA1">Ամպլիտուդ A<sub>1</sub></label>
+              <output class="field__value" for="bA1"></output>
+              <input type="range" id="bA1" min="0.1" max="1" step="0.05" value="1">
+            </div>
+            <div class="field">
+              <label class="field__label" for="bA2">Ամպլիտուդ A<sub>2</sub></label>
+              <output class="field__value" for="bA2"></output>
+              <input type="range" id="bA2" min="0.1" max="1" step="0.05" value="1">
+            </div>
+            <div class="field">
+              <label class="field__label" for="bZoom">Ժամանակային պատուհան</label>
+              <output class="field__value" for="bZoom"></output>
+              <input type="range" id="bZoom" min="-1.699" max="0.301" step="0.01" value="0">
+            </div>
+            <p class="hint">Փոքր պատուհանում երևում են առանձին տատանումները, մեծում՝ զարկերը։</p>
+          </section>
+
+          <section class="group">
+            <div class="btn-row">
+              <button class="btn" id="bPlay"></button>
+              <button class="btn" id="bRestart">↺ Սկսել նորից</button>
+              <button class="btn" id="bListen" aria-pressed="false">🔊 Լսել</button>
+            </div>
+          </section>
+
+          <section class="group">
+            <h2 class="group__title">Գրաֆիկ</h2>
+            <label class="check"><input type="checkbox" id="bShowEnv" checked><i class="swatch swatch--square" style="--c: var(--coral)"></i>Պարուրիչ (ընդհատվող կոր)</label>
+          </section>
+
+          <section class="group">
+            <div class="formula">
+              <b>y = A<sub>1</sub>·sin 2πf<sub>1</sub>t + A<sub>2</sub>·sin 2πf<sub>2</sub>t</b><br>
+              <b>f<sub>զ</sub> = |f<sub>1</sub> − f<sub>2</sub>|</b>, &nbsp;T<sub>զ</sub> = 1/f<sub>զ</sub><br>
+              A<sub>max</sub> = A<sub>1</sub> + A<sub>2</sub>, &nbsp;A<sub>min</sub> = |A<sub>1</sub> − A<sub>2</sub>|
+            </div>
+            <div class="callout" id="bNote"></div>
+          </section>
+        </aside>
+      </div>
+
+      <section class="explain">
+        <h2>Զարկեր</h2>
+        <p>Երբ միաժամանակ հնչում են երկու մոտ հաճախությամբ ձայներ, նրանց տատանումները գումարվում են։ Որոշ պահերի տատանումները համընկնում են փուլով և ուժեղացնում են իրար, մյուս պահերին հակափուլ են և թուլացնում են։ Արդյունքում ձայնի ուժգնությունը պարբերաբար աճում և նվազում է. այդ երևույթը կոչվում է զարկեր։</p>
+        <p>Նույն ամպլիտուդների դեպքում գումարը կարելի է գրել որպես <em>y = 2A·cos(π(f<sub>1</sub> − f<sub>2</sub>)t)·sin(2π·(f<sub>1</sub> + f<sub>2</sub>)t/2)</em>։ Ձայնը հնչում է միջին հաճախությամբ, իսկ նրա ամպլիտուդը դանդաղ փոխվում է պարուրիչի օրենքով։ Ուժգնության առավելագույնների հաճախությունը՝ զարկերի հաճախությունն է՝ <em>f<sub>զ</sub> = |f<sub>1</sub> − f<sub>2</sub>|</em>։ Եթե ամպլիտուդները տարբեր են, գումարի ամպլիտուդը փոխվում է A<sub>1</sub> + A<sub>2</sub>-ից մինչև |A<sub>1</sub> − A<sub>2</sub>|, ուստի զարկերը լրիվ չեն մարում։</p>
+        <p>Փորձեք f<sub>1</sub> = 440 Հց և Δf = 4 Հց. կլսեք վայրկյանում 4 զարկ, իսկ մեկ վայրկյան տևողությամբ պատուհանում կտեսնեք պարուրիչի 4 առավելագույն։ Երբ Δf = 0, զարկեր չկան։ Երբ Δf-ը մեծանում է, զարկերն արագանում են և անցնում 15–20 Հց-ից, դադարում են լսվել որպես առանձին ուժեղացումներ։ Զարկերի վրա է հիմնված երաժշտական գործիքների լարումը. երբ զարկերը վերանում են, հաճախությունները հավասար են։</p>
+      </section>
+    </div>
+  </main>
+
+  <footer data-shell="footer"></footer>
+</body>
+</html>

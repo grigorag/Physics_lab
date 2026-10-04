@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="hy">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Մոլորակների շարժումը․ Կեպլերի օրենքները · Ֆիզիկայի Լաբորատորիաներ</title>
+  <link rel="icon" href="../../../assets/img/favicon.svg" type="image/svg+xml">
+  <script src="../../../assets/js/theme-init.js"></script>
+  <link rel="stylesheet" href="../../../assets/css/main.css">
+  <link rel="stylesheet" href="./sim.css">
+  <script type="module" src="../../../assets/js/core/shell.js"></script>
+  <script type="module" src="./main.js"></script>
+</head>
+<body data-sim="kepler" data-section="mechanics">
+  <header data-shell="header"></header>
+
+  <main class="page">
+    <header class="sim-head">
+      <h1 class="sim-title">Մոլորակների շարժումը․ Կեպլերի օրենքները</h1>
+      <p class="sim-subtitle">շարժումը Արեգակի ձգողության դաշտում</p>
+    </header>
+
+    <div class="sim-layout">
+      <section class="stage">
+        <div class="canvas-wrap canvas-wrap--grab">
+          <canvas id="cv" aria-label="Մոլորակի ուղեծիրը Արեգակի շուրջը"></canvas>
+          <ul class="legend legend--tl">
+            <li><i class="legend__line" style="--c: var(--blue)"></i>հետագիծ</li>
+            <li><i class="legend__line" style="--c: var(--text-3)"></i>հաշվարկված ուղեծիր</li>
+            <li class="js-vel"><i class="legend__dot" style="--c: var(--coral)"></i><span>արագություն v</span></li>
+            <li class="js-force"><i class="legend__dot" style="--c: var(--teal)"></i><span>ձգողության ուժ F</span></li>
+            <li class="js-areas" hidden><i class="legend__dot" style="--c: var(--purple)"></i><span>հավասար Δt-ներում գծած սեկտորներ</span></li>
+          </ul>
+          <span class="canvas-hint" id="cvHint">Քաշեք արագության սլաքի ծայրը կամ սկզբնական կետը</span>
+        </div>
+
+        <div class="readouts">
+          <div class="readout">
+            <div class="readout__title"><i class="swatch" style="--c: var(--blue)"></i>Մոլորակը</div>
+            <div id="posOut"></div>
+          </div>
+          <div class="readout">
+            <div class="readout__title"><i class="swatch" style="--c: var(--coral)"></i>Արագություն</div>
+            <div id="velOut"></div>
+          </div>
+          <div class="readout">
+            <div class="readout__title"><i class="swatch" style="--c: var(--purple)"></i>Հավասար մակերեսներ</div>
+            <div id="areaOut"></div>
+          </div>
+        </div>
+
+        <h2 class="chart-title">Կեպլերի III օրենքը․ T²/a³ = const</h2>
+        <div>
+          <canvas class="chart" id="chart" aria-label="Պտտման պարբերության կախումը մեծ կիսաառանցքից (լոգարիթմական սանդղակ)"></canvas>
+        </div>
+        <p class="chart-caption">
+          Երկու առանցքներն էլ լոգարիթմական են, ուստի T² = a³ կախումն ուղիղ գիծ է՝ 3/2 թեքությամբ։
+          <i class="swatch" style="--c: var(--text-3)"></i>Արեգակնային համակարգի մոլորակներ
+          <i class="swatch" style="--c: var(--blue)"></i>ընթացիկ ուղեծիր
+        </p>
+      </section>
+
+      <aside class="panel">
+        <section class="group">
+          <div class="btn-row">
+            <button class="btn btn--primary" id="playBtn"></button>
+            <button class="btn" id="resetBtn">↺ Վերագործարկել</button>
+          </div>
+          <div class="field">
+            <span class="field__label" id="presetLabel">Օրինակներ</span>
+            <div class="segmented" id="preset" role="group" aria-labelledby="presetLabel">
+              <button data-value="earth" aria-pressed="true">Երկիր</button>
+              <button data-value="mars">Մարս</button>
+              <button data-value="mercury">Մերկուրի</button>
+              <button data-value="halley">Հալլեյի գիսաստղ</button>
+              <button data-value="custom">Ազատ</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="group">
+          <h2 class="group__title">Սկզբնական պայմաններ</h2>
+          <div class="field">
+            <label class="field__label" for="r0">Հեռավորությունն Արեգակից r₀</label>
+            <output class="field__value" for="r0"></output>
+            <input type="range" id="r0" min="0.3" max="3" step="0.001" value="1">
+          </div>
+          <div class="field">
+            <label class="field__label" for="kv">Արագությունը v₀ / v₁</label>
+            <output class="field__value" for="kv"></output>
+            <input type="range" id="kv" min="0.4" max="1.5" step="0.001" value="1">
+          </div>
+          <p class="hint" id="kvHint"></p>
+          <div class="field">
+            <label class="field__label" for="beta">Շեղումն ուղղահայացից β</label>
+            <output class="field__value" for="beta"></output>
+            <input type="range" id="beta" min="-60" max="60" step="1" value="0">
+          </div>
+          <div class="field">
+            <label class="field__label" for="mass">Կենտրոնական աստղի զանգվածը M</label>
+            <output class="field__value" for="mass"></output>
+            <input type="range" id="mass" min="0.5" max="2" step="0.05" value="1">
+          </div>
+          <p class="hint">v₁ = √(GM/r₀)՝ շրջանային (առաջին տիեզերական) արագությունը սկզբնական կետում։ β = 0 դեպքում արագությունն ուղղահայաց է շառավղին, β &gt; 0՝ թեքված է Արեգակից դուրս։</p>
+        </section>
+
+        <section class="group">
+          <h2 class="group__title">Ցուցադրում</h2>
+          <label class="check"><input type="checkbox" id="elements" checked> Էլիպսի տարրերը (կիզակետեր, a, b)</label>
+          <label class="check"><input type="checkbox" id="areas"> Հավասար մակերեսներ</label>
+          <label class="check"><input type="checkbox" id="vel" checked> Արագության վեկտորը</label>
+          <label class="check"><input type="checkbox" id="force" checked> Ձգողության ուժի վեկտորը</label>
+          <label class="check"><input type="checkbox" id="trail" checked> Հետագիծ</label>
+          <div class="field">
+            <span class="field__label" id="speedLabel">Ժամանակի արագություն</span>
+            <output class="field__value" id="speedOut"></output>
+            <div class="segmented" id="speed" role="group" aria-labelledby="speedLabel">
+              <button data-value="0.25">×¼</button>
+              <button data-value="0.5">×½</button>
+              <button data-value="1" aria-pressed="true">×1</button>
+              <button data-value="2">×2</button>
+              <button data-value="4">×4</button>
+            </div>
+          </div>
+          <div class="btn-row">
+            <button class="btn" id="keepBtn">⊕ Պահել ուղեծիրը</button>
+            <button class="btn" id="clearBtn">✕ Մաքրել</button>
+          </div>
+          <p class="hint">Պահված ուղեծրերը (մինչև 4-ը) մնում են նկարում և III օրենքի գրաֆիկում՝ համեմատելու համար։</p>
+        </section>
+
+        <section class="group">
+          <h2 class="group__title">Ուղեծիրը</h2>
+          <div class="callout" id="typeBox"></div>
+          <dl class="stats">
+            <div class="stat"><dt>Մեծ կիսաառանցք a</dt><dd id="sA">—</dd></div>
+            <div class="stat"><dt>Փոքր կիսաառանցք b</dt><dd id="sB">—</dd></div>
+            <div class="stat"><dt>Էքսցենտրիսիտետ e</dt><dd id="sE">—</dd></div>
+            <div class="stat"><dt>Պարբերություն T = √(a³/M)</dt><dd id="sT">—</dd></div>
+            <div class="stat"><dt>Չափված T</dt><dd id="sTm">—</dd></div>
+            <div class="stat"><dt>Պերիհելիոն r<sub>p</sub></dt><dd id="sQ">—</dd></div>
+            <div class="stat"><dt>Արագությունը պերիհելիոնում</dt><dd id="sVq">—</dd></div>
+            <div class="stat"><dt>Աֆելիոն r<sub>a</sub></dt><dd id="sAp">—</dd></div>
+            <div class="stat"><dt>Արագությունն աֆելիոնում</dt><dd id="sVa">—</dd></div>
+            <div class="stat"><dt>Լրիվ էներգիան 1 կգ-ի համար E</dt><dd id="sEn">—</dd></div>
+            <div class="stat"><dt>E-ի փոփոխությունը ΔE/|E|</dt><dd id="sDrift">—</dd></div>
+            <div class="stat"><dt>Սեկտորային արագություն ΔS/Δt</dt><dd id="sAreal">—</dd></div>
+          </dl>
+          <p class="hint">Էներգիան՝ (ա.մ./տարի)²-ով, 1 կգ զանգվածի համար։ 1 ա.մ./տարի ≈ 4.74 կմ/վ։</p>
+        </section>
+
+        <section class="group">
+          <div class="formula">
+            <b>F = GMm / r²</b><br>
+            ձգողության ուժը<br>
+            <b>v₁ = √(GM/r),&nbsp; v₂ = √2·v₁</b><br>
+            շրջանային և երկրորդ տիեզերական արագություններ<br>
+            <b>E = v²/2 − GM/r = −GM/(2a)</b><br>
+            E &lt; 0՝ էլիպս, E = 0՝ պարաբոլ, E &gt; 0՝ հիպերբոլ<br>
+            <b>r<sub>p</sub> = a(1 − e),&nbsp; r<sub>a</sub> = a(1 + e)</b><br>
+            <b>b = a·√(1 − e²)</b><br>
+            <b>ΔS/Δt = r·v<sub>⊥</sub>/2 = const</b><br>
+            II օրենք<br>
+            <b>T² = 4π²a³ / (GM)</b><br>
+            III օրենք. ա.մ.-ով և տարիներով՝ T² = a³/M<br>
+            (GM<sub>☉</sub> = 4π² ա.մ.³/տարի²)
+          </div>
+        </section>
+      </aside>
+    </div>
+
+    <section class="explain">
+      <h2>Ինչպե՞ս են շարժվում մոլորակները</h2>
+      <p>Մոլորակի վրա ազդում է միայն Արեգակի ձգողության ուժը՝ F = GMm/r², որն ուղղված է դեպի Արեգակը։ Այդ ուժի ազդեցությամբ մոլորակը շարժվում է կոնական հատույթով։ <em>Կեպլերի I օրենքը</em>. մոլորակները շարժվում են էլիպսներով, որոնց կիզակետերից մեկում Արեգակն է։ Էլիպսի ձևը որոշում է էքսցենտրիսիտետը՝ e = 0 դեպքում ուղեծիրը շրջանագիծ է, իսկ e-ն 1-ին մոտենալիս էլիպսը ձգվում է։ Եթե սկզբնական արագությունը հավասար է շրջանային v₁ արագությանը, ուղեծիրը շրջանագիծ է, իսկ եթե հասնում է √2·v₁-ի (երկրորդ տիեզերական արագություն), լրիվ էներգիան դառնում է զրո, և մարմինը հեռանում է պարաբոլով՝ այլևս չվերադառնալով։</p>
+      <p><em>Կեպլերի II օրենքը</em>. Արեգակը մոլորակին միացնող շառավիղ-վեկտորը հավասար ժամանակամիջոցներում գծում է հավասար մակերեսներ։ Դա իմպուլսի մոմենտի պահպանման հետևանք է, քանի որ ձգողության ուժն ուղղված է դեպի կենտրոն։ Ուստի պերիհելիոնի մոտ մոլորակը շարժվում է արագ, իսկ աֆելիոնի մոտ՝ դանդաղ։ Միացրեք «Հավասար մակերեսներ» ցուցադրումը. սեկտորները պերիհելիոնի մոտ կարճ են ու լայն, աֆելիոնի մոտ՝ երկար ու նեղ, բայց նրանց մակերեսները նույնն են։</p>
+      <p><em>Կեպլերի III օրենքը</em>. պտտման պարբերության քառակուսու հարաբերությունը մեծ կիսաառանցքի խորանարդին նույնն է նույն աստղի շուրջը պտտվող բոլոր մոլորակների համար՝ T²/a³ = 4π²/(GM)։ Ստուգեք. r₀ = 1 ա.մ. և v₀ = 1.2·v₁ դեպքում a = 1.786 ա.մ., T = 2.386 տարի։ Պահեք մի քանի ուղեծիր և տեսեք, որ դրանց կետերը գրաֆիկում ընկնում են նույն ուղղի վրա։ Կրկնապատկեք կենտրոնական աստղի զանգվածը. ուղեծրի ձևը չի փոխվի, բայց պարբերությունը կփոքրանա √2 անգամ։</p>
+    </section>
+  </main>
+
+  <footer data-shell="footer"></footer>
+</body>
+</html>

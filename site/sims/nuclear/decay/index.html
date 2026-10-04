@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="hy">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ռադիոակտիվ տրոհման օրենքը · Ֆիզիկայի Լաբորատորիաներ</title>
+  <link rel="icon" href="../../../assets/img/favicon.svg" type="image/svg+xml">
+  <script src="../../../assets/js/theme-init.js"></script>
+  <link rel="stylesheet" href="../../../assets/css/main.css">
+  <link rel="stylesheet" href="./sim.css">
+  <script type="module" src="../../../assets/js/core/shell.js"></script>
+  <script type="module" src="./main.js"></script>
+</head>
+<body data-sim="decay" data-section="nuclear">
+  <header data-shell="header"></header>
+
+  <main class="page">
+    <header class="sim-head">
+      <h1 class="sim-title">Ռադիոակտիվ տրոհման օրենքը</h1>
+      <p class="sim-subtitle">կիսատրոհման պարբերություն</p>
+    </header>
+
+    <div class="sim-layout">
+      <section class="stage">
+        <div class="canvas-wrap">
+          <canvas id="scene" aria-label="Ռադիոակտիվ նմուշ. յուրաքանչյուր կետ մեկ միջուկ է"></canvas>
+        </div>
+
+        <div>
+          <canvas class="chart" id="chart" aria-label="Չտրոհված միջուկների թիվը և ակտիվությունը ժամանակից կախված"></canvas>
+        </div>
+        <p class="chart-caption">
+          <span><i class="swatch" style="--c: var(--amber)"></i><span id="capP">չտրոհված միջուկներ N</span></span>
+          <span id="capD" hidden><i class="swatch" style="--c: var(--pink)"></i>դուստր միջուկներ N₂</span>
+          <span id="capS" hidden><i class="swatch" style="--c: var(--blue)"></i>կայուն միջուկներ N₃</span>
+          <span id="capTh"><i class="cap-band"></i>տեսական կոր</span>
+          <span id="capA"><i class="swatch swatch--square" style="--c: var(--purple)"></i><span>ակտիվություն A, <span id="capAUnit">տրոհում/տարի</span> (աջ առանցք)</span></span>
+        </p>
+      </section>
+
+      <aside class="panel">
+        <section class="group">
+          <div class="btn-row">
+            <button class="btn btn--primary" id="playBtn"></button>
+            <button class="btn" id="stepBtn"><span>Քայլ՝ մեկ T</span></button>
+          </div>
+          <button class="btn btn--block" id="resetBtn">↺ Նոր նմուշ</button>
+        </section>
+
+        <section class="group">
+          <h2 class="group__title">Նմուշ</h2>
+          <div class="field">
+            <label class="field__label" for="iso">Իզոտոպ</label>
+            <select class="select" id="iso">
+              <option value="po214">Պոլոնիում-214 (164 մկվ)</option>
+              <option value="rn220">Ռադոն-220 (55.6 վ)</option>
+              <option value="i131">Յոդ-131 (8.02 օր)</option>
+              <option value="co60" selected>Կոբալտ-60 (5.27 տարի)</option>
+              <option value="cs137">Ցեզիում-137 (30.1 տարի)</option>
+              <option value="c14">Ածխածին-14 (5730 տարի)</option>
+              <option value="u238">Ուրան-238 (4.47·10⁹ տարի)</option>
+              <option value="custom">Ընտրովի T (իրական ժամանակ)</option>
+            </select>
+          </div>
+          <div class="field" id="customField" hidden>
+            <label class="field__label" for="customT">Կիսատրոհման պարբերություն T</label>
+            <output class="field__value" for="customT"></output>
+            <input type="range" id="customT" min="1" max="30" step="0.5" value="5">
+          </div>
+          <p class="hint" id="isoHint"></p>
+
+          <div class="field">
+            <span class="field__label">Միջուկների սկզբնական թիվը N₀</span>
+            <div class="segmented" id="n0" role="group" aria-label="Միջուկների սկզբնական թիվը">
+              <button data-value="100">100</button>
+              <button data-value="400">400</button>
+              <button data-value="1600" aria-pressed="true">1600</button>
+              <button data-value="6400">6400</button>
+            </div>
+          </div>
+
+          <label class="check"><input type="checkbox" id="chain"> Տրոհման շղթա</label>
+          <div class="field" id="t2Field" hidden>
+            <span class="field__label">Դուստր միջուկի T₂</span>
+            <output class="field__value" id="t2Out"></output>
+            <div class="segmented" id="t2" role="group" aria-label="Դուստր միջուկի կիսատրոհման պարբերություն">
+              <button data-value="0.25">T/4</button>
+              <button data-value="0.5" aria-pressed="true">T/2</button>
+              <button data-value="1">T</button>
+              <button data-value="2">2T</button>
+              <button data-value="4">4T</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="group">
+          <h2 class="group__title">Ընթացք և գրաֆիկ</h2>
+          <div class="field">
+            <span class="field__label">Արագություն</span>
+            <div class="segmented" id="speed" role="group" aria-label="Արագություն">
+              <button data-value="0.25">×¼</button>
+              <button data-value="0.5">×½</button>
+              <button data-value="1" aria-pressed="true">×1</button>
+              <button data-value="2">×2</button>
+              <button data-value="4">×4</button>
+            </div>
+          </div>
+          <p class="hint" id="speedHint"></p>
+          <label class="check"><input type="checkbox" id="theory" checked> Տեսական կոր N₀·2<sup>−t/T</sup></label>
+          <label class="check"><input type="checkbox" id="activity" checked> Ակտիվություն A (հիստոգրամ)</label>
+          <label class="check"><input type="checkbox" id="logScale"> Լոգարիթմական սանդղակ</label>
+        </section>
+
+        <section class="group">
+          <h2 class="group__title">Չափումներ</h2>
+          <dl class="stats">
+            <div class="stat"><dt>Ժամանակ t</dt><dd id="tVal">—</dd></div>
+            <div class="stat"><dt>t / T</dt><dd id="ttVal">—</dd></div>
+            <div class="stat"><dt id="nLabel">Չտրոհված միջուկներ N</dt><dd id="nVal">—</dd></div>
+            <div class="stat" id="n2Row" hidden><dt>Դուստր միջուկներ N₂</dt><dd id="n2Val">—</dd></div>
+            <div class="stat"><dt id="dLabel">Տրոհված միջուկներ</dt><dd id="dVal">—</dd></div>
+            <div class="stat"><dt>N/N₀ (փորձ)</dt><dd id="fVal">—</dd></div>
+            <div class="stat"><dt>2<sup>−t/T</sup> (տեսություն)</dt><dd id="fthVal">—</dd></div>
+            <div class="stat"><dt>Տրոհման հաստատուն λ</dt><dd id="lamVal">—</dd></div>
+            <div class="stat"><dt>Կյանքի միջին տևողություն τ</dt><dd id="tauVal">—</dd></div>
+            <div class="stat"><dt id="aLabel">Ակտիվություն A = λN</dt><dd id="aVal">—</dd></div>
+          </dl>
+          <div class="callout">
+            <b>Մեկ միջուկի տրոհումը պատահական է.</b> անհնար է գուշակել, թե երբ կտրոհվի տվյալ միջուկը։ Բայց շատ միջուկների վիճակագրությունը ճշգրիտ է։ Համեմատեք N₀ = 100 և N₀ = 6400. փոքր նմուշի կորը շատ ավելի «ատամնավոր» է։
+          </div>
+        </section>
+
+        <section class="group">
+          <h2 class="group__title">Ռադիոածխածնային թվագրում</h2>
+          <div class="field">
+            <label class="field__label" for="ageF">¹⁴C-ի մնացած բաժինը N/N₀</label>
+            <output class="field__value" for="ageF"></output>
+            <input type="range" id="ageF" min="0.02" max="1" step="0.01" value="0.25">
+          </div>
+          <dl class="stats">
+            <div class="stat"><dt>Տարիքը t</dt><dd id="ageVal">—</dd></div>
+          </dl>
+          <p class="hint" id="ageHint"></p>
+        </section>
+
+        <section class="group">
+          <div class="formula">
+            <b>N = N₀·2<sup>−t/T</sup> = N₀·e<sup>−λt</sup></b><br>
+            տրոհման օրենքը<br><br>
+            <b>λ = ln2 / T ≈ 0.693 / T</b><br>
+            տրոհման հաստատուն<br>
+            <b>τ = 1/λ ≈ 1.44·T</b><br>
+            միջուկի կյանքի միջին տևողություն<br>
+            <b>A = λN = A₀·2<sup>−t/T</sup></b><br>
+            ակտիվություն՝ տրոհումների թիվը միավոր ժամանակում<br>
+            <b>t = T·log₂(N₀/N)</b><br>
+            տարիքը՝ ըստ մնացած միջուկների բաժնի
+          </div>
+        </section>
+      </aside>
+    </div>
+
+    <section class="explain">
+      <h2>Ինչ է կատարվում այստեղ</h2>
+      <p>Ռադիոակտիվ միջուկն ինքնաբերաբար տրոհվում է՝ առաքելով α- կամ β-մասնիկ և վերածվելով այլ տարրի միջուկի (դուստր միջուկի)։ Առանձին միջուկի համար հնարավոր չէ կանխատեսել, թե երբ դա տեղի կունենա. հայտնի է միայն հավանականությունը։ Յուրաքանչյուր միջուկ, անկախ իր «տարիքից» և հարևաններից, փոքր Δt ժամանակամիջոցում տրոհվում է λΔt հավանականությամբ, որտեղ λ-ն <em>տրոհման հաստատունն</em> է։ Սիմուլյացիայում ամեն քայլի ժամանակ յուրաքանչյուր չտրոհված միջուկի համար կարծես «զառ է նետվում»։</p>
+      <p>Թեև առանձին միջուկի վարքը պատահական է, մեծ թվով միջուկների համար ստացվում է ճշգրիտ օրենք. յուրաքանչյուր T ժամանակամիջոցում չտրոհված միջուկների թիվը կիսով չափ նվազում է՝ N = N₀·2<sup>−t/T</sup>։ T-ն կոչվում է <em>կիսատրոհման պարբերություն</em>. այն կախված չէ միջուկների թվից, և տարբեր իզոտոպների համար տատանվում է միկրովայրկյանի մասերից մինչև միլիարդավոր տարիներ։ Նմուշի <em>ակտիվությունը</em>՝ միավոր ժամանակում տրոհումների թիվը, համեմատական է չտրոհված միջուկների թվին (A = λN), ուստի նվազում է նույն օրենքով։ Լոգարիթմական սանդղակով տրոհման կորը դառնում է ուղիղ գիծ։</p>
+      <p>Փորձեք. համեմատեք N₀ = 100 և N₀ = 6400 նմուշները։ Մեկ T-ից հետո փոքր նմուշում կարող է մնալ, օրինակ, 43 կամ 57 միջուկ, իսկ մեծ նմուշում շեղումը 3200-ից հարաբերականորեն շատ ավելի փոքր է (պատահական շեղումը մոտ √N է)։ Մի քանի անգամ սեղմեք «Քայլ՝ մեկ T» կոճակը. ամեն անգամ մնում է մոտավորապես կեսը։ Միացրեք «Տրոհման շղթա»-ն. եթե դուստր միջուկն էլ է ռադիոակտիվ, նրանց թիվը սկզբում աճում է, ապա նվազում։ Ածխածին-14-ի տրոհման օրենքով հնագետները որոշում են օրգանական մնացորդների տարիքը (ռադիոածխածնային թվագրում)։</p>
+    </section>
+  </main>
+
+  <footer data-shell="footer"></footer>
+</body>
+</html>

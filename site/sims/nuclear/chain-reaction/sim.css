@@ -1,0 +1,81 @@
+/* Chain reaction — sim-specific bits (tokens only). */
+
+/* Legend colors that are not in the shared palette (match C.u238 / C.rod in shared.js). */
+body { --legend-238: #5d6584; --legend-rod: #9aa3bf; }
+:root[data-theme="light"] body { --legend-238: #9aa0b4; --legend-rod: #4a5068; }
+
+/* Reaction equation under the single-nucleus canvas. */
+.fission-eq {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  row-gap: 6px;
+  font-size: var(--fs-sm);
+}
+.fission-eq .eq-tail { display: inline-flex; align-items: center; }
+.fission-eq .nuc { display: inline-flex; align-items: center; gap: 1px; }
+.fission-eq .iso {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-end;
+  font-size: 0.68em;
+  line-height: 1.05;
+}
+.fission-eq .op { margin: 0 0.45em; color: var(--text-3); }
+.fission-eq b { font-weight: 600; }
+
+/* Steps of the fission animation; the current one is highlighted. */
+.phase-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: phase;
+}
+.phase-list li {
+  position: relative;
+  padding: 6px 10px 6px 34px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  font-size: var(--fs-xs);
+  line-height: 1.5;
+  color: var(--text-3);
+  transition: color var(--ease), background var(--ease), border-color var(--ease);
+}
+.phase-list li::before {
+  counter-increment: phase;
+  content: counter(phase);
+  position: absolute;
+  left: 8px;
+  top: 6px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 1px solid var(--border-strong);
+  font-size: var(--fs-2xs);
+  line-height: 16px;
+  text-align: center;
+}
+.phase-list li.is-done { color: var(--text-2); }
+.phase-list li.is-active {
+  color: var(--text);
+  background: var(--accent-soft);
+  border-color: var(--accent-line);
+}
+.phase-list li.is-active::before,
+.phase-list li.is-done::before {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--on-accent);
+}
+
+/* SCRAM button: red outline, filled while the protection is active. */
+.scram { --accent: var(--red); border-color: var(--accent-line); color: var(--accent); font-weight: 600; }
+.btn.scram[aria-pressed="true"] { background: var(--accent); color: var(--on-accent); }
+
+/* Key under the reactor picture. */
+.reactor-key { display: flex; flex-wrap: wrap; gap: 4px 16px; }
+.reactor-key > span { display: inline-flex; align-items: center; gap: 6px; }

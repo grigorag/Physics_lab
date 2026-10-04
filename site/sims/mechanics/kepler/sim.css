@@ -1,0 +1,12 @@
+/* Kepler's laws — sim-specific styles (tokens only). */
+
+.chart-title {
+  margin-top: var(--sp-2);
+  font-size: var(--fs-2xs);
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+
+.chart-caption .swatch { margin: 0 4px 0 10px; vertical-align: -1px; }

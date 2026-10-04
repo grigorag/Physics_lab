@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="hy">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Հաստատուն հոսանքի շղթաներ · Ֆիզիկայի Լաբորատորիաներ</title>
+  <link rel="icon" href="../../../assets/img/favicon.svg" type="image/svg+xml">
+  <script src="../../../assets/js/theme-init.js"></script>
+  <link rel="stylesheet" href="../../../assets/css/main.css">
+  <link rel="stylesheet" href="./sim.css">
+  <script type="module" src="../../../assets/js/core/shell.js"></script>
+  <script type="module" src="./main.js"></script>
+</head>
+<body data-sim="dc-circuit" data-section="electrodynamics">
+  <header data-shell="header"></header>
+
+  <main class="page">
+    <header class="sim-head">
+      <h1 class="sim-title">Հաստատուն հոսանքի շղթաներ</h1>
+      <p class="sim-subtitle">Օհմի օրենք, հաջորդական և զուգահեռ միացումներ</p>
+    </header>
+
+    <div class="tabs" role="tablist" id="tabs" aria-label="Շղթա">
+      <button role="tab" data-tab="ohm" aria-selected="true">Օհմի օրենք</button>
+      <button role="tab" data-tab="series">Հաջորդական միացում</button>
+      <button role="tab" data-tab="parallel">Զուգահեռ միացում</button>
+      <button role="tab" data-tab="mixed">Խառը միացում</button>
+      <button role="tab" data-tab="source">Աղբյուրի ներքին դիմադրություն</button>
+    </div>
+
+    <div class="sim-layout">
+      <section class="stage">
+        <div class="canvas-wrap">
+          <canvas id="cv" aria-label="Էլեկտրական շղթայի սխեմա՝ չափիչ սարքերի ցուցմունքներով"></canvas>
+          <ul class="dc-legend">
+            <li><i class="legend__dot" id="carrierDot" style="--c: var(--amber)"></i><span id="carrierText">լիցքակիրներ</span></li>
+            <li><i class="dc-arrow"></i>հոսանքի ուղղություն</li>
+            <li id="potLegend" hidden><i class="dc-grad"></i>պոտենցիալ՝ ցածր → բարձր</li>
+            <li class="dc-legend__hint">Սեղմեք բանալու վրա՝ այն փակելու կամ բացելու համար</li>
+          </ul>
+        </div>
+
+        <div class="readouts" id="cards"></div>
+
+        <div class="dc-chart" id="chartBox" hidden>
+          <canvas class="chart" id="chart" aria-label="Գրաֆիկ"></canvas>
+          <p class="chart-caption" id="chartCap"></p>
+        </div>
+      </section>
+
+      <aside class="panel">
+        <section class="group">
+          <h2 class="group__title">Աղբյուր</h2>
+          <div class="field">
+            <label class="field__label" for="emf">Էլեկտրաշարժ ուժ ε</label>
+            <output class="field__value" for="emf"></output>
+            <input type="range" id="emf" min="0" max="24" step="0.5" value="12">
+          </div>
+          <div class="field" hidden>
+            <label class="field__label" for="rInt">Ներքին դիմադրություն r</label>
+            <output class="field__value" for="rInt"></output>
+            <input type="range" id="rInt" min="0.2" max="5" step="0.1" value="1">
+          </div>
+        </section>
+
+        <section class="group">
+          <h2 class="group__title" id="loadTitle">Սպառիչներ</h2>
+          <div class="segmented" id="type" role="group" aria-label="Սպառիչի տեսակ">
+            <button data-value="R" aria-pressed="true">Ռեզիստոր ▭</button>
+            <button data-value="lamp">Լամպ ⊗</button>
+          </div>
+          <div class="field">
+            <label class="field__label" for="R1" id="R1Label">Դիմադրություն R</label>
+            <output class="field__value" for="R1"></output>
+            <input type="range" id="R1" min="1" max="100" step="1" value="6">
+          </div>
+          <div class="field" hidden>
+            <label class="field__label" for="R2">Դիմադրություն R₂</label>
+            <output class="field__value" for="R2"></output>
+            <input type="range" id="R2" min="1" max="100" step="1" value="4">
+          </div>
+          <div class="field" hidden>
+            <label class="field__label" for="R3">Դիմադրություն R₃</label>
+            <output class="field__value" for="R3"></output>
+            <input type="range" id="R3" min="1" max="100" step="1" value="6">
+          </div>
+          <div class="field" hidden>
+            <label class="field__label" for="RL">Բեռի (ռեոստատի) դիմադրություն R</label>
+            <output class="field__value" for="RL"></output>
+            <input type="range" id="RL" min="0.2" max="20" step="0.1" value="5">
+          </div>
+          <label class="check" hidden><input type="checkbox" id="third"> <span id="thirdLabel">Երրորդ սպառիչը (R₃)</span></label>
+        </section>
+
+        <section class="group">
+          <h2 class="group__title">Բանալիներ</h2>
+          <label class="check"><input type="checkbox" id="swK" checked> Բանալի K (գլխավոր)</label>
+          <label class="check" hidden><input type="checkbox" id="swK1" checked> K₁ — 1-ին ճյուղ</label>
+          <label class="check" hidden><input type="checkbox" id="swK2" checked> K₂ — 2-րդ ճյուղ</label>
+          <label class="check" hidden><input type="checkbox" id="swK3" checked> K₃ — 3-րդ ճյուղ</label>
+          <label class="check" hidden><input type="checkbox" id="swKS"> K₂ — կարճ միացում</label>
+        </section>
+
+        <section class="group">
+          <h2 class="group__title">Ցուցադրել</h2>
+          <label class="check"><input type="checkbox" id="electrons"> Էլեկտրոնների շարժումը</label>
+          <label class="check"><input type="checkbox" id="potential"> Պոտենցիալը գույնով</label>
+          <button class="btn btn--block" id="clearBtn" hidden>↺ Մաքրել գրաֆիկը</button>
+        </section>
+
+        <section class="group">
+          <h2 class="group__title">Հաշվարկ</h2>
+          <dl class="stats" id="stats"></dl>
+          <div class="callout dc-checks" id="checks"></div>
+          <div class="callout tint" id="warn" style="--accent: var(--red)" hidden></div>
+        </section>
+
+        <section class="group">
+          <div class="formula" id="formula"></div>
+        </section>
+      </aside>
+    </div>
+
+    <section class="explain">
+      <h2>Ինչ է կատարվում այստեղ</h2>
+      <p>Փակ շղթայում աղբյուրը ստեղծում է էլեկտրական դաշտ, և հաղորդիչներում ազատ լիցքակիրները սկսում են ուղղորդված շարժվել. առաջանում է էլեկտրական հոսանք։ Հոսանքի ուղղություն պայմանականորեն համարվում է դրական լիցքերի շարժման ուղղությունը՝ արտաքին շղթայում «+»-ից դեպի «−»։ Մետաղներում իրականում շարժվում են էլեկտրոնները՝ հակառակ ուղղությամբ (միացրեք «Էլեկտրոնների շարժումը»)։ Շղթայի տեղամասի համար ճիշտ է <em>Օհմի օրենքը՝ I = U / R</em>. նույն դիմադրության համար I(U) գրաֆիկը սկզբնակետով անցնող ուղիղ է։</p>
+      <p>Հաջորդական միացման դեպքում բոլոր սպառիչներով անցնում է նույն հոսանքը, իսկ լարումները գումարվում են՝ <em>U = U₁ + U₂ + U₃</em>, ընդ որում ավելի մեծ դիմադրության վրա լարումն ավելի մեծ է։ Զուգահեռ միացման դեպքում ճյուղերի լարումը նույնն է, իսկ հոսանքները գումարվում են՝ <em>I = I₁ + I₂ + I₃</em>։ Բացեք ճյուղերից մեկի բանալին. մյուս ճյուղերի հոսանքը չի փոխվում, փոքրանում է միայն գլխավոր հոսանքը։ Լամպերով փորձեք նույնը. լամպի պայծառությունը որոշվում է նրանում անջատվող հզորությամբ՝ <em>P = UI</em> (այստեղ լամպի դիմադրությունը համարվում է հաստատուն)։</p>
+      <p>Իրական աղբյուրն ունի ներքին դիմադրություն r, ուստի նրա սեղմերի լարումը փոքր է ԷլՇՈՒ-ից՝ <em>U = ε − Ir</em>, իսկ հոսանքը որոշվում է լրիվ շղթայի Օհմի օրենքով՝ <em>I = ε / (R + r)</em>։ Փոքրացրեք բեռի դիմադրությունը և հետևեք վոլտաչափին. որքան մեծ է հոսանքը, այնքան փոքր է սեղմերի լարումը։ Բեռում անջատվող հզորությունն առավելագույնն է, երբ R = r։ Փակեք K₂ բանալին՝ կարճ միացում. հոսանքը սահմանափակված է միայն ներքին դիմադրությամբ։</p>
+    </section>
+  </main>
+
+  <footer data-shell="footer"></footer>
+</body>
+</html>

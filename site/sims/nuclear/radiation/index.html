@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="hy">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>α, β և γ ճառագայթումները · Ֆիզիկայի Լաբորատորիաներ</title>
+  <link rel="icon" href="../../../assets/img/favicon.svg" type="image/svg+xml">
+  <script src="../../../assets/js/theme-init.js"></script>
+  <link rel="stylesheet" href="../../../assets/css/main.css">
+  <link rel="stylesheet" href="./sim.css">
+  <script type="module" src="../../../assets/js/core/shell.js"></script>
+  <script type="module" src="./main.js"></script>
+</head>
+<body data-sim="radiation" data-section="nuclear">
+  <header data-shell="header"></header>
+
+  <main class="page">
+    <header class="sim-head">
+      <h1 class="sim-title">α, β և γ ճառագայթումները</h1>
+      <p class="sim-subtitle">ռադիոակտիվ ճառագայթման բաղադրությունը և թափանցող ունակությունը</p>
+    </header>
+
+    <div class="tabs" role="tablist" id="tabs">
+      <button role="tab" data-tab="field" aria-controls="panel-field" aria-selected="true">Դաշտում</button>
+      <button role="tab" data-tab="penetration" aria-controls="panel-penetration">Թափանցող ունակություն</button>
+    </div>
+
+    <!-- ===== Composition: deflection in a magnetic / electric field ===== -->
+    <div id="panel-field" role="tabpanel">
+      <div class="sim-layout">
+        <section class="stage">
+          <div class="canvas-wrap">
+            <canvas id="fieldCv" aria-label="α, β և γ ճառագայթների շեղումը մագնիսական կամ էլեկտրական դաշտում"></canvas>
+            <span class="canvas-hint" id="scaleHint">—</span>
+          </div>
+
+          <div class="readouts">
+            <div class="readout">
+              <div class="readout__title"><i class="swatch" style="--c: var(--coral)"></i><span class="gk">α</span>-ճառագայթում</div>
+              <div id="roAlpha"></div>
+            </div>
+            <div class="readout">
+              <div class="readout__title"><i class="swatch" style="--c: var(--blue)"></i><span class="gk">β</span>-ճառագայթում</div>
+              <div id="roBeta"></div>
+            </div>
+            <div class="readout">
+              <div class="readout__title"><i class="swatch" style="--c: var(--green)"></i><span class="gk">γ</span>-ճառագայթում</div>
+              <div id="roGamma"></div>
+            </div>
+          </div>
+        </section>
+
+        <aside class="panel">
+          <section class="group">
+            <h2 class="group__title">Դաշտ</h2>
+            <div class="field">
+              <span class="field__label" id="kindLabel">Դաշտի տեսակը</span>
+              <div class="segmented" id="fieldKind" role="group" aria-labelledby="kindLabel">
+                <button data-value="B" aria-pressed="true">Մագնիսական</button>
+                <button data-value="E">Էլեկտրական</button>
+              </div>
+            </div>
+
+            <div class="field" id="bBox">
+              <label class="field__label" for="fieldB">Մագնիսական ինդուկցիա B</label>
+              <output class="field__value" for="fieldB"></output>
+              <input type="range" id="fieldB" min="0" max="50" step="1" value="25">
+            </div>
+            <div class="field" id="bDirBox">
+              <span class="field__label" id="bDirLabel">B-ի ուղղությունը</span>
+              <div class="segmented" id="bDir" role="group" aria-labelledby="bDirLabel">
+                <button data-value="-1" aria-pressed="true">⊗ դեպի նկարի ներսը</button>
+                <button data-value="1">⊙ դեպի մեզ</button>
+              </div>
+            </div>
+
+            <div class="field" id="eBox" hidden>
+              <label class="field__label" for="fieldE">Էլեկտրական դաշտի լարվածություն E</label>
+              <output class="field__value" for="fieldE"></output>
+              <input type="range" id="fieldE" min="0" max="10" step="0.1" value="6">
+            </div>
+            <div class="field" id="eDirBox" hidden>
+              <span class="field__label" id="eDirLabel">Թիթեղների բևեռները</span>
+              <div class="segmented" id="eDir" role="group" aria-labelledby="eDirLabel">
+                <button data-value="1" aria-pressed="true">«+»՝ ձախում</button>
+                <button data-value="-1">«+»՝ աջում</button>
+              </div>
+            </div>
+
+            <p class="hint" id="ruleHint">—</p>
+          </section>
+
+          <section class="group">
+            <h2 class="group__title">Ճառագայթներ</h2>
+            <label class="check"><input type="checkbox" id="onAlpha" checked> <i class="swatch" style="--c: var(--coral)"></i> α-մասնիկներ</label>
+            <label class="check"><input type="checkbox" id="onBeta" checked> <i class="swatch" style="--c: var(--blue)"></i> β-մասնիկներ</label>
+            <label class="check"><input type="checkbox" id="onGamma" checked> <i class="swatch" style="--c: var(--green)"></i> γ-քվանտներ</label>
+            <div class="field">
+              <label class="field__label" for="rate">Ճառագայթման ինտենսիվություն</label>
+              <output class="field__value" for="rate"></output>
+              <input type="range" id="rate" min="1" max="20" step="1" value="6">
+            </div>
+            <div class="btn-row">
+              <button class="btn" id="playBtn"></button>
+              <button class="btn" id="clearBtn">⌫ Մաքրել թիթեղը</button>
+            </div>
+            <p class="hint">Մասնիկների արագությունների հարաբերությունը իրական է (դանդաղեցված շարժում)․ α-մասնիկը մոտ 18 անգամ դանդաղ է շարժվում, քան β-ն։</p>
+          </section>
+
+          <section class="group">
+            <div class="formula">
+              <b>F = q·v·B</b> — Լորենցի ուժ (v ⊥ B)<br>
+              <b>r = p / (|q|·B)</b> — շրջանագծի շառավիղ<br>
+              <b>F = q·E</b> — էլեկտրական ուժ<br><br>
+              α. q = +2e, m ≈ 4 ա.զ.մ.<br>
+              β. q = −e, m ≈ 1/1836 ա.զ.մ.<br>
+              γ. q = 0, m = 0
+            </div>
+          </section>
+        </aside>
+      </div>
+    </div>
+
+    <!-- ===== Penetrating power ===== -->
+    <div id="panel-penetration" role="tabpanel" hidden>
+      <div class="sim-layout">
+        <section class="stage">
+          <div class="canvas-wrap">
+            <canvas id="penCv" aria-label="α, β և γ ճառագայթների անցումը թղթի, ալյումինի և կապարի միջով"></canvas>
+            <span class="canvas-hint">Կլանիչների հաստությունները պատկերված են ոչ մասշտաբով</span>
+          </div>
+
+          <div class="readouts">
+            <div class="readout">
+              <div class="readout__title"><i class="swatch" style="--c: var(--coral)"></i><span class="gk">α</span>&nbsp;· հաշվիչ</div>
+              <div id="penAlpha"></div>
+            </div>
+            <div class="readout">
+              <div class="readout__title"><i class="swatch" style="--c: var(--blue)"></i><span class="gk">β</span>&nbsp;· հաշվիչ</div>
+              <div id="penBeta"></div>
+            </div>
+            <div class="readout">
+              <div class="readout__title"><i class="swatch" style="--c: var(--green)"></i><span class="gk">γ</span>&nbsp;· հաշվիչ</div>
+              <div id="penGamma"></div>
+            </div>
+          </div>
+
+          <canvas class="chart" id="gammaChart" aria-label="γ-ճառագայթման ինտենսիվությունը՝ կախված կապարի հաստությունից"></canvas>
+          <p class="chart-caption">γ-ճառագայթման (1 ՄէՎ) ինտենսիվությունը կապարի շերտից հետո։ Յուրաքանչյուր կիսաթուլացման շերտ (x<sub>½</sub> ≈ 0.9 սմ) ինտենսիվությունը փոքրացնում է 2 անգամ։</p>
+        </section>
+
+        <aside class="panel">
+          <section class="group">
+            <h2 class="group__title">Օդ</h2>
+            <div class="field">
+              <label class="field__label" for="airGap">Հեռավորությունը աղբյուրից</label>
+              <output class="field__value" for="airGap"></output>
+              <input type="range" id="airGap" min="1" max="10" step="0.1" value="2">
+            </div>
+          </section>
+
+          <section class="group">
+            <h2 class="group__title">Կլանիչներ</h2>
+            <label class="check"><input type="checkbox" id="usePaper"> Թղթի թերթ (0.1 մմ)</label>
+
+            <label class="check"><input type="checkbox" id="useAl"> Ալյումին</label>
+            <div class="field">
+              <label class="field__label" for="alThick">Ալյումինի հաստությունը</label>
+              <output class="field__value" for="alThick"></output>
+              <input type="range" id="alThick" min="0.1" max="5" step="0.1" value="3" disabled>
+            </div>
+
+            <label class="check"><input type="checkbox" id="usePb"> Կապար</label>
+            <div class="field">
+              <label class="field__label" for="pbThick">Կապարի հաստությունը</label>
+              <output class="field__value" for="pbThick"></output>
+              <input type="range" id="pbThick" min="0.1" max="10" step="0.1" value="0.9" disabled>
+            </div>
+          </section>
+
+          <section class="group">
+            <h2 class="group__title">Տվյալներ</h2>
+            <dl class="stats">
+              <div class="stat"><dt>α-ի վազքը օդում (5 ՄէՎ)</dt><dd>≈ 3.6 սմ</dd></div>
+              <div class="stat"><dt>β-ի վազքը ալյումինում (1 ՄէՎ)</dt><dd>≈ 1.5 մմ</dd></div>
+              <div class="stat"><dt>μ (γ, 1 ՄէՎ, կապար)</dt><dd>0.77 սմ⁻¹</dd></div>
+              <div class="stat"><dt>Կիսաթուլացման շերտ x<sub>½</sub></dt><dd>0.90 սմ</dd></div>
+            </dl>
+          </section>
+
+          <section class="group">
+            <div class="formula">
+              <b>I = I₀·e<sup>−μx</sup></b><br>
+              γ-ճառագայթման թուլացումը<br><br>
+              <b>x<sub>½</sub> = ln 2 / μ ≈ 0.9 սմ</b><br>
+              կիսաթուլացման շերտ (կապար)<br><br>
+              <b>I = I₀ / 2<sup>n</sup>, n = x / x<sub>½</sub></b>
+            </div>
+          </section>
+        </aside>
+      </div>
+    </div>
+
+    <section class="explain">
+      <h2>Ի՞նչ է ռադիոակտիվ ճառագայթումը</h2>
+      <p>1899 թ. Է. Ռեզերֆորդը պարզեց, որ ռադիումի ճառագայթումը մագնիսական դաշտում բաժանվում է երեք փնջի։ Դրանք անվանեցին <em>α</em>, <em>β</em> և <em>γ</em> ճառագայթներ։ Ըստ Լորենցի ուժի ուղղության՝ α-ճառագայթները դրական լիցքավորված են, β-ճառագայթները՝ բացասական, իսկ γ-ճառագայթները չեզոք են և դաշտում չեն շեղվում։ α-մասնիկը հելիումի միջուկ է, β-մասնիկը՝ էլեկտրոն, γ-ճառագայթումը՝ շատ կարճ ալիքի երկարությամբ էլեկտրամագնիսական ալիք (ֆոտոններ)։</p>
+      <p>Մագնիսական դաշտում α-մասնիկը շատ թույլ է շեղվում․ նրա իմպուլսը մոտ 140 անգամ մեծ է β-մասնիկի իմպուլսից, իսկ լիցքը՝ ընդամենը 2 անգամ, ուստի կորության շառավիղը r = p/(|q|B) մոտ 70 անգամ մեծ է։ Որպեսզի α-ի շեղումը նկարում երևա, այն մեծացված է 20 անգամ։ Էլեկտրական դաշտում շեղումը կախված է qE/(pv)-ից, և այնտեղ պատկերը մասշտաբային է։</p>
+      <p>Որքան ուժեղ է մասնիկը իոնացնում նյութը, այնքան արագ է կորցնում էներգիան և այնքան կարճ է նրա վազքը։ α-մասնիկները կանգնում են թղթի թերթում կամ մի քանի սանտիմետր օդում, β-մասնիկները՝ մի քանի միլիմետր ալյումինում, իսկ γ-ճառագայթումը միայն թուլանում է՝ ըստ էքսպոնենտային օրենքի։ <em>Փորձեք</em>. փոխեք դաշտի ուղղությունը և համոզվեք, որ α և β փնջերը տեղերով փոխվում են, մեծացրեք B-ն, որ β-մասնիկները չհասնեն թիթեղին, իսկ երկրորդ ներդիրում գտեք կապարի այն հաստությունը, որի դեպքում γ-ի ինտենսիվությունը 4 անգամ փոքրանում է։</p>
+
+      <div class="table-wrap">
+        <table class="data-table">
+          <caption>Ռադիոակտիվ ճառագայթումների համեմատությունը</caption>
+          <thead>
+            <tr><th></th><th><i class="swatch" style="--c: var(--coral)"></i> α</th><th><i class="swatch" style="--c: var(--blue)"></i> β⁻</th><th><i class="swatch" style="--c: var(--green)"></i> γ</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Բնույթը</td><td>հելիումի միջուկ ⁴₂He</td><td>էլեկտրոն</td><td>էլեկտրամագնիսական ալիք</td></tr>
+            <tr><td>Լիցքը</td><td>+2e</td><td>−e</td><td>0</td></tr>
+            <tr><td>Զանգվածը</td><td>≈ 4 ա.զ.մ.</td><td>≈ 0.00055 ա.զ.մ.</td><td>0</td></tr>
+            <tr><td>Բնորոշ արագությունը</td><td>≈ 0.05c (15 000 կմ/վ)</td><td>մինչև 0.99c</td><td>c</td></tr>
+            <tr><td>Իոնացնող ունակությունը</td><td>շատ մեծ</td><td>միջին</td><td>փոքր</td></tr>
+            <tr><td>Թափանցող ունակությունը</td><td>փոքր՝ թուղթ, 3–4 սմ օդ</td><td>միջին՝ մի քանի մմ ալյումին</td><td>մեծ՝ թուլանում է կապարում</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <footer data-shell="footer"></footer>
+</body>
+</html>

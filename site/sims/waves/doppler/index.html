@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="hy">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Դոպլերի էֆեկտ · Ֆիզիկայի Լաբորատորիաներ</title>
+  <link rel="icon" href="../../../assets/img/favicon.svg" type="image/svg+xml">
+  <script src="../../../assets/js/theme-init.js"></script>
+  <link rel="stylesheet" href="../../../assets/css/main.css">
+  <script type="module" src="../../../assets/js/core/shell.js"></script>
+  <script type="module" src="./main.js"></script>
+</head>
+<body data-sim="doppler" data-section="waves">
+  <header data-shell="header"></header>
+
+  <main class="page">
+    <header class="sim-head">
+      <h1 class="sim-title">Դոպլերի էֆեկտ</h1>
+      <p class="sim-subtitle">շարժվող աղբյուր և շարժվող դիտորդ</p>
+    </header>
+
+    <div class="sim-layout sim-layout--wide-panel">
+      <section class="stage">
+        <div class="canvas-wrap canvas-wrap--grab">
+          <canvas id="cv" aria-label="Շարժվող ձայնի աղբյուրի ալիքային ճակատները և դիտորդը՝ տեսքը վերևից"></canvas>
+          <ul class="legend legend--tl">
+            <li><i class="legend__dot" style="--c: var(--coral)"></i>աղբյուր</li>
+            <li><i class="legend__dot" style="--c: var(--teal)"></i>դիտորդ</li>
+            <li><i class="legend__line" style="--c: var(--blue)"></i>ալիքային ճակատ</li>
+            <li><i class="legend__line" style="--c: var(--amber)"></i>Մախի կոն</li>
+          </ul>
+          <span class="canvas-hint">Քաշեք դիտորդին՝ դիրքը փոխելու համար</span>
+        </div>
+
+        <canvas class="chart" id="chart" aria-label="Դիտորդի ընկալած հաճախության գրաֆիկը՝ կախված ժամանակից"></canvas>
+        <p class="chart-caption">Դիտորդի ընկալած հաճախությունը՝ չափված (կետեր) և հաշվված բանաձևով (կետագիծ)։ Չափումը կատարվում է երկու հաջորդական ճակատների դիտորդին հասնելու ժամանակների տարբերությամբ՝ f = 1/Δt։</p>
+
+        <div class="callout">
+          <b>Որտե՞ղ ենք հանդիպում.</b> <b>Շտապօգնության շչակը</b> մոտենալիս հնչում է ավելի բարձր, իսկ անցնելուց հետո՝ ավելի ցածր։ <b>Ճանապարհային ռադարը</b> չափում է մեքենայից անդրադարձած ալիքի հաճախության շեղումը և դրանով որոշում արագությունը։ <b>Աստղագիտության մեջ</b> հեռացող գալակտիկաների լույսի կարմիր շեղումը նույն երևույթի արդյունքն է (լույսի համար բանաձևը մի փոքր այլ է, բայց էությունը՝ նույնը)։
+        </div>
+      </section>
+
+      <aside class="panel">
+        <section class="group">
+          <h2 class="group__title">Պարամետրեր</h2>
+          <div class="field">
+            <label class="field__label" for="mach">Աղբյուրի արագություն (Մախի թիվ) M = v<sub>s</sub>/c</label>
+            <output class="field__value" for="mach"></output>
+            <input type="range" id="mach" min="0" max="2" step="0.05" value="0.5">
+          </div>
+          <div class="btn-row">
+            <button class="btn" type="button" data-mach="0.5"><span>M = 0.5</span></button>
+            <button class="btn" type="button" data-mach="1"><span>M = 1</span></button>
+            <button class="btn" type="button" data-mach="2"><span>M = 2</span></button>
+          </div>
+          <div class="field">
+            <label class="field__label" for="vo">Դիտորդի արագություն v<sub>o</sub> (դեպի աջ՝ +)</label>
+            <output class="field__value" for="vo"></output>
+            <input type="range" id="vo" min="-0.9" max="0.9" step="0.05" value="0">
+          </div>
+          <div class="field">
+            <label class="field__label" for="f0">Արձակվող հաճախություն f<sub>0</sub></label>
+            <output class="field__value" for="f0"></output>
+            <input type="range" id="f0" min="0.5" max="3" step="0.1" value="1">
+          </div>
+          <p class="hint">Աղբյուրը շարժվում է աջ։ Որպեսզի ճակատները երևան, ժամանակը «դանդաղեցված» է. իրական ձայնի հաճախությունը հարյուրավոր հերցեր է, կարևորը f / f<sub>0</sub> հարաբերությունն է։</p>
+        </section>
+
+        <section class="group">
+          <div class="btn-row">
+            <button class="btn" id="playBtn"></button>
+            <button class="btn" id="resetBtn" type="button">↺ Սկսել նորից</button>
+          </div>
+          <label class="check"><input type="checkbox" id="coneChk" checked><i class="swatch swatch--square" style="--c: var(--amber)"></i>Մախի կոն (հարվածային ալիք)</label>
+          <label class="check"><input type="checkbox" id="lamChk" checked><i class="swatch swatch--square" style="--c: var(--purple)"></i>Ալիքի երկարության չափագծեր</label>
+          <button class="btn btn--block" id="audioBtn" type="button" aria-pressed="false"><span id="audioLabel">🔊 Լսել</span></button>
+          <p class="hint" id="audioHint">Ձայնի բարձրությունը՝ 440 Հց · f / f<sub>0</sub>։</p>
+        </section>
+
+        <section class="group" aria-label="Չափումներ">
+          <h2 class="group__title">Չափումներ</h2>
+          <dl class="stats">
+            <div class="stat"><dt>Աղբյուրի արագություն v<sub>s</sub></dt><dd id="stVs">—</dd></div>
+            <div class="stat"><dt>Դիտորդի արագություն v<sub>o</sub></dt><dd id="stVo">—</dd></div>
+            <div class="stat"><dt>Արձակվող հաճախություն f<sub>0</sub></dt><dd id="stF0">—</dd></div>
+            <div class="stat"><dt>Ալիքի երկարություն առջևում λ<sub>1</sub> = (c − v<sub>s</sub>)/f<sub>0</sub></dt><dd id="stLam1">—</dd></div>
+            <div class="stat"><dt>Ալիքի երկարություն հետևում λ<sub>2</sub> = (c + v<sub>s</sub>)/f<sub>0</sub></dt><dd id="stLam2">—</dd></div>
+            <div class="stat"><dt>Ընկալվող հաճախություն f (բանաձևով)</dt><dd id="stFth">—</dd></div>
+            <div class="stat"><dt>Ընկալվող հաճախություն f (չափված)</dt><dd id="stFm">—</dd></div>
+            <div class="stat"><dt>Մախի անկյուն α</dt><dd id="stAngle">—</dd></div>
+          </dl>
+          <p class="hint" id="calcLine">—</p>
+        </section>
+
+        <section class="group">
+          <div class="formula">
+            <b>f = f<sub>0</sub> · (c + u<sub>o</sub>) / (c − u<sub>s</sub>)</b><br>
+            c = 340 մ/վ՝ ձայնի արագությունը<br>
+            u<sub>s</sub>՝ աղբյուրի արագության բաղադրիչը դեպի դիտորդը (մոտենալիս +)<br>
+            u<sub>o</sub>՝ դիտորդի արագության բաղադրիչը դեպի աղբյուրը (մոտենալիս +)<br>
+            դիտորդը շարժման գծից դուրս է՝ u<sub>s</sub> և u<sub>o</sub> ճառագայթային (դիտորդին ու աղբյուրին միացնող ուղղի վրա) բաղադրիչներն են<br>
+            <b>sin α = c / v<sub>s</sub> = 1 / M</b>, երբ v<sub>s</sub> &gt; c
+          </div>
+        </section>
+      </aside>
+    </div>
+
+    <section class="explain">
+      <h2>Ինչու՞ է փոխվում հաճախությունը</h2>
+      <p>Աղբյուրը ժամանակի յուրաքանչյուր պարբերությամբ արձակում է մեկ ալիքային ճակատ։ Ճակատը շրջան է, որի կենտրոնը այն կետն է, որտեղ աղբյուրը գտնվում էր արձակման պահին, և որը ձայնի արագությամբ ընդլայնվում է՝ անկախ աղբյուրի շարժումից։ Շարժվող աղբյուրի դեպքում ճակատները առջևում խտանում են (<em>λ<sub>1</sub> = (c − v<sub>s</sub>)/f<sub>0</sub></em>), իսկ հետևում՝ նոսրանում (<em>λ<sub>2</sub> = (c + v<sub>s</sub>)/f<sub>0</sub></em>)։ Ձայնի արագությունը չի փոխվում, ուստի առջևում դիտորդին ժամանակի միավորում հասնում են ավելի շատ ճակատներ, և նա լսում է ավելի բարձր ձայն։</p>
+      <p>Եթե շարժվում է նաև դիտորդը, ապա աղբյուրին մոտենալիս նա «դիմավորում է» ճակատները, ուստի ընկալում է <em>f = f<sub>0</sub>(c + u<sub>o</sub>)/(c − u<sub>s</sub>)</em> հաճախությունը։ Սիմուլյացիայում այն չափվում է ուղղակիորեն՝ դիտորդին հասնող հաջորդական ճակատների ժամանակային տարբերությամբ, և համընկնում է բանաձևի հետ։ Եթե դիտորդը շարժման գծից դուրս է, կարևոր են միայն արագությունների ճառագայթային բաղադրիչները, ուստի աղբյուրի անցնելիս հաճախությունը փոխվում է սահուն։</p>
+      <p>Երբ v<sub>s</sub> = c, ճակատները կուտակվում են աղբյուրի առջև (<em>ձայնային արգելք</em>)։ Երբ v<sub>s</sub> &gt; c, աղբյուրը վազում է իր ճակատներից առաջ, և նրանց պարուրող կոնը կոչվում է Մախի կոն (<em>հարվածային ալիք</em>)՝ կիսաբացվածքի անկյունով՝ sin α = c/v<sub>s</sub>։ Փորձեք M = 0.5, 1 և 2, քաշեք դիտորդին գծից վեր ու վար, փոխեք նրա արագությունը և սեղմեք «Լսել»՝ հաճախության փոփոխությունը ձայնով լսելու համար։</p>
+    </section>
+  </main>
+
+  <footer data-shell="footer"></footer>
+</body>
+</html>

@@ -1,0 +1,38 @@
+/* Twin paradox — sim-specific layout (tokens only). */
+
+/* Play button + Earth-time scrubber under the scene. */
+.transport {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: var(--sp-2) var(--sp-4);
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface-1);
+}
+.transport > .btn { min-width: 9.5em; }
+.transport > .hint { grid-column: 1 / -1; min-height: 3em; }
+
+/* Spacetime diagram next to the signal counters. */
+.st-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+  gap: var(--sp-3);
+  align-items: start;
+}
+.st-chart, .st-side { display: grid; gap: var(--sp-2); min-width: 0; }
+.st-side { gap: var(--sp-3); }
+.st-side .legend { position: static; pointer-events: auto; background: var(--surface-1); }
+
+.counter { display: flex; justify-content: space-between; gap: var(--sp-3); font-family: var(--font-sans); }
+.counter + .counter { border-top: 1px dashed var(--border); }
+.counter b { font-family: var(--font-mono); white-space: nowrap; }
+.counter--sub { color: var(--text-3); }
+
+@media (max-width: 760px) {
+  .st-row { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 480px) {
+  .transport { grid-template-columns: minmax(0, 1fr); }
+}

@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="hy">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Բախումներ · Ֆիզիկայի Լաբորատորիաներ</title>
+  <link rel="icon" href="../../../assets/img/favicon.svg" type="image/svg+xml">
+  <script src="../../../assets/js/theme-init.js"></script>
+  <link rel="stylesheet" href="../../../assets/css/main.css">
+  <script type="module" src="../../../assets/js/core/shell.js"></script>
+  <script type="module" src="./main.js"></script>
+</head>
+<body data-sim="collisions" data-section="mechanics">
+  <header data-shell="header"></header>
+
+  <main class="page">
+    <header class="sim-head">
+      <h1 class="sim-title">Բախումներ</h1>
+      <p class="sim-subtitle">իմպուլսի և էներգիայի պահպանման օրենքները</p>
+    </header>
+
+    <div class="tabs" role="tablist" id="tabs">
+      <button role="tab" data-tab="line" aria-controls="panel-line" aria-selected="true">Ուղիղ բախում (1D)</button>
+      <button role="tab" data-tab="plane" aria-controls="panel-plane">Հարթության վրա (2D)</button>
+    </div>
+
+    <!-- ===== 1D: two carts on a track ===== -->
+    <div id="panel-line" role="tabpanel">
+      <div class="sim-layout">
+        <section class="stage">
+          <div class="canvas-wrap">
+            <canvas id="lCv" aria-label="Երկու սայլակների բախումը ուղիղ ուղու վրա"></canvas>
+          </div>
+          <canvas class="chart" id="lChart" aria-label="Իմպուլսների և էներգիաների սյունակային գրաֆիկ"></canvas>
+          <p class="chart-caption">Ձախից՝ սայլակների իմպուլսները և ընդհանուր իմպուլսը (նշանը ցույց է տալիս ուղղությունը), աջից՝ կինետիկ էներգիաները, ընդհանուր կինետիկ էներգիան և անջատված ջերմությունը Q։ Կետագիծը սկզբնական արժեքի մակարդակն է։</p>
+
+          <div class="readouts">
+            <div class="readout">
+              <div class="readout__title">Մինչև բախումը</div>
+              <div id="lBefore"></div>
+            </div>
+            <div class="readout">
+              <div class="readout__title" id="lAfterTitle">Բախումից հետո</div>
+              <div id="lAfter"></div>
+            </div>
+          </div>
+        </section>
+
+        <aside class="panel">
+          <section class="group" aria-label="Պահպանման օրենքներ">
+            <dl class="stats">
+              <div class="stat"><dt>Ժամանակ t</dt><dd id="lT">—</dd></div>
+              <div class="stat"><dt>Ընդհանուր իմպուլս p մինչև</dt><dd id="lPb">—</dd></div>
+              <div class="stat"><dt>Ընդհանուր իմպուլս p հետո</dt><dd id="lPa">—</dd></div>
+              <div class="stat"><dt>Կինետիկ էներգիա E<sub>կ</sub> մինչև</dt><dd id="lEb">—</dd></div>
+              <div class="stat"><dt>Կինետիկ էներգիա E<sub>կ</sub> հետո</dt><dd id="lEa">—</dd></div>
+              <div class="stat"><dt>Անջատված ջերմություն Q</dt><dd id="lQ">—</dd></div>
+            </dl>
+            <div class="callout" id="lVerdict"></div>
+          </section>
+
+          <section class="group">
+            <div class="btn-row">
+              <button class="btn btn--primary" id="lPlay"></button>
+              <button class="btn" id="lReset">↺ Սկզբնական դիրք</button>
+            </div>
+          </section>
+
+          <section class="group">
+            <h2 class="group__title">Սայլակներ</h2>
+            <div class="field">
+              <label class="field__label" for="lM1"><i class="swatch" style="--c: var(--blue)"></i> Զանգված m<sub>1</sub></label>
+              <output class="field__value" for="lM1"></output>
+              <input type="range" id="lM1" min="0.5" max="10" step="0.5" value="2">
+            </div>
+            <div class="field">
+              <label class="field__label" for="lV1"><i class="swatch" style="--c: var(--blue)"></i> Արագություն v<sub>1</sub></label>
+              <output class="field__value" for="lV1"></output>
+              <input type="range" id="lV1" min="-5" max="5" step="0.1" value="3">
+            </div>
+            <div class="field">
+              <label class="field__label" for="lM2"><i class="swatch" style="--c: var(--coral)"></i> Զանգված m<sub>2</sub></label>
+              <output class="field__value" for="lM2"></output>
+              <input type="range" id="lM2" min="0.5" max="10" step="0.5" value="1">
+            </div>
+            <div class="field">
+              <label class="field__label" for="lV2"><i class="swatch" style="--c: var(--coral)"></i> Արագություն v<sub>2</sub></label>
+              <output class="field__value" for="lV2"></output>
+              <input type="range" id="lV2" min="-5" max="5" step="0.1" value="0">
+            </div>
+            <p class="hint">Դրական արագությունն ուղղված է աջ։ Բախում լինելու համար ձախ սայլակը պետք է շարժվի աջից ավելի արագ՝ v<sub>1</sub> &gt; v<sub>2</sub>։</p>
+          </section>
+
+          <section class="group">
+            <h2 class="group__title">Բախման տեսակը</h2>
+            <div class="segmented" id="lPreset" role="group" aria-label="Բախման տեսակը">
+              <button data-value="1" aria-pressed="true">Բացարձակ առաձգական</button>
+              <button data-value="0.5">Մասնակի</button>
+              <button data-value="0">Բացարձակ ոչ առաձգական</button>
+            </div>
+            <div class="field">
+              <label class="field__label" for="lE">Վերականգնման գործակից e</label>
+              <output class="field__value" for="lE"></output>
+              <input type="range" id="lE" min="0" max="1" step="0.05" value="1">
+            </div>
+            <p class="hint">e = 1՝ կինետիկ էներգիան պահպանվում է։ e = 0՝ սայլակները կպչում են իրար և շարունակում շարժվել միասին։</p>
+          </section>
+
+          <section class="group">
+            <h2 class="group__title">Ցուցադրում</h2>
+            <label class="check"><input type="checkbox" id="lCm" checked> Զանգվածների կենտրոնը</label>
+            <label class="check"><input type="checkbox" id="lWalls"> Առաձգական պատեր ուղու ծայրերում</label>
+            <p class="hint">Պատերին բախվելիս ընդհանուր իմպուլսը փոխվում է, քանի որ պատը արտաքին մարմին է. այն պահպանվում է միայն սայլակների փոխադարձ բախման ժամանակ։</p>
+            <div class="field">
+              <span class="field__label" id="lSpeedLabel">Անիմացիայի արագություն</span>
+              <div class="segmented" id="lSpeed" role="group" aria-labelledby="lSpeedLabel">
+                <button data-value="0.25">×0.25</button>
+                <button data-value="0.5">×0.5</button>
+                <button data-value="1" aria-pressed="true">×1</button>
+              </div>
+            </div>
+          </section>
+
+          <section class="group">
+            <h2 class="group__title">Օրինակներ</h2>
+            <div class="btn-row">
+              <button class="btn" data-ex="equal"><span>Հավասար զանգվածներ</span></button>
+              <button class="btn" data-ex="heavy"><span>Ծանր՝ թեթևի վրա</span></button>
+            </div>
+            <div class="btn-row">
+              <button class="btn" data-ex="light"><span>Թեթև՝ ծանրի վրա</span></button>
+              <button class="btn" data-ex="head"><span>Հանդիպակաց շարժում</span></button>
+            </div>
+          </section>
+
+          <section class="group">
+            <div class="formula">
+              <b>m<sub>1</sub>v<sub>1</sub> + m<sub>2</sub>v<sub>2</sub> = m<sub>1</sub>v<sub>1</sub>′ + m<sub>2</sub>v<sub>2</sub>′</b><br>
+              <b>e = (v<sub>2</sub>′ − v<sub>1</sub>′) / (v<sub>1</sub> − v<sub>2</sub>)</b><br>
+              v<sub>1</sub>′ = [(m<sub>1</sub> − e·m<sub>2</sub>)v<sub>1</sub> + (1 + e)m<sub>2</sub>v<sub>2</sub>] / (m<sub>1</sub> + m<sub>2</sub>)<br>
+              v<sub>2</sub>′ = [(m<sub>2</sub> − e·m<sub>1</sub>)v<sub>2</sub> + (1 + e)m<sub>1</sub>v<sub>1</sub>] / (m<sub>1</sub> + m<sub>2</sub>)<br>
+              Q = (1 − e²)·μ(v<sub>1</sub> − v<sub>2</sub>)² / 2,<br>
+              μ = m<sub>1</sub>m<sub>2</sub> / (m<sub>1</sub> + m<sub>2</sub>)
+            </div>
+          </section>
+        </aside>
+      </div>
+
+      <section class="explain">
+        <h2>Իմպուլսի և էներգիայի պահպանումը բախման ժամանակ</h2>
+        <p>Երբ երկու սայլակ բախվում է, նրանց միջև ազդող ուժերը ներքին են, իսկ շփում չկա։ Այդ պատճառով սայլակների ընդհանուր իմպուլսը բախումից առաջ և հետո նույնն է՝ <em>m<sub>1</sub>v<sub>1</sub> + m<sub>2</sub>v<sub>2</sub> = m<sub>1</sub>v<sub>1</sub>′ + m<sub>2</sub>v<sub>2</sub>′</em>, անկախ նրանից՝ բախումն առաձգական է, թե ոչ։ Գրաֆիկում «p» սյունը բախման ժամանակ չի փոխվում և միշտ հասնում է կետագծին։ Զանգվածների կենտրոնը շարժվում է հաստատուն արագությամբ նաև բախման պահին։</p>
+        <p>Կինետիկ էներգիայի պահպանումը կախված է բախման տեսակից։ <em>Բացարձակ առաձգական</em> բախման դեպքում (e = 1) կինետիկ էներգիան պահպանվում է, իսկ սայլակների հարաբերական արագությունը փոխում է միայն նշանը։ <em>Բացարձակ ոչ առաձգական</em> բախման դեպքում (e = 0) սայլակները կպչում են իրար և շարժվում են ընդհանուր u = (m<sub>1</sub>v<sub>1</sub> + m<sub>2</sub>v<sub>2</sub>) / (m<sub>1</sub> + m<sub>2</sub>) արագությամբ, ընդ որում կինետիկ էներգիայի մի մասը վերածվում է ջերմության՝ Q։ Մասնակի առաձգական բախման դեպքում (0 &lt; e &lt; 1) էներգիայի կորուստը ավելի փոքր է։</p>
+        <p>Փորձեք հետևյալը. վերցրեք հավասար զանգվածներ և e = 1՝ սայլակները կփոխանակվեն արագություններով։ Ծանր սայլակը թեթևի վրա ուղարկելիս ծանրը գրեթե չի դանդաղում, իսկ թեթևը թռչում է գրեթե կրկնակի արագությամբ։ Միացրեք պատերը և e = 1՝ սայլակները կշարժվեն առաջ ու հետ, իսկ կինետիկ էներգիան չի փոխվի։ Համեմատեք չափված Q-ն (1 − e²)·μ(v<sub>1</sub> − v<sub>2</sub>)² / 2 բանաձևով հաշվածի հետ։</p>
+      </section>
+    </div>
+
+    <!-- ===== 2D: discs on a plane ===== -->
+    <div id="panel-plane" role="tabpanel" hidden>
+      <div class="sim-layout">
+        <section class="stage">
+          <div class="canvas-wrap canvas-wrap--grab">
+            <canvas id="pCv" aria-label="Երկու սկավառակների բախումը հարթության վրա, տեսք վերևից"></canvas>
+            <ul class="legend legend--tr">
+              <li><i class="legend__dot" style="--c: var(--blue)"></i>սկավառակ 1</li>
+              <li><i class="legend__dot" style="--c: var(--coral)"></i>սկավառակ 2</li>
+            </ul>
+            <span class="canvas-hint">Քաշեք առաջին սկավառակը վերև կամ ներքև՝ b-ն փոխելու համար</span>
+          </div>
+          <canvas class="chart" id="pTri" aria-label="Իմպուլսների եռանկյունը"></canvas>
+          <p class="chart-caption">Իմպուլսների եռանկյունը. քանի որ p<sub>1</sub> = p<sub>1</sub>′ + p<sub>2</sub>′, երեք վեկտորները կազմում են փակ եռանկյուն։ Վեկտորները գծված են նույն մասշտաբով։</p>
+
+          <div class="readouts">
+            <div class="readout">
+              <div class="readout__title"><i class="swatch" style="--c: var(--blue)"></i>Սկավառակ 1</div>
+              <div id="pCard1"></div>
+            </div>
+            <div class="readout">
+              <div class="readout__title"><i class="swatch" style="--c: var(--coral)"></i>Սկավառակ 2</div>
+              <div id="pCard2"></div>
+            </div>
+          </div>
+        </section>
+
+        <aside class="panel">
+          <section class="group" aria-label="Պահպանման օրենքները">
+            <dl class="stats">
+              <div class="stat"><dt>p<sub>x</sub>, կգ·մ/վ (մինչև → հետո)</dt><dd id="pPx">—</dd></div>
+              <div class="stat"><dt>p<sub>y</sub>, կգ·մ/վ (մինչև → հետո)</dt><dd id="pPy">—</dd></div>
+              <div class="stat"><dt>E<sub>կ</sub>, Ջ (մինչև → հետո)</dt><dd id="pE">—</dd></div>
+              <div class="stat"><dt>Անջատված ջերմություն Q</dt><dd id="pQ">—</dd></div>
+              <div class="stat"><dt>Ցրման անկյուն θ<sub>1</sub></dt><dd id="pTh1">—</dd></div>
+              <div class="stat"><dt>Ցրման անկյուն θ<sub>2</sub></dt><dd id="pTh2">—</dd></div>
+              <div class="stat"><dt>Անկյուն արագությունների միջև φ</dt><dd id="pPhi">—</dd></div>
+            </dl>
+            <div class="callout" id="pVerdict"></div>
+          </section>
+
+          <section class="group">
+            <div class="btn-row">
+              <button class="btn btn--primary" id="pLaunch">➚ Արձակել</button>
+              <button class="btn" id="pPause"></button>
+            </div>
+            <div class="btn-row">
+              <button class="btn" id="pReset">↺ Սկզբնական դիրք</button>
+            </div>
+          </section>
+
+          <section class="group">
+            <h2 class="group__title">Պայմաններ</h2>
+            <div class="field">
+              <label class="field__label" for="pM1"><i class="swatch" style="--c: var(--blue)"></i> Զանգված m<sub>1</sub></label>
+              <output class="field__value" for="pM1"></output>
+              <input type="range" id="pM1" min="0.5" max="10" step="0.5" value="2">
+            </div>
+            <div class="field">
+              <label class="field__label" for="pM2"><i class="swatch" style="--c: var(--coral)"></i> Զանգված m<sub>2</sub></label>
+              <output class="field__value" for="pM2"></output>
+              <input type="range" id="pM2" min="0.5" max="10" step="0.5" value="2">
+            </div>
+            <div class="field">
+              <label class="field__label" for="pV">Սկավառակ 1-ի արագությունը v</label>
+              <output class="field__value" for="pV"></output>
+              <input type="range" id="pV" min="1" max="6" step="0.5" value="4">
+            </div>
+            <div class="field">
+              <label class="field__label" for="pB">Նշանառության հեռավորություն b</label>
+              <output class="field__value" for="pB"></output>
+              <input type="range" id="pB" min="0" max="1.6" step="0.01" value="0.4">
+            </div>
+            <p class="hint">b-ն առաջին սկավառակի շարժման գծի և թիրախի կենտրոնի հեռավորությունն է։ b = 0՝ կենտրոնական բախում, b ≥ r<sub>1</sub> + r<sub>2</sub>՝ սկավառակները չեն բախվում։ Երկրորդ սկավառակը սկզբում դադարի վիճակում է։</p>
+          </section>
+
+          <section class="group">
+            <h2 class="group__title">Բախման տեսակը</h2>
+            <div class="segmented" id="pPreset" role="group" aria-label="Բախման տեսակը">
+              <button data-value="1" aria-pressed="true">Բացարձակ առաձգական</button>
+              <button data-value="0.5">Մասնակի</button>
+              <button data-value="0">Ոչ առաձգական</button>
+            </div>
+            <div class="field">
+              <label class="field__label" for="pEr">Վերականգնման գործակից e</label>
+              <output class="field__value" for="pEr"></output>
+              <input type="range" id="pEr" min="0" max="1" step="0.05" value="1">
+            </div>
+            <p class="hint">Սկավառակները հարթ են, ուստի հարվածի ուժը ուղղված է կենտրոնները միացնող ուղղությամբ։ Այդ ուղղությամբ է գործում e-ն, իսկ ուղղահայաց բաղադրիչները չեն փոխվում։</p>
+          </section>
+
+          <section class="group">
+            <h2 class="group__title">Ցուցադրում</h2>
+            <label class="check"><input type="checkbox" id="pTrail" checked> Հետագծեր (կետերը՝ հավասար ժամանակամիջոցներով)</label>
+            <label class="check"><input type="checkbox" id="pVec" checked> Արագության վեկտորները</label>
+            <div class="field">
+              <span class="field__label" id="pSpeedLabel">Անիմացիայի արագություն</span>
+              <div class="segmented" id="pSpeed" role="group" aria-labelledby="pSpeedLabel">
+                <button data-value="0.25">×0.25</button>
+                <button data-value="0.5">×0.5</button>
+                <button data-value="1" aria-pressed="true">×1</button>
+              </div>
+            </div>
+          </section>
+
+          <section class="group">
+            <h2 class="group__title">Օրինակներ</h2>
+            <div class="btn-row">
+              <button class="btn" data-ex="equal"><span>Հավասար զանգվածներ</span></button>
+              <button class="btn" data-ex="heavy"><span>Ծանր թիրախ</span></button>
+            </div>
+            <div class="btn-row">
+              <button class="btn" data-ex="light"><span>Թեթև թիրախ</span></button>
+              <button class="btn" data-ex="head"><span>Կենտրոնական բախում</span></button>
+            </div>
+          </section>
+
+          <section class="group">
+            <div class="formula">
+              <b>p<sub>1</sub> = p<sub>1</sub>′ + p<sub>2</sub>′</b> (վեկտորական)<br>
+              sin α = b / (r<sub>1</sub> + r<sub>2</sub>)<br>
+              v<sub>2</sub>′ = (1 + e)·m<sub>1</sub>/(m<sub>1</sub> + m<sub>2</sub>)·v·cos α<br>
+              <b>m<sub>1</sub> = m<sub>2</sub>, e = 1 ⟹ φ = 90°</b>
+            </div>
+          </section>
+        </aside>
+      </div>
+
+      <section class="explain">
+        <h2>Բախում հարթության վրա</h2>
+        <p>Երբ առաջին սկավառակը թիրախին հարվածում է ոչ կենտրոնով, սկավառակները շարժվում են տարբեր ուղղություններով։ Հարթ սկավառակների դեպքում հարվածի ուժն ուղղված է կենտրոնները միացնող գծով։ Այդ գծի ուղղությամբ սկավառակները փոխանակում են իմպուլս (այստեղ գործում են e-ի և պահպանման օրենքի բանաձևերը), իսկ ուղղահայաց ուղղությամբ յուրաքանչյուր սկավառակի արագության բաղադրիչը չի փոխվում։ α անկյունը որոշվում է b հեռավորությամբ՝ sin α = b / (r<sub>1</sub> + r<sub>2</sub>)։</p>
+        <p>Իմպուլսը վեկտորական մեծություն է, ուստի p<sub>1</sub> = p<sub>1</sub>′ + p<sub>2</sub>′ հավասարումը նշանակում է, որ երեք վեկտորները կազմում են փակ եռանկյուն։ Յուրաքանչյուր առանցքի վրա պրոյեկցիաները նույնպես պահպանվում են՝ տես p<sub>x</sub> և p<sub>y</sub> տողերը։ Եթե բախումը առաձգական է, ապա կինետիկ էներգիան նույնպես պահպանվում է։</p>
+        <p>Հատուկ դեպք՝ երբ m<sub>1</sub> = m<sub>2</sub>, բախումը բացարձակ առաձգական է և թիրախը դադարի մեջ է։ Այդ դեպքում էներգիայի և իմպուլսի պահպանումից հետևում է, որ սկավառակները ցրվում են փոխուղղահայաց՝ φ = 90° (կենտրոնական բախման դեպքում առաջինը կանգ է առնում)։ Փոխեք b-ն և համոզվեք, որ անկյունը չի փոխվում, ապա նվազեցրեք e-ն. φ-ն կփոքրանա։</p>
+      </section>
+    </div>
+  </main>
+
+  <footer data-shell="footer"></footer>
+</body>
+</html>

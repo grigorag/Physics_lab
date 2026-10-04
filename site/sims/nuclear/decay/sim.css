@@ -1,0 +1,19 @@
+/* Radioactive decay — sim-specific bits (tokens only). */
+
+.chart-caption {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+}
+.chart-caption > span { display: inline-flex; align-items: center; gap: 6px; }
+
+/* The theoretical curve is drawn as a wide translucent band. */
+.cap-band {
+  display: inline-block;
+  width: 18px;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--text-3);
+  opacity: 0.45;
+  flex: none;
+}

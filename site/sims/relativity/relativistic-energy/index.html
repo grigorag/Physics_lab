@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="hy">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ռելյատիվիստական էներգիա և իմպուլս · Ֆիզիկայի Լաբորատորիաներ</title>
+  <link rel="icon" href="../../../assets/img/favicon.svg" type="image/svg+xml">
+  <script src="../../../assets/js/theme-init.js"></script>
+  <link rel="stylesheet" href="../../../assets/css/main.css">
+  <link rel="stylesheet" href="./sim.css">
+  <script type="module" src="../../../assets/js/core/shell.js"></script>
+  <script type="module" src="./main.js"></script>
+</head>
+<body data-sim="relativistic-energy" data-section="relativity">
+  <header data-shell="header"></header>
+
+  <main class="page">
+    <header class="sim-head">
+      <h1 class="sim-title">Ռելյատիվիստական էներգիա և իմպուլս</h1>
+      <p class="sim-subtitle">E = mc² և արագության սահմանը</p>
+    </header>
+
+    <div class="sim-layout">
+      <section class="stage">
+        <div class="canvas-wrap">
+          <canvas id="cv" aria-label="Արագացված մասնիկը, դրա դասական կանխատեսումը և լույսի իմպուլսը թռչում են խողովակի միջով"></canvas>
+        </div>
+        <p class="chart-caption">Արագացնող U լարումն անցնելուց հետո մասնիկը մտնում է խողովակ՝ լույսի իմպուլսի հետ միաժամանակ։ Երբ լույսը հասնում է խողովակի ծայրին, մասնիկն անցած է լինում խողովակի երկարության β = v/c մասը։</p>
+
+        <div class="chart-cell">
+          <div class="block-title">Գրաֆիկներ</div>
+          <div class="segmented" id="chartSel" role="group" aria-label="Գրաֆիկի ընտրություն">
+            <button data-value="speed" aria-pressed="true">Արագություն և էներգիա</button>
+            <button data-value="energy">Էներգիա և իմպուլս</button>
+            <button data-value="triangle">E² = (pc)² + (mc²)²</button>
+          </div>
+          <div><canvas class="chart" id="chart" aria-label="Ընտրված գրաֆիկը"></canvas></div>
+          <p class="chart-caption" id="cap-speed">
+            <i class="swatch" style="--c: var(--red)"></i> ռելյատիվիստական արագություն
+            <i class="swatch" style="--c: var(--text-3)"></i> դասական կանխատեսում՝ v = √(2Eₖ/m)։
+            Հորիզոնական առանցքը լոգարիթմական է. յուրաքանչյուր բաժանում էներգիան մեծացնում է 10 անգամ։
+          </p>
+          <p class="chart-caption" id="cap-energy" hidden>
+            <i class="swatch" style="--c: var(--purple)"></i> լրիվ էներգիա E
+            <i class="swatch" style="--c: var(--red)"></i> կինետիկ էներգիա Eₖ
+            <i class="swatch" style="--c: var(--teal)"></i> իմպուլս (pc)։
+            Հոծ գծերը ռելյատիվիստական բանաձևերն են, կետագծերը՝ դասական mv²/2-ը և mv-ն։ Բոլոր մեծությունները mc² միավորներով են։
+          </p>
+          <p class="chart-caption" id="cap-triangle" hidden>
+            Ուղղանկյուն եռանկյան էջերն են <i class="swatch" style="--c: var(--blue)"></i> mc² և
+            <i class="swatch" style="--c: var(--teal)"></i> pc, ներքնաձիգը՝
+            <i class="swatch" style="--c: var(--purple)"></i> E։ Ներքնաձիգի
+            <i class="swatch" style="--c: var(--red)"></i> կարմիր մասը կինետիկ էներգիան է՝ Eₖ = E − mc²։
+          </p>
+        </div>
+
+        <div class="mass-box">
+          <div class="block-title">Զանգվածի և էներգիայի համարժեքությունը՝ E₀ = mc²</div>
+          <div class="field">
+            <label class="field__label" for="mass">Մարմնի զանգվածը, m</label>
+            <output class="field__value" for="mass"></output>
+            <input type="range" id="mass" min="0" max="18" step="1" value="9">
+          </div>
+          <div class="readouts">
+            <div class="readout">
+              <div class="readout__title">Հանգստի էներգիա</div>
+              <div id="mE"></div>
+            </div>
+            <div class="readout">
+              <div class="readout__title">Բենզինի այրում</div>
+              <div id="mFuel"></div>
+            </div>
+            <div class="readout">
+              <div class="readout__title">Էլեկտրակայան՝ 1 ԳՎտ</div>
+              <div id="mPlant"></div>
+            </div>
+          </div>
+          <p class="hint">Ցանկացած մարմնի հանգստի էներգիան հսկայական է, որովհետև c² = 9·10¹⁶ մ²/վ²։ Սովորական պայմաններում այդ էներգիան «փակված» է զանգվածի մեջ. միջուկային ռեակցիաներում դրա միայն փոքր մասն է (մոտ 0.1–1 %) վերածվում ջերմության։</p>
+        </div>
+      </section>
+
+      <aside class="panel">
+        <section class="group">
+          <h2 class="group__title">Մասնիկ</h2>
+          <div class="field">
+            <label class="field__label" for="particle">Արագացվող մասնիկը</label>
+            <select class="select" id="particle">
+              <option value="electron" selected>էլեկտրոն · mc² = 0.511 ՄէՎ</option>
+              <option value="muon">մյուոն · mc² = 105.7 ՄէՎ</option>
+              <option value="proton">պրոտոն · mc² = 938.3 ՄէՎ</option>
+            </select>
+          </div>
+        </section>
+
+        <section class="group">
+          <h2 class="group__title">Արագացում</h2>
+          <div class="field">
+            <label class="field__label" for="ek">Կինետիկ էներգիա, Eₖ = eU</label>
+            <output class="field__value" for="ek"></output>
+            <input type="range" id="ek" min="-3" max="4" step="0.01" value="0">
+          </div>
+          <div class="field">
+            <label class="field__label" for="beta">Արագություն, β = v/c</label>
+            <output class="field__value" for="beta"></output>
+            <input type="range" id="beta" min="0.045" max="0.999" step="0.001" value="0.866">
+          </div>
+          <p class="hint">Երկու սողնակները կապված են. մեկը շարժելիս մյուսն ինքն է փոխվում։ Էներգիայի սանդղակը լոգարիթմական է՝ 0.001·mc²-ից մինչև 10⁴·mc²։</p>
+          <div class="btn-row">
+            <button class="btn" id="preMc2"><span>Eₖ = mc²</span></button>
+            <button class="btn" id="preU"><span>U = 1 ՄՎ</span></button>
+          </div>
+          <button class="btn btn--block" id="preLhc"><span>Պրոտոնը ՄՀԲ-ում (LHC)՝ 6.5 ՏէՎ</span></button>
+          <label class="check"><input type="checkbox" id="ghost" checked> Ցույց տալ դասական կանխատեսումը</label>
+          <button class="btn btn--block" id="playBtn"></button>
+        </section>
+
+        <section class="group">
+          <h2 class="group__title">Արդյունքներ</h2>
+          <dl class="stats">
+            <div class="stat"><dt>Հանգստի էներգիա mc²</dt><dd id="sRest">—</dd></div>
+            <div class="stat"><dt>Արագացնող լարում U</dt><dd id="sU">—</dd></div>
+            <div class="stat"><dt>Կինետիկ էներգիա Eₖ</dt><dd id="sEk">—</dd></div>
+            <div class="stat"><dt>Լրիվ էներգիա E</dt><dd id="sE">—</dd></div>
+            <div class="stat"><dt>Իմպուլս p</dt><dd id="sP">—</dd></div>
+            <div class="stat"><dt>Լորենցի գործակից γ</dt><dd id="sG">—</dd></div>
+            <div class="stat"><dt>β = v/c</dt><dd id="sB">—</dd></div>
+            <div class="stat"><dt>1 − β</dt><dd id="sOmb">—</dd></div>
+            <div class="stat"><dt>Արագություն v</dt><dd id="sV">—</dd></div>
+            <div class="stat"><dt>Դասական √(2Eₖ/m)</dt><dd id="sCl">—</dd></div>
+            <div class="stat"><dt>Դասական բանաձևի սխալը</dt><dd id="sErr">—</dd></div>
+          </dl>
+          <div class="callout" id="note"></div>
+        </section>
+
+        <section class="group">
+          <div class="formula">
+            <b>E = γmc²</b>, &nbsp;<b>γ = 1 / √(1 − v²/c²)</b><br>
+            լրիվ էներգիան<br>
+            <b>E₀ = mc²</b><br>
+            հանգստի էներգիան<br>
+            <b>Eₖ = E − mc² = (γ − 1)mc²</b><br>
+            կինետիկ էներգիան (երբ v ≪ c՝ mv²/2)<br>
+            <b>p = γmv</b><br>
+            իմպուլսը<br>
+            <b>E² = (pc)² + (mc²)²</b><br>
+            էներգիայի և իմպուլսի կապը
+          </div>
+        </section>
+      </aside>
+    </div>
+
+    <section class="explain">
+      <h2>Ինչո՞ւ հնարավոր չէ մասնիկն արագացնել մինչև լույսի արագությունը</h2>
+      <p>Դասական մեխանիկայում կինետիկ էներգիան mv²/2 է, ուստի մասնիկին բավականաչափ էներգիա հաղորդելով՝ կարելի էր ստանալ ցանկացած արագություն. v = √(2Eₖ/m)։ Փորձը ցույց է տալիս, որ դա այդպես չէ։ Հարաբերականության հատուկ տեսության մեջ մասնիկի լրիվ էներգիան <em>E = γmc²</em> է, իսկ կինետիկ էներգիան՝ <em>Eₖ = (γ − 1)mc²</em>։ Երբ արագությունը մոտենում է c-ին, γ գործակիցն անսահման աճում է, ուստի c արագության հասնելու համար անսահման մեծ էներգիա կպահանջվեր։ Արագացուցիչը կարող է մասնիկին անընդհատ էներգիա հաղորդել, բայց արագությունը միայն մոտենում է լույսի արագությանը և երբեք չի հասնում դրան. աճում են էներգիան և <em>p = γmv</em> իմպուլսը, այլ ոչ թե արագությունը։</p>
+      <p>Անշարժ մասնիկն էլ ունի էներգիա՝ <em>E₀ = mc²</em> հանգստի էներգիան։ Դա նշանակում է, որ զանգվածը և էներգիան համարժեք են. 1 գ նյութի հանգստի էներգիան մոտ 9·10¹³ Ջ է՝ այնքան, որքան մեծ էլեկտրակայանն արտադրում է մեկ օրում։ Էներգիան, իմպուլսը և զանգվածը կապված են <em>E² = (pc)² + (mc²)²</em> առնչությամբ, որը հարմար է պատկերել ուղղանկյուն եռանկյունով. դանդաղ մասնիկի դեպքում եռանկյունը նեղ է և բարձր (E ≈ mc²), իսկ շատ արագ մասնիկի դեպքում՝ երկար և ցածր (E ≈ pc)։</p>
+      <p>Փորձեք. էլեկտրոնի համար ընտրեք Eₖ = mc² և համոզվեք, որ γ = 2, իսկ v ≈ 0.866c, թեև դասական բանաձևը կտար 1.41c։ Սեղմեք «U = 1 ՄՎ» կոճակը և համեմատեք էլեկտրոնը պրոտոնի հետ. նույն լարումը էլեկտրոնին հասցնում է 0.94c արագության, իսկ մոտ 1800 անգամ ծանր պրոտոնը մնում է դանդաղ, և դասական բանաձևը նրա համար գրեթե ճշգրիտ է։ Փոքրացրեք էներգիան մինչև 0.001·mc² և տեսեք, որ երկու բանաձևերը համընկնում են 0.1 %-ից լավ ճշտությամբ։ Վերջում դիտեք Մեծ հադրոնային բախիչի (ՄՀԲ, LHC) պրոտոնը. նրա էներգիան հանգստի էներգիայից մոտ 7000 անգամ մեծ է, իսկ արագությունը լույսի արագությունից փոքր է ընդամենը մոտ 3 մ/վ-ով։</p>
+    </section>
+  </main>
+
+  <footer data-shell="footer"></footer>
+</body>
+</html>

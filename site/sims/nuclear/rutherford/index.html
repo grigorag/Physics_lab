@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="hy">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ռեզերֆորդի փորձը · Ֆիզիկայի Լաբորատորիաներ</title>
+  <link rel="icon" href="../../../assets/img/favicon.svg" type="image/svg+xml">
+  <script src="../../../assets/js/theme-init.js"></script>
+  <link rel="stylesheet" href="../../../assets/css/main.css">
+  <link rel="stylesheet" href="./sim.css">
+  <script type="module" src="../../../assets/js/core/shell.js"></script>
+  <script type="module" src="./main.js"></script>
+</head>
+<body data-sim="rutherford" data-section="nuclear">
+  <header data-shell="header"></header>
+
+  <main class="page">
+    <header class="sim-head">
+      <h1 class="sim-title">Ռեզերֆորդի փորձը</h1>
+      <p class="sim-subtitle">α-մասնիկների ցրումը և ատոմի միջուկային մոդելը</p>
+    </header>
+
+    <div class="tabs" role="tablist" id="tabs">
+      <button role="tab" data-tab="setup" aria-controls="panel-setup" aria-selected="true">Փորձի սխեման</button>
+      <button role="tab" data-tab="nucleus" aria-controls="panel-nucleus">Ցրումը միջուկի վրա</button>
+    </div>
+
+    <!-- ===== The apparatus ===== -->
+    <div id="panel-setup" role="tabpanel">
+      <div class="sim-layout">
+        <section class="stage">
+          <div class="canvas-wrap canvas-wrap--grab">
+            <canvas id="setupCv" aria-label="Ռեզերֆորդի փորձի սխեման՝ վերևից. α-աղբյուր, ոսկե նրբաթիթեղ, լյումինեսցենտային էկրան և մանրադիտակ"></canvas>
+            <ul class="legend legend--tl">
+              <li><i class="legend__dot" style="--c: var(--red)"></i>α-մասնիկ</li>
+              <li><i class="legend__dot" style="--c: var(--green)"></i>բռնկում էկրանին</li>
+            </ul>
+            <span class="canvas-hint">Քաշեք մանրադիտակը էկրանի շրջանագծով</span>
+          </div>
+
+          <canvas class="chart" id="histCv" aria-label="Բռնկումների թիվը՝ ըստ ցրման անկյան (լոգարիթմական սանդղակ)"></canvas>
+          <p class="chart-caption">
+            <i class="swatch swatch--square" style="--c: var(--green)"></i>բռնկումների թիվը 2°-անոց միջակայքերում (ուղղաձիգ առանցքը՝ լոգարիթմական)
+            <i class="swatch" style="--c: var(--amber)"></i><span id="theoryCaption">տեսական կոր՝ 1/sin⁴(θ/2)</span>
+            <i class="swatch" style="--c: var(--purple)"></i>մանրադիտակի անկյունը
+          </p>
+        </section>
+
+        <aside class="panel">
+          <section class="group">
+            <h2 class="group__title">Ատոմի մոդել</h2>
+            <div class="segmented" id="model1" role="group" aria-label="Ատոմի մոդել">
+              <button data-value="rutherford" aria-pressed="true">Միջուկային մոդել (Ռեզերֆորդ)</button>
+              <button data-value="thomson">Թոմսոնի մոդել</button>
+            </div>
+          </section>
+
+          <section class="group">
+            <h2 class="group__title">Փորձ</h2>
+            <div class="field">
+              <label class="field__label" for="rate">α-մասնիկների հոսք</label>
+              <output class="field__value" for="rate"></output>
+              <input type="range" id="rate" min="1" max="6" step="0.1" value="4">
+            </div>
+            <div class="field">
+              <label class="field__label" for="detAngle">Մանրադիտակի անկյուն φ</label>
+              <output class="field__value" for="detAngle"></output>
+              <input type="range" id="detAngle" min="0" max="180" step="1" value="45">
+            </div>
+            <div class="btn-row">
+              <button class="btn" id="playBtn"></button>
+              <button class="btn" id="clearBtn">↺ Մաքրել</button>
+            </div>
+          </section>
+
+          <section class="group">
+            <h2 class="group__title">Հաշվարկ</h2>
+            <dl class="stats">
+              <div class="stat"><dt>Մասնիկների ընդհանուր թիվը N</dt><dd id="sTotal">—</dd></div>
+              <div class="stat"><dt>θ &lt; 10°</dt><dd id="sSmall">—</dd></div>
+              <div class="stat"><dt>10° ≤ θ ≤ 90°</dt><dd id="sMid">—</dd></div>
+              <div class="stat"><dt>θ &gt; 90° (հետ են շպրտվել)</dt><dd id="sBack">—</dd></div>
+              <div class="stat"><dt>Բռնկումներ մանրադիտակում</dt><dd id="sDet">—</dd></div>
+              <div class="stat"><dt>Բռնկումների հաճախություն</dt><dd id="sDetRate">—</dd></div>
+            </dl>
+            <div class="callout" id="setupInfo">—</div>
+          </section>
+
+          <section class="group">
+            <div class="formula">
+              <b>N(θ) ∼ 1 / sin⁴(θ/2)</b><br>
+              Ռեզերֆորդի բանաձևը. նույն մակերեսով էկրանի տեղամասին ընկնող α-մասնիկների թիվը<br><br>
+              <b>N(90°) / N(10°) ≈ 1 / 4300</b><br>
+              <b>N(180°) / N(10°) ≈ 1 / 17 000</b>
+            </div>
+          </section>
+        </aside>
+      </div>
+
+      <section class="explain">
+        <h2>Ինչ ցույց տվեց փորձը</h2>
+        <p>1909–1911 թվականներին Ռեզերֆորդի աշխատակիցներ Հ. Գայգերը և Է. Մարսդենը ռադիոակտիվ աղբյուրից դուրս եկող α-մասնիկների նեղ փունջն ուղղում էին ոսկու շատ բարակ նրբաթիթեղի վրա։ Ցրված մասնիկներն ընկնում էին ցինկի սուլֆիդով պատված էկրանին և առաջացնում թույլ բռնկումներ, որոնք հաշվում էին մանրադիտակով՝ այն պտտելով նրբաթիթեղի շուրջը։ Մասնիկների գերակշիռ մասն անցնում էր նրբաթիթեղով գրեթե չշեղվելով, սակայն մոտավորապես ութ հազարից մեկը շեղվում էր 90°-ից ավելի, իսկ որոշները՝ ետ էին շպրտվում։</p>
+        <p>Թոմսոնի մոդելում դրական լիցքը «քսված» է ամբողջ ատոմով մեկ, և նրա էլեկտրական դաշտն այնքան թույլ է, որ α-մասնիկը յուրաքանչյուր ատոմում շեղվում է ընդամենը հարյուրերորդական աստիճաններով։ Հազարավոր ատոմներով անցնելիս այդ շեղումները գումարվում են պատահականորեն և տալիս մոտ 1°-ի կարգի ցրում. մեծ անկյուններով ցրված մասնիկներ գործնականում չպետք է լինեին։ Ռեզերֆորդն այդ առթիվ ասել է, որ դա գրեթե նույնքան անհավանական էր, որքան եթե 15 դյույմանոց արկով կրակեիք բարակ թղթի թերթիկի վրա, իսկ արկը հետ դառնար ու խփեր ձեզ։</p>
+        <p>Եզրակացությունը. ատոմի ամբողջ դրական լիցքը և զանգվածի գրեթե ամբողջ մասը կենտրոնացած են շատ փոքր՝ մոտ 10⁻¹⁴ մ չափով <em>միջուկում</em>, որը մոտ 10 000 անգամ փոքր է ատոմից, իսկ ատոմի մնացած մասը գրեթե դատարկ է։ Միայն միջուկին շատ մոտ անցնող հազվադեպ մասնիկներն են մեծ անկյուններով շեղվում, և նրանց թիվը նվազում է ճիշտ 1/sin⁴(θ/2) օրենքով։ Փորձեք. տեղադրեք մանրադիտակը 30°, 90° և 150° անկյուններում և համեմատեք բռնկումների հաճախությունը, ապա միացրեք Թոմսոնի մոդելը։</p>
+      </section>
+    </div>
+
+    <!-- ===== Close-up: one nucleus ===== -->
+    <div id="panel-nucleus" role="tabpanel" hidden>
+      <div class="sim-layout">
+        <section class="stage">
+          <div class="canvas-wrap">
+            <canvas id="nucCv" aria-label="α-մասնիկների հետագծերը միջուկի մոտով անցնելիս"></canvas>
+          </div>
+          <p class="chart-caption">
+            <i class="swatch" style="--c: var(--red)"></i>α-մասնիկի հետագիծ
+            <i class="swatch" style="--c: var(--amber)"></i>ցրման անկյուն θ
+            <i class="swatch" style="--c: var(--blue)"></i>r<sub>min</sub>՝ մոտեցման նվազագույն հեռավորություն
+            <i class="swatch" style="--c: var(--text-3)"></i>d₀ շառավղով շրջանագիծ
+          </p>
+        </section>
+
+        <aside class="panel">
+          <section class="group">
+            <h2 class="group__title">Ատոմի մոդել</h2>
+            <div class="segmented" id="model2" role="group" aria-label="Ատոմի մոդել">
+              <button data-value="rutherford" aria-pressed="true">Միջուկային մոդել (Ռեզերֆորդ)</button>
+              <button data-value="thomson">Թոմսոնի մոդել</button>
+            </div>
+          </section>
+
+          <section class="group">
+            <h2 class="group__title">Պարամետրեր</h2>
+            <div class="field">
+              <label class="field__label" for="target">Թիրախ</label>
+              <select class="select" id="target">
+                <option value="au" selected>Ոսկի (Z = 79)</option>
+                <option value="ag">Արծաթ (Z = 47)</option>
+                <option value="al">Ալյումին (Z = 13)</option>
+              </select>
+            </div>
+            <div class="field">
+              <label class="field__label" for="energy">Կինետիկ էներգիա E</label>
+              <output class="field__value" for="energy"></output>
+              <input type="range" id="energy" min="3" max="10" step="0.1" value="5">
+            </div>
+            <div class="field">
+              <label class="field__label" for="impact">Նշանառության պարամետր b</label>
+              <output class="field__value" for="impact"></output>
+              <input type="range" id="impact" min="0" max="240" step="0.05" value="22.75">
+            </div>
+            <label class="check"><input type="checkbox" id="bundle"> Փունջ (շատ զուգահեռ հետագծեր)</label>
+            <div class="btn-row">
+              <button class="btn" id="nucPlayBtn"></button>
+            </div>
+          </section>
+
+          <section class="group">
+            <h2 class="group__title">Հաշվարկ</h2>
+            <dl class="stats">
+              <div class="stat"><dt>Կինետիկ էներգիա E</dt><dd id="nE">—</dd></div>
+              <div class="stat"><dt>Նշանառության պարամետր b</dt><dd id="nB">—</dd></div>
+              <div class="stat"><dt>Ցրման անկյուն θ (բանաձևով)</dt><dd id="nThetaF">—</dd></div>
+              <div class="stat"><dt>Ցրման անկյուն θ (հետագծից)</dt><dd id="nThetaS">—</dd></div>
+              <div class="stat"><dt>Ճակատային մոտեցում d₀</dt><dd id="nD0">—</dd></div>
+              <div class="stat"><dt>Նվազագույն հեռավորություն r<sub>min</sub></dt><dd id="nRmin">—</dd></div>
+              <div class="stat"><dt>Միջուկի շառավիղ R</dt><dd id="nR">—</dd></div>
+            </dl>
+            <div class="callout" id="nucInfo">—</div>
+          </section>
+
+          <section class="group">
+            <div class="formula">
+              <b>d₀ = 2Z·ke² / E</b><br>
+              ճակատային բախման դեպքում մոտեցման հեռավորությունը, ke² = 1.44 ՄէՎ·ֆմ<br><br>
+              <b>tg(θ/2) = d₀ / (2b)</b><br>
+              ցրման անկյունը<br><br>
+              <b>r<sub>min</sub> = d₀/2 · (1 + 1/sin(θ/2))</b><br>
+              մոտեցման նվազագույն հեռավորությունը<br><br>
+              <b>R ≈ 1.2·∛A ֆմ</b><br>
+              միջուկի շառավիղը (1 ֆմ = 10⁻¹⁵ մ)
+            </div>
+          </section>
+        </aside>
+      </div>
+
+      <section class="explain">
+        <h2>α-մասնիկը միջուկի դաշտում</h2>
+        <p>Դրական լիցքավորված α-մասնիկը (լիցքը՝ 2e) վանվում է միջուկից (լիցքը՝ Ze) Կուլոնի ուժով, որը հակադարձ համեմատական է հեռավորության քառակուսուն։ Այդ ուժի ազդեցությամբ մասնիկը շարժվում է հիպերբոլով։ Ինչքան մոտ է անցնում մասնիկը միջուկին, այսինքն՝ ինչքան փոքր է <em>նշանառության պարամետրը b</em> (մասնիկի սկզբնական ուղղի հեռավորությունը միջուկից), այնքան մեծ է ցրման անկյունը՝ <em>tg(θ/2) = d₀ / (2b)</em>։ Ճակատային բախման դեպքում (b = 0) մասնիկը կանգ է առնում d₀ հեռավորության վրա, որտեղ նրա ամբողջ կինետիկ էներգիան վերածվում է կուլոնյան պոտենցիալ էներգիայի, և ետ է շպրտվում (θ = 180°)։</p>
+        <p>Ոսկու համար 5 ՄէՎ էներգիայի դեպքում d₀ ≈ 45 ֆմ, իսկ ատոմի չափը մոտ 100 000 ֆմ է։ Ուստի մեծ անկյուններով ցրվում են միայն այն մասնիկները, որոնք «նշան են բռնում» ատոմի կենտրոնի մի չնչին տիրույթ։ Թոմսոնի մոդելում դրական լիցքը բաշխված է ատոմի ամբողջ ծավալով, ուստի պատկերի մասշտաբը 1000 անգամ մեծ է (պիկոմետրեր), իսկ ցրման անկյունները չեն գերազանցում հարյուրերորդական աստիճանները։</p>
+        <p>Ռեզերֆորդի բանաձևը ճիշտ է, քանի դեռ α-մասնիկը չի դիպչում միջուկին։ Ընտրեք ալյումին և մեծացրեք էներգիան. երբ r<sub>min</sub>-ը դառնում է միջուկի և α-մասնիկի շառավիղների գումարից փոքր, միանում են միջուկային ուժերը, և ցրումը շեղվում է Ռեզերֆորդի օրենքից։ Հենց այդ շեղումներից էլ առաջին անգամ գնահատվեցին միջուկների չափերը։</p>
+      </section>
+    </div>
+  </main>
+
+  <footer data-shell="footer"></footer>
+</body>
+</html>

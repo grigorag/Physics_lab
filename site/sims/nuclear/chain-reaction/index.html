@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="hy">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Շղթայական միջուկային ռեակցիա · Ֆիզիկայի Լաբորատորիաներ</title>
+  <link rel="icon" href="../../../assets/img/favicon.svg" type="image/svg+xml">
+  <script src="../../../assets/js/theme-init.js"></script>
+  <link rel="stylesheet" href="../../../assets/css/main.css">
+  <link rel="stylesheet" href="./sim.css">
+  <script type="module" src="../../../assets/js/core/shell.js"></script>
+  <script type="module" src="./main.js"></script>
+</head>
+<body data-sim="chain-reaction" data-section="nuclear">
+  <header data-shell="header"></header>
+
+  <main class="page">
+    <header class="sim-head">
+      <h1 class="sim-title">Շղթայական միջուկային ռեակցիա</h1>
+      <p class="sim-subtitle">ուրանի միջուկների բաժանում</p>
+    </header>
+
+    <div class="tabs" role="tablist" id="tabs">
+      <button role="tab" data-tab="fission" aria-controls="panel-fission" aria-selected="true">Մեկ միջուկ</button>
+      <button role="tab" data-tab="chain" aria-controls="panel-chain">Շղթայական ռեակցիա</button>
+      <button role="tab" data-tab="reactor" aria-controls="panel-reactor">Ռեակտոր</button>
+    </div>
+
+    <!-- ===== Tab 1: fission of one nucleus ===== -->
+    <div id="panel-fission" role="tabpanel">
+      <div class="sim-layout">
+        <section class="stage">
+          <div class="canvas-wrap">
+            <canvas id="fScene" aria-label="Ուրան-235 միջուկի բաժանումը դանդաղ նեյտրոնի կլանումից հետո"></canvas>
+            <ul class="legend legend--tl">
+              <li><i class="legend__dot" style="--c: var(--coral)"></i>պրոտոն</li>
+              <li><i class="legend__dot" style="--c: var(--blue)"></i>նեյտրոն</li>
+            </ul>
+          </div>
+          <div class="formula fission-eq" id="fEquation">—</div>
+          <ol class="phase-list" id="fPhases">
+            <li data-phase="1">Դանդաղ նեյտրոնը մոտենում է <sup>235</sup>U միջուկին։</li>
+            <li data-phase="2">Միջուկը կլանում է նեյտրոնը և դառնում գրգռված <sup>236</sup>U* միջուկ։</li>
+            <li data-phase="3">Գրգռված միջուկը կաթիլի պես տատանվում է և ձգվում, մեջտեղում առաջանում է նեղացում։</li>
+            <li data-phase="4">Կուլոնյան վանման ուժերը միջուկը բաժանում են երկու բեկորի. դուրս են թռչում 2–3 արագ նեյտրոն, անջատվում է ≈ 200 ՄէՎ էներգիա։</li>
+          </ol>
+        </section>
+
+        <aside class="panel">
+          <section class="group">
+            <h2 class="group__title">Բաժանման եղանակ</h2>
+            <div class="segmented" id="fChannel" role="group" aria-label="Բաժանման բեկորները">
+              <button data-value="BaKr" aria-pressed="true">Ba + Kr + 3n</button>
+              <button data-value="XeSr">Xe + Sr + 2n</button>
+            </div>
+            <button class="btn btn--primary btn--block" id="fFire">Արձակել նեյտրոն</button>
+            <div class="btn-row">
+              <button class="btn" id="fReset">↺ Սկզբից</button>
+            </div>
+            <label class="check"><input type="checkbox" id="fSlow"> Դանդաղեցված շարժում</label>
+          </section>
+
+
+          <section class="group">
+            <h2 class="group__title">Էներգիայի հաշվարկ</h2>
+            <dl class="stats">
+              <div class="stat"><dt>Մինչև ռեակցիան՝ m(<sup>235</sup>U) + m(n)</dt><dd id="fM1">—</dd></div>
+              <div class="stat"><dt>Ռեակցիայից հետո</dt><dd id="fM2">—</dd></div>
+              <div class="stat"><dt>Զանգվածի դեֆեկտ Δm</dt><dd id="fDm">—</dd></div>
+              <div class="stat"><dt>Էներգիա Q = Δm·c²</dt><dd id="fQ">—</dd></div>
+              <div class="stat"><dt>Q ջոուլներով</dt><dd id="fQJ">—</dd></div>
+              <div class="stat"><dt>Բեկորների արագությունների հարաբերություն <span id="fVLabel"></span></dt><dd id="fV">—</dd></div>
+            </dl>
+            <p class="hint">Q-ն բեկորների և նեյտրոնների կինետիկ էներգիան է։ Եվս ≈ 25 ՄէՎ անջատվում է ավելի ուշ՝ ռադիոակտիվ բեկորների տրոհման ժամանակ, ընդամենը՝ ≈ 200 ՄէՎ մեկ բաժանման համար։</p>
+          </section>
+
+          <section class="group">
+            <div class="formula">
+              <b>Q = Δm·c²</b><br>
+              1 ա.զ.մ.·c² = 931.5 ՄէՎ<br>
+              1 ՄէՎ = 1.602·10⁻¹³ Ջ<br><br>
+              <b>m<sub>1</sub>v<sub>1</sub> = m<sub>2</sub>v<sub>2</sub></b><br>
+              բեկորների իմպուլսները հավասար են մոդուլով
+            </div>
+          </section>
+        </aside>
+      </div>
+
+      <section class="explain">
+        <h2>Միջուկի բաժանումը</h2>
+        <p>Ուրան-235-ի միջուկը կարող է կլանել դանդաղ (ջերմային) նեյտրոն։ Առաջանում է ուրան-236-ի գրգռված միջուկ, որն իրեն պահում է ինչպես հեղուկի տատանվող կաթիլ. նրա ձևը ձգվում է, և եթե ձգումը բավականաչափ մեծ է, միջուկային ձգողության կարճազդու ուժերն այլևս չեն կարողանում հաղթահարել պրոտոնների կուլոնյան վանումը։ Միջուկը բաժանվում է երկու միջին զանգվածի բեկորի (օրինակ՝ բարիում և կրիպտոն), և ազատվում են 2–3 արագ նեյտրոն։</p>
+        <p>Բեկորների և նեյտրոնների զանգվածների գումարը մոտ 0.2 ա.զ.մ.-ով փոքր է ելային միջուկի և նեյտրոնի զանգվածից։ Համաձայն Այնշտայնի <em>E = mc²</em> առնչության՝ այդ զանգվածի դեֆեկտին համապատասխանում է ≈ 200 ՄէՎ էներգիա, որի հիմնական մասը բեկորների կինետիկ էներգիան է։ Դա միլիոնավոր անգամ ավելի է, քան մեկ մոլեկուլի այրման ժամանակ անջատվող էներգիան (մի քանի էՎ)։ Համեմատեք երկու եղանակները. բեկորները տարբեր են, բայց էներգիան մոտավորապես նույնն է։ Ուշադրություն դարձրեք, որ թեթև բեկորը թռչում է ավելի արագ՝ իմպուլսի պահպանման օրենքի համաձայն։</p>
+      </section>
+    </div>
+
+    <!-- ===== Tab 2: chain reaction in a lump ===== -->
+    <div id="panel-chain" role="tabpanel" hidden>
+      <div class="sim-layout">
+        <section class="stage">
+          <div class="canvas-wrap canvas-wrap--crosshair">
+            <canvas id="cScene" aria-label="Ուրանի գնդաձև կտոր, որտեղ նեյտրոնները բաժանում են միջուկները"></canvas>
+            <ul class="legend legend--tl">
+              <li><i class="legend__dot" style="--c: var(--green)"></i><span><sup>235</sup>U</span></li>
+              <li><i class="legend__dot" style="--c: var(--legend-238)"></i><span><sup>238</sup>U</span></li>
+              <li><i class="legend__dot" style="--c: var(--blue)"></i>նեյտրոն</li>
+              <li><i class="legend__dot" style="--c: var(--coral)"></i>բեկորներ</li>
+            </ul>
+            <span class="canvas-hint">Սեղմեք կտորի ներսում՝ այնտեղից նեյտրոն արձակելու համար</span>
+          </div>
+          <canvas class="chart" id="cChart" aria-label="Բաժանումների թիվը ըստ սերունդների"></canvas>
+          <p class="chart-caption">Բաժանումների թիվը յուրաքանչյուր սերնդում. g-րդ սերնդի բաժանումներն առաջացրել են (g−1)-րդ սերնդի նեյտրոնները։ k &gt; 1 դեպքում սյուները աճում են երկրաչափական պրոգրեսիայով։</p>
+        </section>
+
+        <aside class="panel">
+          <section class="group">
+            <button class="btn btn--primary btn--block" id="cFire">Արձակել նեյտրոն կենտրոնից</button>
+            <div class="btn-row">
+              <button class="btn" id="cPlay"></button>
+              <button class="btn" id="cReset">↺ Նոր կտոր</button>
+            </div>
+            <div class="field">
+              <span class="field__label">Արագություն</span>
+              <div class="segmented" id="cSpeed" role="group" aria-label="Սիմուլյացիայի արագություն">
+                <button data-value="0.5">×0.5</button>
+                <button data-value="1" aria-pressed="true">×1</button>
+                <button data-value="2">×2</button>
+              </div>
+            </div>
+          </section>
+
+          <section class="group">
+            <h2 class="group__title">Ուրանի կտոր</h2>
+            <div class="field">
+              <label class="field__label" for="cRadius">Շառավիղ R</label>
+              <output class="field__value" for="cRadius"></output>
+              <input type="range" id="cRadius" min="0.1" max="1" step="0.02" value="0.6">
+            </div>
+            <div class="field">
+              <label class="field__label" for="cEnrich">Հարստացում (<sup>235</sup>U-ի բաժինը)</label>
+              <output class="field__value" for="cEnrich"></output>
+              <input type="range" id="cEnrich" min="0" max="100" step="1" value="100">
+            </div>
+            <div class="field">
+              <label class="field__label" for="cDensity">Խտություն (միջուկներ/պ.մ.²)</label>
+              <output class="field__value" for="cDensity"></output>
+              <input type="range" id="cDensity" min="50" max="190" step="5" value="110">
+            </div>
+            <p class="hint" id="cInfo">—</p>
+          </section>
+
+          <section class="group">
+            <h2 class="group__title">Արդյունքներ</h2>
+            <dl class="stats">
+              <div class="stat"><dt>Սերունդների թիվ</dt><dd id="cGen">—</dd></div>
+              <div class="stat"><dt>Բաժանումներ N</dt><dd id="cFis">—</dd></div>
+              <div class="stat"><dt>Ազատ նեյտրոններ հիմա</dt><dd id="cNeu">—</dd></div>
+              <div class="stat"><dt>Դուրս թռած նեյտրոններ</dt><dd id="cEsc">—</dd></div>
+              <div class="stat"><dt><sup>238</sup>U-ի կլանած նեյտրոններ</dt><dd id="cCap">—</dd></div>
+              <div class="stat"><dt>Էներգիա E = N·200 ՄէՎ</dt><dd id="cEMeV">—</dd></div>
+              <div class="stat"><dt>Էներգիա ջոուլներով</dt><dd id="cEJ">—</dd></div>
+              <div class="stat"><dt>Բազմապատկման գործակից k</dt><dd id="cK">—</dd></div>
+            </dl>
+            <div class="callout tint" id="cVerdict">—</div>
+          </section>
+
+          <section class="group">
+            <div class="formula">
+              <b>k = N<sub>g+1</sub> / N<sub>g</sub></b><br>
+              մեկ բաժանման նեյտրոններից առաջացած նոր բաժանումների միջին թիվը<br><br>
+              <b>N<sub>g</sub> = N<sub>1</sub>·k<sup>g−1</sup></b><br>
+              k &lt; 1՝ մարող, k = 1՝ կրիտիկական, k &gt; 1՝ աճող ռեակցիա<br><br>
+              <b>E = N·200 ՄէՎ</b>, 1 ՄէՎ = 1.602·10⁻¹³ Ջ
+            </div>
+          </section>
+        </aside>
+      </div>
+
+      <section class="explain">
+        <h2>Ինչու է ռեակցիան շղթայական</h2>
+        <p>Յուրաքանչյուր բաժանման ժամանակ միջինում ազատվում է 2.4 նեյտրոն, և նրանցից յուրաքանչյուրը կարող է բաժանել նոր միջուկ։ Եթե մեկ բաժանման նեյտրոնները միջինում առաջացնում են k նոր բաժանում, ապա g-րդ սերնդում բաժանումների թիվը մոտ k<sup>g</sup> անգամ մեծ է առաջինից։ Երբ <em>k &gt; 1</em>, ռեակցիան ձնահյուսի պես աճում է, երբ <em>k &lt; 1</em>՝ արագ մարում է։ Մոդելում նեյտրոնը կորչում է, եթե դուրս է թռչում կտորից կամ կլանվում է <sup>238</sup>U միջուկի կողմից, որը չի բաժանվում։</p>
+        <p>Փոքր կտորից նեյտրոնների մեծ մասը դուրս է թռչում՝ չհասցնելով միջուկի հանդիպել, ուստի k &lt; 1։ Կտորի չափերը մեծացնելիս ծավալն աճում է ավելի արագ, քան մակերևույթը, և կորուստները նվազում են։ Այն նվազագույն զանգվածը, որի դեպքում k = 1, կոչվում է <em>կրիտիկական զանգված</em> (մաքուր <sup>235</sup>U-ի գնդի համար՝ մոտ 50 կգ)։ Փոխեք շառավիղը և գտեք կրիտիկական չափը, ապա փոքրացրեք հարստացումը կամ խտությունը և տեսեք, թե ինչպես է այն մեծանում։ Ատոմային ռումբում մի քանի ենթակրիտիկական կտոր արագ միացվում կամ սեղմվում են՝ ստանալով k &gt; 1, և ռեակցիան ընթանում է անկառավարելի (պայթյուն)։</p>
+        <p>Մոդելը երկչափ է, և երկարությունները տրված են պայմանական միավորներով (պ.մ.)։ Իրականում մեկ սերունդը տևում է վայրկյանի հարյուրմիլիոներորդական մասեր, և 1 կգ <sup>235</sup>U-ի լրիվ բաժանման ժամանակ անջատվում է ≈ 8·10¹³ Ջ էներգիա, որքան այրվելիս տալիս է մոտ 2000 տոննա նավթ։</p>
+      </section>
+    </div>
+
+    <!-- ===== Tab 3: reactor ===== -->
+    <div id="panel-reactor" role="tabpanel" hidden>
+      <div class="sim-layout">
+        <section class="stage">
+          <div class="canvas-wrap">
+            <canvas id="rScene" aria-label="Միջուկային ռեակտորի ակտիվ գոտին վառելիքային և կառավարող ձողերով"></canvas>
+          </div>
+          <p class="chart-caption reactor-key">
+            <span><i class="swatch swatch--square" style="--c: var(--green)"></i><span>վառելիք (<sup>235</sup>U)</span></span>
+            <span><i class="swatch swatch--square" style="--c: var(--blue)"></i>դանդաղիչ (ջուր)</span>
+            <span><i class="swatch swatch--square" style="--c: var(--legend-rod)"></i>կառավարող ձողեր</span>
+            <span><i class="swatch" style="--c: var(--blue)"></i>նեյտրոն</span>
+            <span><i class="swatch" style="--c: var(--coral)"></i>բեկորներ</span>
+          </p>
+          <canvas class="chart" id="rChart" aria-label="Ռեակտորի հզորությունը՝ կախված ժամանակից"></canvas>
+          <p class="chart-caption">Հզորությունը (բաժանումների թիվը վայրկյանում)՝ անվանականի տոկոսներով։ Կանաչ շերտը թույլատրելի տիրույթն է, կարմիր գիծը՝ վթարային պաշտպանության շեմը։</p>
+        </section>
+
+        <aside class="panel">
+          <section class="group">
+            <h2 class="group__title">Կառավարում</h2>
+            <div class="field">
+              <label class="field__label" for="rDepth">Կառավարող ձողերի խորությունը</label>
+              <output class="field__value" for="rDepth"></output>
+              <input type="range" id="rDepth" min="0" max="100" step="1" value="75">
+            </div>
+            <div class="btn-row">
+              <button class="btn btn--primary" id="rStart">Գործարկել</button>
+              <button class="btn" id="rReset">↺ Սկզբից</button>
+            </div>
+            <button class="btn btn--block tint scram" id="rScram">Վթարային պաշտպանություն (SCRAM)</button>
+            <label class="check"><input type="checkbox" id="rAuto" checked> Ավտոմատ վթարային պաշտպանություն</label>
+            <p class="hint">«Գործարկել» կոճակը ակտիվ գոտի է ներմուծում մի քանի նեյտրոն (նեյտրոնային աղբյուր)։ Նպատակը՝ ձողերի խորությամբ հզորությունը պահել կանաչ շերտում (k ≈ 1)։</p>
+          </section>
+
+          <section class="group">
+            <h2 class="group__title">Ռեակտորի վիճակը</h2>
+            <dl class="stats">
+              <div class="stat"><dt>Հզորություն</dt><dd id="rPow">—</dd></div>
+              <div class="stat"><dt>Բաժանումներ վայրկյանում</dt><dd id="rRate">—</dd></div>
+              <div class="stat"><dt>Բազմապատկման գործակից k</dt><dd id="rK">—</dd></div>
+              <div class="stat"><dt>Ազատ նեյտրոններ</dt><dd id="rNeu">—</dd></div>
+              <div class="stat"><dt>Ձողերի իրական դիրքը</dt><dd id="rRod">—</dd></div>
+              <div class="stat"><dt>Չբաժանված <sup>235</sup>U</dt><dd id="rFuel">—</dd></div>
+              <div class="stat"><dt>Անջատված էներգիա</dt><dd id="rE">—</dd></div>
+            </dl>
+            <div class="callout tint" id="rStatus">—</div>
+          </section>
+
+          <section class="group">
+            <div class="formula">
+              <b>k = 1</b>՝ կայուն աշխատանք<br>
+              <b>P ∝ (բաժանումներ/վ)·200 ՄէՎ</b><br><br>
+              Ձողերը կլանում են նեյտրոններ (բոր, կադմիում)՝ իջեցնելով k-ն։<br>
+              Դանդաղիչը (ջուր, գրաֆիտ) դանդաղեցնում է նեյտրոնները, որոնք ավելի հավանաբար են բաժանում <sup>235</sup>U-ը։
+            </div>
+          </section>
+        </aside>
+      </div>
+
+      <section class="explain">
+        <h2>Միջուկային ռեակտոր</h2>
+        <p>Ռեակտորում շղթայական ռեակցիան ընթանում է կառավարվող ձևով՝ <em>k = 1</em>. յուրաքանչյուր բաժանում առաջացնում է ճիշտ մեկ նոր բաժանում, և հզորությունը մնում է հաստատուն։ Վառելիքային ձողերի միջև գտնվում է դանդաղիչը (ջուր կամ գրաֆիտ). այն դանդաղեցնում է արագ նեյտրոնները, որոնք դրանից հետո շատ ավելի հավանաբար են բաժանում <sup>235</sup>U-ի միջուկները։ Դրա շնորհիվ ռեակտորում բավական է թույլ հարստացված վառելիքը (3–5 % <sup>235</sup>U)։ Մոդելում նեյտրոնները պատկերված են արդեն դանդաղեցված։</p>
+        <p>Հզորությունը կառավարվում է նեյտրոններ լավ կլանող նյութից (բոր, կադմիում) պատրաստված <em>կառավարող ձողերով</em>։ Երբ դրանք խորն են իջեցված, նեյտրոնների մեծ մասը կլանվում է, k &lt; 1, և ռեակտորը կանգ է առնում։ Բարձրացնելիս k-ն մեծանում է, և հզորությունն աճում է։ Փորձեք գտնել ձողերի այն դիրքը, որի դեպքում հզորությունը մնում է կանաչ շերտում։ Եթե հզորությունը վտանգավոր աճում է, վթարային պաշտպանությունն ակնթարթորեն իջեցնում է բոլոր ձողերը (SCRAM)։ Մոդելում բաժանված միջուկների տեղում որոշ ժամանակ անց հայտնվում են նորերը (թարմ վառելիք). դա թույլ է տալիս հասնել կայուն վիճակի։</p>
+        <p>Ատոմային ռումբում, ընդհակառակը, k-ն զգալիորեն մեծ է 1-ից, և ամբողջ էներգիան անջատվում է վայրկյանի միլիոներորդական մասերում։ Հայաստանում էլեկտրաէներգիայի զգալի մասն արտադրում է Մեծամորի ատոմակայանը, որի ռեակտորում որպես դանդաղիչ և ջերմակիր օգտագործվում է ջուրը։</p>
+      </section>
+    </div>
+  </main>
+
+  <footer data-shell="footer"></footer>
+</body>
+</html>

@@ -1,0 +1,62 @@
+/* α, β, γ radiation — sim-specific bits (tokens only). */
+
+.check .swatch { margin-left: -2px; }
+
+/* Greek letters must not be uppercased (α → Α) by .readout__title. */
+.gk { text-transform: none; font-size: 1.15em; }
+
+/* Transmitted-intensity bar in the counter readouts. */
+.bar {
+  height: 6px;
+  margin: 4px 0 6px;
+  border-radius: 3px;
+  background: var(--surface-3);
+  overflow: hidden;
+}
+.bar > i {
+  display: block;
+  height: 100%;
+  width: var(--p, 0%);
+  border-radius: 3px;
+  background: var(--c, var(--accent));
+  transition: width var(--ease);
+}
+
+/* Summary table in the theory section. */
+.table-wrap {
+  margin-top: var(--sp-4);
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+}
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--fs-xs);
+}
+.data-table caption {
+  padding: 10px 12px 6px;
+  text-align: left;
+  font-size: var(--fs-2xs);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+.data-table th,
+.data-table td {
+  padding: 6px 12px;
+  text-align: left;
+  vertical-align: top;
+}
+.data-table th {
+  font-weight: 600;
+  color: var(--text);
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+.data-table th .swatch { vertical-align: -1px; margin-right: 2px; }
+.data-table td { color: var(--text); min-width: 9em; }
+.data-table td:first-child { color: var(--text-2); min-width: 0; }
+.data-table tbody tr + tr td { border-top: 1px dashed var(--border); }

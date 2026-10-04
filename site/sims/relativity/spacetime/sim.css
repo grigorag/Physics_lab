@@ -1,0 +1,13 @@
+/* Spacetime diagram — sim-specific bits (tokens only). */
+.callout { margin-top: var(--sp-3); }
+.preset-list { display: grid; gap: var(--sp-2); }
+.readouts--st { grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr)); }
+.readout .verdict {
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px dashed var(--border);
+  font-family: var(--font-sans);
+}
+.readout .fp { color: var(--accent); }
+.readout .muted { color: var(--text-3); font-family: var(--font-sans); }
+.sel-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--sp-2); }

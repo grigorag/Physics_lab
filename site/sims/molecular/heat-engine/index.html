@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="hy">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ջերմային շարժիչ․ Կառնոյի ցիկլ · Ֆիզիկայի Լաբորատորիաներ</title>
+  <link rel="icon" href="../../../assets/img/favicon.svg" type="image/svg+xml">
+  <script src="../../../assets/js/theme-init.js"></script>
+  <link rel="stylesheet" href="../../../assets/css/main.css">
+  <link rel="stylesheet" href="./sim.css">
+  <script type="module" src="../../../assets/js/core/shell.js"></script>
+  <script type="module" src="./main.js"></script>
+</head>
+<body data-sim="heat-engine" data-section="molecular">
+  <header data-shell="header"></header>
+
+  <main class="page">
+    <header class="sim-head">
+      <h1 class="sim-title">Ջերմային շարժիչ․ Կառնոյի ցիկլ</h1>
+      <p class="sim-subtitle">շրջանային պրոցեսներ և օգտակար գործողության գործակից</p>
+    </header>
+
+    <div class="sim-layout">
+      <section class="stage">
+        <div class="canvas-wrap">
+          <canvas id="scene" aria-label="Մխոցով գլան՝ թափանիվով, տաքացուցիչով, ջերմամեկուսիչ տակդիրով և սառնարանով, ու էներգիայի հոսքի գծապատկեր"></canvas>
+        </div>
+
+        <div class="callout stage-box" id="stageBox">—</div>
+
+        <div>
+          <canvas class="chart" id="chart" aria-label="Ցիկլի p–V դիագրամը"></canvas>
+        </div>
+        <p class="chart-caption">
+          <i class="swatch" style="--c: var(--red)"></i>գազը ջերմաքանակ է ստանում (Q &gt; 0)
+          <i class="swatch" style="--c: var(--blue)"></i>գազը ջերմաքանակ է տալիս (Q &lt; 0)
+          <i class="swatch" style="--c: var(--purple)"></i>ադիաբատ (Q = 0)
+          <i class="swatch" style="--c: var(--amber)"></i>ներգծված մակերեսը = ցիկլի աշխատանքը A։
+          Կետագծերով՝ T₁ և T₂ իզոթերմերը։ Մկնիկը (մատը) մոտեցրեք 1–4 կետերին՝ վիճակը տեսնելու համար։
+        </p>
+
+        <div class="tables">
+          <div class="table-wrap">
+            <table class="data-table" id="statesTable">
+              <caption>Անկյունային վիճակները</caption>
+              <thead><tr><th>Վիճակ</th><th>p, կՊա</th><th>V, լ</th><th>T, Կ</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <div class="table-wrap">
+            <table class="data-table" id="stagesTable">
+              <caption>Էներգիան ըստ փուլերի (Q = ΔU + A)</caption>
+              <thead><tr><th>Փուլ</th><th>ΔU, Ջ</th><th>Q, Ջ</th><th>A, Ջ</th></tr></thead>
+              <tbody></tbody>
+              <tfoot></tfoot>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <aside class="panel">
+        <section class="group">
+          <h2 class="group__title">Ցիկլ</h2>
+          <div class="segmented" id="cycle" role="group" aria-label="Ցիկլի տեսակը">
+            <button data-value="carnot" aria-pressed="true">Կառնո</button>
+            <button data-value="rect">Ուղղանկյուն</button>
+            <button data-value="otto">Օտտո</button>
+          </div>
+          <div class="callout" id="cycleBox">—</div>
+        </section>
+
+        <section class="group" id="params-carnot">
+          <h2 class="group__title">Պարամետրեր</h2>
+          <div class="field">
+            <label class="field__label" for="cT1">Տաքացուցիչի ջերմաստիճան T₁</label>
+            <output class="field__value" for="cT1"></output>
+            <input type="range" id="cT1" min="400" max="1000" step="10" value="600">
+          </div>
+          <div class="field">
+            <label class="field__label" for="cT2">Սառնարանի ջերմաստիճան T₂</label>
+            <output class="field__value" for="cT2"></output>
+            <input type="range" id="cT2" min="250" max="400" step="5" value="300">
+          </div>
+          <div class="field">
+            <label class="field__label" for="cV1">Ծավալը 1 վիճակում V₁</label>
+            <output class="field__value" for="cV1"></output>
+            <input type="range" id="cV1" min="5" max="20" step="0.5" value="10">
+          </div>
+          <div class="field">
+            <label class="field__label" for="cV2">Իզոթերմ ընդարձակման վերջում V₂</label>
+            <output class="field__value" for="cV2"></output>
+            <input type="range" id="cV2" min="7" max="40" step="0.5" value="20">
+          </div>
+          <p class="hint" id="hint-carnot"></p>
+        </section>
+
+        <section class="group" id="params-rect" hidden>
+          <h2 class="group__title">Պարամետրեր</h2>
+          <div class="field">
+            <label class="field__label" for="rP1">Փոքր ճնշում p₁</label>
+            <output class="field__value" for="rP1"></output>
+            <input type="range" id="rP1" min="50" max="300" step="10" value="100">
+          </div>
+          <div class="field">
+            <label class="field__label" for="rP2">Մեծ ճնշում p₂</label>
+            <output class="field__value" for="rP2"></output>
+            <input type="range" id="rP2" min="70" max="400" step="10" value="200">
+          </div>
+          <div class="field">
+            <label class="field__label" for="rV1">Փոքր ծավալ V₁</label>
+            <output class="field__value" for="rV1"></output>
+            <input type="range" id="rV1" min="5" max="30" step="1" value="10">
+          </div>
+          <div class="field">
+            <label class="field__label" for="rV2">Մեծ ծավալ V₂</label>
+            <output class="field__value" for="rV2"></output>
+            <input type="range" id="rV2" min="7" max="40" step="1" value="20">
+          </div>
+          <p class="hint" id="hint-rect"></p>
+        </section>
+
+        <section class="group" id="params-otto" hidden>
+          <h2 class="group__title">Պարամետրեր</h2>
+          <div class="field">
+            <label class="field__label" for="oT1">Սկզբնական ջերմաստիճան T₁</label>
+            <output class="field__value" for="oT1"></output>
+            <input type="range" id="oT1" min="250" max="400" step="5" value="300">
+          </div>
+          <div class="field">
+            <label class="field__label" for="oT3">Առավելագույն ջերմաստիճան T₃</label>
+            <output class="field__value" for="oT3"></output>
+            <input type="range" id="oT3" min="1000" max="3000" step="50" value="1500">
+          </div>
+          <div class="field">
+            <label class="field__label" for="oV1">Առավելագույն ծավալ V₁</label>
+            <output class="field__value" for="oV1"></output>
+            <input type="range" id="oV1" min="10" max="40" step="1" value="30">
+          </div>
+          <div class="field">
+            <label class="field__label" for="oR">Սեղմման աստիճան ε = V₁/V₂</label>
+            <output class="field__value" for="oR"></output>
+            <input type="range" id="oR" min="2" max="10" step="0.5" value="6">
+          </div>
+          <p class="hint" id="hint-otto"></p>
+        </section>
+
+        <section class="group">
+          <h2 class="group__title">Անիմացիա</h2>
+          <div class="field">
+            <label class="field__label" for="speed">Արագություն</label>
+            <output class="field__value" for="speed"></output>
+            <input type="range" id="speed" min="0.25" max="3" step="0.25" value="1">
+          </div>
+          <div class="btn-row">
+            <button class="btn" id="playBtn"></button>
+            <button class="btn" id="nextBtn">⏭ Հաջորդ փուլ</button>
+          </div>
+          <button class="btn btn--block" id="resetBtn">↺ Սկզբից</button>
+        </section>
+
+        <section class="group">
+          <h2 class="group__title">Գազի ընթացիկ վիճակը</h2>
+          <dl class="stats">
+            <div class="stat"><dt>Ճնշում p</dt><dd id="pNow">—</dd></div>
+            <div class="stat"><dt>Ծավալ V</dt><dd id="vNow">—</dd></div>
+            <div class="stat"><dt>Ջերմաստիճան T</dt><dd id="tNow">—</dd></div>
+            <div class="stat"><dt>Ներքին էներգիա U = 3/2·RT</dt><dd id="uNow">—</dd></div>
+          </dl>
+        </section>
+
+        <section class="group">
+          <h2 class="group__title">Մեկ ցիկլում</h2>
+          <dl class="stats">
+            <div class="stat"><dt>Ստացած ջերմաքանակ Q₁</dt><dd id="q1Val">—</dd></div>
+            <div class="stat"><dt>Տված ջերմաքանակ |Q₂|</dt><dd id="q2Val">—</dd></div>
+            <div class="stat"><dt>Աշխատանք A = Q₁ − |Q₂|</dt><dd id="aVal">—</dd></div>
+            <div class="stat"><dt>ՕԳԳ η = A/Q₁</dt><dd id="etaVal">—</dd></div>
+            <div class="stat"><dt id="etaCLabel">η<sub>Կառնո</sub> = 1 − T₂/T₁</dt><dd id="etaCVal">—</dd></div>
+            <div class="stat"><dt>ΔU<sub>ցիկլ</sub></dt><dd id="duVal">—</dd></div>
+          </dl>
+          <p class="hint" id="etaHint"></p>
+        </section>
+
+        <section class="group">
+          <div class="formula">
+            <b>Q = ΔU + A</b> (ջերմադինամիկայի I օրենք)<br>
+            ν = 1 մոլ միատոմ իդեալական գազ՝<br>
+            pV = νRT,  U = 3/2·νRT<br>
+            C<sub>V</sub> = 3/2·R,  C<sub>p</sub> = 5/2·R,  γ = 5/3<br><br>
+            <b>իզոթերմ՝</b> ΔU = 0, Q = A = νRT·ln(V₂/V₁)<br>
+            <b>ադիաբատ՝</b> Q = 0, TV<sup>γ−1</sup> = const, A = −ΔU<br>
+            <b>իզոխոր՝</b> A = 0, Q = νC<sub>V</sub>ΔT<br>
+            <b>իզոբար՝</b> A = pΔV, Q = νC<sub>p</sub>ΔT<br><br>
+            <b>η = A/Q₁ = 1 − |Q₂|/Q₁</b><br>
+            <b>η<sub>Կառնո</sub> = 1 − T₂/T₁</b><br>
+            <b>η<sub>Օտտո</sub> = 1 − ε<sup>1−γ</sup></b><br>
+            R = 8.31 Ջ/(մոլ·Կ), 1 կՊա·լ = 1 Ջ
+          </div>
+        </section>
+      </aside>
+    </div>
+
+    <section class="explain">
+      <h2>Ինչպես է աշխատում ջերմային շարժիչը</h2>
+      <p>Ջերմային շարժիչը ներքին էներգիան մեխանիկական աշխատանքի է վերածում։ Նրա <em>աշխատող մարմինը</em> (այստեղ՝ 1 մոլ միատոմ իդեալական գազ) <em>տաքացուցիչից</em> ստանում է Q₁ ջերմաքանակ, կատարում է A աշխատանք և ջերմաքանակի մի մասը՝ |Q₂|-ը, անպայման տալիս է <em>սառնարանին</em>։ Որպեսզի շարժիչն աշխատի անընդհատ, գազը պետք է կրկնի նույն <em>շրջանային պրոցեսը (ցիկլը)</em>՝ վերադառնալով սկզբնական վիճակին։ Ցիկլից հետո ներքին էներգիան նույնն է (ΔU = 0), ուստի A = Q₁ − |Q₂|, իսկ p–V դիագրամում աշխատանքը հավասար է ցիկլի կորով սահմանափակված մակերեսին։ Օգտակար գործողության գործակիցը՝ η = A/Q₁, ցույց է տալիս, թե ստացած ջերմաքանակի որ մասն է դարձել աշխատանք։</p>
+      <p>Սադի Կառնոն ցույց տվեց, որ T₁ և T₂ ջերմաստիճաններով տաքացուցիչի ու սառնարանի միջև աշխատող ոչ մի շարժիչ չի կարող ունենալ ավելի մեծ ՕԳԳ, քան η = 1 − T₂/T₁։ Այդպիսի ՕԳԳ ունի <em>Կառնոյի ցիկլը</em>՝ երկու իզոթերմ և երկու ադիաբատ։ Նրանում գազը ջերմաքանակ է փոխանակում միայն այն ժամանակ, երբ նրա ջերմաստիճանը հավասար է տաքացուցիչի կամ սառնարանի ջերմաստիճանին, իսկ մի ջերմաստիճանից մյուսին անցնում է ադիաբատ՝ առանց ջերմափոխանակության։ Ուղղանկյուն և Օտտոյի ցիկլերում գազը ջերմաքանակ է ստանում կամ տալիս՝ ջերմաստիճանը փոխելով, և նրանց ՕԳԳ-ն ավելի փոքր է, քան Կառնոյի ցիկլինը՝ նույն ծայրահեղ ջերմաստիճանների միջև։</p>
+      <p>Փորձեք. Կառնոյի ցիկլում դրեք T₁ = 600 Կ, T₂ = 300 Կ և համոզվեք, որ η = 50 % և այն կախված չէ V₁ և V₂ ծավալներից (դրանք փոխում են միայն Q₁-ը և A-ն)։ Բարձրացրեք T₁-ը կամ իջեցրեք T₂-ը և հետևեք ՕԳԳ-ի աճին։ Ուղղանկյուն ցիկլում հաշվեք ջերմաքանակները՝ իզոխոր փուլում Q = C<sub>V</sub>ΔT, իզոբարում՝ Q = C<sub>p</sub>ΔT, և համեմատեք ստացված ՕԳԳ-ն նույն T<sub>max</sub> և T<sub>min</sub> ջերմաստիճանների համար Կառնոյի ՕԳԳ-ի հետ։ Օտտոյի ցիկլում (բենզինային շարժիչի մոդելը) համոզվեք, որ ՕԳԳ-ն կախված է միայն սեղմման աստիճանից։</p>
+    </section>
+  </main>
+
+  <footer data-shell="footer"></footer>
+</body>
+</html>

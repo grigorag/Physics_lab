@@ -1,0 +1,25 @@
+/* Standing waves — harmonic buttons (label + frequency), fine-step buttons. */
+
+.harm-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--sp-2);
+}
+.harm-grid > .btn {
+  flex-direction: column;
+  gap: 0;
+  padding: 5px 4px;
+  min-width: 0;
+}
+.harm-grid > .btn small {
+  font-family: var(--font-mono);
+  font-size: var(--fs-2xs);
+  color: var(--text-3);
+}
+.harm-grid > .btn[aria-pressed="true"] small { color: inherit; }
+
+.btn-row--steps > .btn {
+  padding-inline: 8px;
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+}
