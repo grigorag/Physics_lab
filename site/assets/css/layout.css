@@ -155,7 +155,8 @@
   .page { padding: var(--sp-4) var(--sp-4) var(--sp-6); }
   .site-header__inner, .site-footer__inner { padding-inline: var(--sp-4); }
   /* On sim pages the mark alone links home; the breadcrumb names the page. */
-  body[data-sim] .brand span { display: none; }
+  body[data-sim] .brand span,
+  body[data-page="section"] .brand span { display: none; }
 }
 
 /* ---- Explanation / theory text below a simulation ---- */

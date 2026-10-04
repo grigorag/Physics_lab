@@ -1,81 +1,86 @@
-// Home page: renders the section list and simulation cards from the catalog,
-// and filters them with the search box.
+// Home page: the list of physics sections, rendered from the catalog.
+// The section name opens that section's page; the arrow expands the row to
+// show its labs in place. The search box filters labs across all sections.
 
 import { sections, simsIn } from './catalog.js';
-import { siteUrl } from './core/shell.js';
-import { thumbs, fallbackThumb } from './thumbs.js';
-import { byId, $$ } from './core/dom.js';
+import { sectionUrl } from './core/shell.js';
+import { cardGrid, normalize } from './cards.js';
+import { byId, $, $$ } from './core/dom.js';
 
 const pad = (n) => String(n).padStart(2, '0');
-const normalize = (s) => s.toLocaleLowerCase('hy').trim();
 
-function card(sim, sec) {
-  const tag = sim.tag ? `<span class="card__tag">${sim.tag}</span>` : '';
-  const haystack = normalize(`${sim.title} ${sim.tag ?? ''} ${sim.summary} ${sec.title}`);
-  return `
-    <a class="card" href="${siteUrl(sim.path)}" data-search="${haystack}">
-      <div class="card__thumb">${thumbs[sim.id] ?? fallbackThumb}</div>
-      <div class="card__body">
-        <h3 class="card__title">${sim.title}${tag}</h3>
-        <p class="card__summary">${sim.summary}</p>
-        <span class="card__cta">Բացել</span>
-      </div>
-    </a>`;
-}
+const CHEVRON = `
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="m6 9 6 6 6-6"/>
+  </svg>`;
 
 function section(sec, index) {
   const items = simsIn(sec.id);
-  const cards = items.length
-    ? items.map((sim) => card(sim, sec)).join('')
-    : '<div class="card card--empty">Շուտով…</div>';
   return `
-    <section class="home-section" id="${sec.id}" data-section="${sec.id}" aria-labelledby="h-${sec.id}">
-      <header class="home-section__head">
-        <span class="home-section__index">${pad(index + 1)}</span>
-        <div class="home-section__text">
-          <h2 class="home-section__title" id="h-${sec.id}">${sec.title}</h2>
-          <p class="home-section__blurb">${sec.blurb}</p>
-        </div>
-        <span class="home-section__count">${items.length} լաբորատորիա</span>
-      </header>
-      <div class="card-grid">${cards}</div>
+    <section class="sec" id="${sec.id}" data-section="${sec.id}">
+      <div class="sec__head">
+        <a class="sec__link" href="${sectionUrl(sec.id)}">
+          <span class="sec__index">${pad(index + 1)}</span>
+          <span class="sec__text">
+            <h2 class="sec__title">${sec.title}</h2>
+            <span class="sec__blurb">${sec.blurb}</span>
+          </span>
+        </a>
+        <span class="sec__count">${items.length} լաբորատորիա</span>
+        <button class="icon-btn sec__toggle" type="button" aria-expanded="false" aria-controls="labs-${sec.id}">${CHEVRON}</button>
+      </div>
+      <div class="sec__labs" id="labs-${sec.id}" hidden>${cardGrid(items)}</div>
     </section>`;
 }
 
-byId('jump').innerHTML = sections
-  .map((s) => `
-    <li data-section="${s.id}">
-      <a href="#${s.id}">${s.title}<span class="jump__count">${simsIn(s.id).length}</span></a>
-    </li>`)
-  .join('');
-
 byId('sections').innerHTML = sections.map(section).join('');
 
-// ---------- Search: hide cards (and whole sections) that don't match ----------
+// ---------- Expand / collapse, and search ----------
 const search = byId('search');
 const noResults = byId('noResults');
+const open = new Set();          // ids of the sections the user expanded
 
-function filter() {
+function render() {
   const words = normalize(search.value).split(/\s+/).filter(Boolean);
+  const searching = words.length > 0;
   let total = 0;
-  for (const sec of $$('.home-section')) {
+
+  for (const el of $$('.sec')) {
     let shown = 0;
-    for (const el of $$('.card[data-search]', sec)) {
-      const match = words.every((w) => el.dataset.search.includes(w));
-      el.hidden = !match;
+    for (const card of $$('.card[data-search]', el)) {
+      const match = words.every((w) => card.dataset.search.includes(w));
+      card.hidden = !match;
       if (match) shown++;
     }
-    // With an empty query every section stays, including "coming soon" ones.
-    sec.hidden = words.length > 0 && shown === 0;
     total += shown;
+
+    // While searching, sections with matches open and the rest disappear.
+    const expanded = searching ? shown > 0 : open.has(el.id);
+    el.hidden = searching && shown === 0;
+    $('.sec__labs', el).hidden = !expanded;
+    const toggle = $('.sec__toggle', el);
+    toggle.setAttribute('aria-expanded', String(expanded));
+    toggle.title = expanded ? 'Թաքցնել լաբորատորիաները' : 'Ցույց տալ լաբորատորիաները';
+    toggle.setAttribute('aria-label', toggle.title);
   }
-  noResults.hidden = words.length === 0 || total > 0;
+  noResults.hidden = !searching || total > 0;
 }
 
-search.addEventListener('input', filter);
+for (const el of $$('.sec')) {
+  $('.sec__toggle', el).addEventListener('click', () => {
+    if (search.value.trim()) return;      // the search decides what is open
+    if (!open.delete(el.id)) open.add(el.id);
+    render();
+  });
+}
+
+search.addEventListener('input', render);
 search.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape') { search.value = ''; filter(); }
+  if (e.key === 'Escape') { search.value = ''; render(); }
 });
 
-// Content is rendered after load, so re-apply a #section anchor from the URL.
-if (location.hash) document.getElementById(location.hash.slice(1))?.scrollIntoView();
+// A #section anchor in the URL opens that section and scrolls to it.
+const target = location.hash ? document.getElementById(location.hash.slice(1)) : null;
+if (target?.classList.contains('sec')) open.add(target.id);
+render();
+target?.scrollIntoView();

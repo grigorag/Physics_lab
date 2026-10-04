@@ -21,7 +21,8 @@ To deploy, upload the `site/` folder as-is to any static host (GitHub Pages, Net
 
 ```
 site/
-├── index.html                 Home page (sections + cards, generated from the catalog)
+├── index.html                 Home page: list of sections (name → section page, arrow → expand labs)
+├── section.html               Section page (?id=<section id>): that section's labs + back link
 ├── assets/
 │   ├── css/
 │   │   ├── main.css           Entry point: fonts + imports the layers below
@@ -33,7 +34,9 @@ site/
 │   ├── js/
 │   │   ├── theme-init.js      Classic script in <head>: applies the saved/system theme before first paint
 │   │   ├── catalog.js         ★ Sections and simulations: the single source of truth
-│   │   ├── home.js            Renders the home page from the catalog; search filter
+│   │   ├── home.js            Renders the home page from the catalog; expand/collapse, search
+│   │   ├── section.js         Renders section.html from the catalog
+│   │   ├── cards.js           Simulation card markup shared by both
 │   │   ├── thumbs.js          SVG card illustrations, keyed by sim id
 │   │   └── core/
 │   │       ├── shell.js       Renders header (breadcrumbs, theme toggle), footer, prev/next links
@@ -61,7 +64,7 @@ Sections: `mechanics`, `molecular`, `electrodynamics`, `optics`.
 2. Add an entry to `sims` in `assets/js/catalog.js` (id, section, title, summary, path).
 3. Optionally add a card illustration to `assets/js/thumbs.js` under the same id.
 
-The home page and breadcrumbs update automatically.
+The home page, the section page and breadcrumbs update automatically.
 
 ## Adding a section
 

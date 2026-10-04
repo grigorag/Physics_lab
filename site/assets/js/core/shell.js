@@ -3,8 +3,8 @@
 //
 // Pages include it with:
 //   <script type="module" src="…/assets/js/core/shell.js"></script>
-// and mark themselves with <body data-sim="<sim id>"> (sim pages) or
-// <body data-page="home">. Placeholders <header data-shell="header"> and
+// and mark themselves with <body data-sim="<sim id>"> (sim pages),
+// <body data-page="home"> or <body data-page="section"> (section.html?id=…). Placeholders <header data-shell="header"> and
 // <footer data-shell="footer"> are filled in place.
 
 import { SITE_TITLE, SITE_CREDIT, sims, getSim, getSection } from '../catalog.js';
@@ -14,6 +14,8 @@ import { syncRangeFill } from './controls.js';
 /** URL of the site root, independent of where the page lives. */
 export const ROOT = new URL('../../../', import.meta.url);
 export const siteUrl = (path = '') => new URL(path, ROOT).href;
+/** URL of the page that lists one section's labs. */
+export const sectionUrl = (id) => siteUrl(`section.html?id=${id}`);
 
 export const BRAND_MARK = `
   <svg class="brand__mark" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
@@ -37,24 +39,23 @@ const THEME_LABELS = { dark: 'Միացնել լուսավոր ռեժիմը', lig
 const escape = (s) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const fullTitle = (sim) => (sim.tag ? `${sim.title} (${sim.tag})` : sim.title);
 
-function crumbs(sim) {
-  if (!sim) return '';
-  const section = getSection(sim.section);
+function crumbs(sim, section) {
+  if (!section) return '';
+  const here = (title) => `<span aria-current="page">${escape(title)}</span>`;
   return `
     <nav class="crumbs" aria-label="Նավիգացիա">
       <span class="crumbs__sep">/</span>
-      <a href="${siteUrl(`#${section.id}`)}">${escape(section.title)}</a>
-      <span class="crumbs__sep">/</span>
-      <span aria-current="page">${escape(fullTitle(sim))}</span>
+      ${sim ? `<a href="${sectionUrl(section.id)}">${escape(section.title)}</a>` : here(section.title)}
+      ${sim ? `<span class="crumbs__sep">/</span>${here(fullTitle(sim))}` : ''}
     </nav>`;
 }
 
-function renderHeader(el, sim) {
+function renderHeader(el, sim, section) {
   el.classList.add('site-header');
   el.innerHTML = `
     <div class="site-header__inner">
       <a class="brand" href="${siteUrl()}" aria-label="${escape(SITE_TITLE)}">${BRAND_MARK}<span>${escape(SITE_TITLE)}</span></a>
-      ${crumbs(sim)}
+      ${crumbs(sim, section)}
       <div class="site-header__actions">
         <button class="icon-btn theme-toggle" type="button">${THEME_ICONS}</button>
       </div>
@@ -95,10 +96,17 @@ function renderSimNav(main, sim) {
 }
 
 const sim = getSim(document.body.dataset.sim);
+// The section this page belongs to: the sim's, or ?id=… on a section page.
+const section = sim
+  ? getSection(sim.section)
+  : document.body.dataset.page === 'section'
+    ? getSection(new URLSearchParams(location.search).get('id'))
+    : null;
+if (section) document.body.dataset.section = section.id;   // accent color
 const header = document.querySelector('[data-shell="header"]');
 const footer = document.querySelector('[data-shell="footer"]');
 const main = document.querySelector('main.page');
-if (header) renderHeader(header, sim);
+if (header) renderHeader(header, sim, section);
 if (footer) renderFooter(footer);
 if (sim && main) renderSimNav(main, sim);
 
