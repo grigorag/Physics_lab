@@ -1,0 +1,20 @@
+/* Bohr model — sim-specific layout (tokens only). */
+
+/* Atom and energy-level diagram side by side; stacked when the stage is narrow. */
+.views {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--sp-3);
+}
+.views > .canvas-wrap { min-width: 0; }
+
+/* No dragging here: let the page scroll when a finger starts on a canvas. */
+.views canvas,
+.spectrum canvas { touch-action: manipulation; }
+.levels > canvas { cursor: pointer; }
+
+.spectrum-bar { display: flex; flex-wrap: wrap; gap: var(--sp-2); }
+.spectrum-bar > .btn { flex: 1 1 auto; }
+
+.segmented.levels-pick > button { min-width: 2.2em; padding-inline: 4px; }
+.btn--primary:disabled { color: var(--on-accent); border-color: var(--accent); }

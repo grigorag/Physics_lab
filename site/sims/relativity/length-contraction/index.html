@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="hy">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Երկարության կրճատում · Ֆիզիկայի Լաբորատորիաներ</title>
+  <link rel="icon" href="../../../assets/img/favicon.svg" type="image/svg+xml">
+  <script src="../../../assets/js/theme-init.js"></script>
+  <link rel="stylesheet" href="../../../assets/css/main.css">
+  <link rel="stylesheet" href="./sim.css">
+  <script type="module" src="../../../assets/js/core/shell.js"></script>
+  <script type="module" src="./main.js"></script>
+</head>
+<body data-sim="length-contraction" data-section="relativity">
+  <header data-shell="header"></header>
+
+  <main class="page">
+    <header class="sim-head">
+      <h1 class="sim-title">Երկարության կրճատում</h1>
+      <p class="sim-subtitle">շարժվող մարմնի երկարությունը</p>
+    </header>
+
+    <div class="tabs" role="tablist" id="tabs">
+      <button role="tab" data-tab="rocket" aria-controls="panel-rocket" aria-selected="true">Հրթիռ և կայան</button>
+      <button role="tab" data-tab="muons" aria-controls="panel-muons">Մյուոններ</button>
+    </div>
+
+    <!-- ===== Rocket and station ===== -->
+    <div id="panel-rocket" role="tabpanel">
+      <div class="sim-layout">
+        <section class="stage">
+          <div class="canvas-wrap">
+            <canvas id="lcScene" aria-label="Հրթիռը թռչում է տիեզերական կայանի քանոնի երկայնքով"></canvas>
+          </div>
+
+          <div class="readouts">
+            <div class="readout">
+              <div class="readout__title"><i class="swatch" style="--c: var(--amber)"></i>Չափում քանոնով</div>
+              <div id="lcMeasure"></div>
+            </div>
+            <div class="readout">
+              <div class="readout__title">Ինչ է երևում այս համակարգում</div>
+              <div id="lcFrameNote"></div>
+            </div>
+          </div>
+
+          <canvas class="chart" id="lcChart" aria-label="L/L₀ հարաբերության կախումը արագությունից"></canvas>
+          <p class="chart-caption">Երկարության հարաբերական փոփոխությունը՝ L/L<sub>0</sub> = √(1 − β²)՝ կախված արագությունից։ Գրաֆիկի վրա սեղմելով կամ քաշելով՝ կարելի է փոխել β-ն։</p>
+        </section>
+
+        <aside class="panel">
+          <section class="group" aria-label="Չափումներ">
+            <dl class="stats">
+              <div class="stat"><dt>Հարաբերական արագություն β = v/c</dt><dd id="lcBeta">—</dd></div>
+              <div class="stat"><dt>Արագություն v</dt><dd id="lcV">—</dd></div>
+              <div class="stat"><dt>Լորենցի գործակից γ</dt><dd id="lcGamma">—</dd></div>
+              <div class="stat"><dt>Սեփական երկարություն L<sub>0</sub></dt><dd id="lcL0">—</dd></div>
+              <div class="stat"><dt>Երկարությունը կայանի համակարգում L</dt><dd id="lcL">—</dd></div>
+              <div class="stat"><dt>Կրճատում (L<sub>0</sub> − L)/L<sub>0</sub></dt><dd id="lcPct">—</dd></div>
+              <div class="stat"><dt>Կայանի կետի մոտով անցնելու տևողությունը՝ կայանի համակարգում, L/v</dt><dd id="lcT1">—</dd></div>
+              <div class="stat"><dt>Նույնը՝ հրթիռի համակարգում, L<sub>0</sub>/v</dt><dd id="lcT2">—</dd></div>
+            </dl>
+          </section>
+
+          <section class="group">
+            <h2 class="group__title">Հաշվարկման համակարգ</h2>
+            <div class="segmented" id="lcFrame" role="group" aria-label="Հաշվարկման համակարգ">
+              <button data-value="station" aria-pressed="true">Կայանի համակարգ</button>
+              <button data-value="rocket">Հրթիռի համակարգ</button>
+            </div>
+            <button class="btn btn--primary btn--block" id="lcMeasureBtn">Չափել</button>
+            <p class="hint">Երկարությունը չափելու համար մարմնի երկու ծայրերի դիրքերը քանոնի վրա պետք է նշել <b>միաժամանակ</b>՝ տվյալ համակարգի ժամացույցներով։</p>
+          </section>
+
+          <section class="group">
+            <h2 class="group__title">Պարամետրեր</h2>
+            <div class="field">
+              <label class="field__label" for="lcBetaIn">Արագություն β = v/c</label>
+              <output class="field__value" for="lcBetaIn"></output>
+              <input type="range" id="lcBetaIn" min="0" max="0.99" step="0.005" value="0.6">
+            </div>
+            <div class="field">
+              <label class="field__label" for="lcL0In">Սեփական երկարություն L<sub>0</sub></label>
+              <output class="field__value" for="lcL0In"></output>
+              <input type="range" id="lcL0In" min="50" max="200" step="10" value="100">
+            </div>
+            <div class="field">
+              <label class="field__label" for="lcSpeed">Անիմացիայի արագություն</label>
+              <output class="field__value" for="lcSpeed"></output>
+              <input type="range" id="lcSpeed" min="0.25" max="3" step="0.25" value="1">
+            </div>
+            <label class="check"><input type="checkbox" id="lcOutline" checked> Հանգստի վիճակի ուրվագիծ</label>
+            <div class="btn-row">
+              <button class="btn" id="lcPlay"></button>
+              <button class="btn" id="lcReset">↺ Սկզբից</button>
+            </div>
+          </section>
+
+          <section class="group">
+            <div class="formula">
+              <b>L = L<sub>0</sub>·√(1 − v²/c²) = L<sub>0</sub>/γ</b><br>
+              γ = 1/√(1 − β²), β = v/c<br>
+              L<sub>0</sub>՝ սեփական երկարությունը (այն համակարգում, որտեղ մարմինն անշարժ է)<br>
+              Շարժմանն ուղղահայաց չափերը չեն փոխվում
+            </div>
+          </section>
+        </aside>
+      </div>
+    </div>
+
+    <!-- ===== Cosmic muons ===== -->
+    <div id="panel-muons" role="tabpanel" hidden>
+      <div class="sim-layout">
+        <section class="stage">
+          <div class="canvas-wrap">
+            <canvas id="muScene" aria-label="Մյուոնների թռիչքը մթնոլորտով՝ Երկրի և մյուոնի հաշվարկման համակարգերում"></canvas>
+          </div>
+          <ul class="legend lc-legend">
+            <li><i class="legend__dot" style="--c: var(--red)"></i>մյուոններ</li>
+            <li><i class="legend__line" style="--c: var(--amber)"></i>միջին ճանապարհն առանց հարաբերականության</li>
+            <li><i class="legend__line" style="--c: var(--red)"></i>միջին ճանապարհը Երկրի համակարգում</li>
+          </ul>
+          <div class="callout" id="muNote"></div>
+        </section>
+
+        <aside class="panel">
+          <section class="group" aria-label="Չափումներ">
+            <dl class="stats">
+              <div class="stat"><dt>Լորենցի գործակից γ</dt><dd id="muGamma">—</dd></div>
+              <div class="stat"><dt>Կյանքի սեփական միջին տևողություն τ<sub>0</sub></dt><dd>2.2 մկվ</dd></div>
+              <div class="stat"><dt>Կյանքի տևողությունը Երկրի համակարգում γτ<sub>0</sub></dt><dd id="muLife">—</dd></div>
+              <div class="stat"><dt>Միջին ճանապարհն առանց հարաբերականության vτ<sub>0</sub></dt><dd id="muD0">—</dd></div>
+              <div class="stat"><dt>Միջին ճանապարհը Երկրի համակարգում vγτ<sub>0</sub></dt><dd id="muD">—</dd></div>
+              <div class="stat"><dt>Մթնոլորտի շերտի հաստությունը մյուոնի համակարգում h/γ</dt><dd id="muH">—</dd></div>
+              <div class="stat"><dt>Թռիչքի տևողությունը Երկրի համակարգում</dt><dd id="muT1">—</dd></div>
+              <div class="stat"><dt>Թռիչքի տևողությունը մյուոնի համակարգում</dt><dd id="muT2">—</dd></div>
+              <div class="stat"><dt>Երկրի մակերևույթին հասնում է</dt><dd id="muN">—</dd></div>
+              <div class="stat"><dt>Առանց հարաբերականության կհասներ</dt><dd id="muN0">—</dd></div>
+            </dl>
+          </section>
+
+          <section class="group">
+            <h2 class="group__title">Պարամետրեր</h2>
+            <div class="field">
+              <label class="field__label" for="muBeta">Մյուոնների արագություն β = v/c</label>
+              <output class="field__value" for="muBeta"></output>
+              <input type="range" id="muBeta" min="0.5" max="0.9995" step="0.0005" value="0.995">
+            </div>
+            <div class="field">
+              <label class="field__label" for="muAlt">Առաջացման բարձրություն h</label>
+              <output class="field__value" for="muAlt"></output>
+              <input type="range" id="muAlt" min="5" max="15" step="0.5" value="10">
+            </div>
+            <div class="btn-row">
+              <button class="btn" id="muPlay"></button>
+              <button class="btn" id="muReset">↺ Սկզբից</button>
+            </div>
+          </section>
+
+          <section class="group">
+            <div class="formula">
+              <b>Երկրի համակարգ՝ τ = γτ<sub>0</sub>, t = h/v</b><br>
+              <b>Մյուոնի համակարգ՝ h′ = h/γ, t′ = h′/v</b><br>
+              N/N<sub>0</sub> = e<sup>−t/τ</sup> = e<sup>−t′/τ<sub>0</sub></sup>՝ երկու համակարգում էլ նույնն է
+            </div>
+          </section>
+        </aside>
+      </div>
+    </div>
+
+    <section class="explain">
+      <h2>Ինչու է շարժվող մարմինը կարճանում</h2>
+      <p>Հարաբերականության հատուկ տեսության համաձայն՝ մարմնի երկարությունը կախված է այն հաշվարկման համակարգից, որտեղ այն չափում են։ Ամենամեծը <em>սեփական երկարությունն</em> է՝ L<sub>0</sub>-ն, որը չափվում է այն համակարգում, որտեղ մարմինն անշարժ է։ Եթե մարմինը դիտորդի նկատմամբ շարժվում է v արագությամբ, ապա շարժման ուղղությամբ նրա երկարությունը փոքր է γ անգամ՝ <em>L = L<sub>0</sub>·√(1 − v²/c²)</em>, իսկ շարժմանն ուղղահայաց չափերը մնում են նույնը։ Սա ո՛չ սեղմում է, ո՛չ էլ տեսողական խաբկանք. պատճառն այն է, որ երկարությունը չափելիս երկու ծայրերի դիրքերը պետք է նշել միաժամանակ, իսկ միաժամանակությունը տարբեր համակարգերում տարբեր է։</p>
+      <p>Երևույթը փոխադարձ է. կայանի համակարգում կրճատված է հրթիռը, իսկ հրթիռի համակարգում՝ կայանն իր քանոնով։ Փորձեք β = 0.6 և β = 0.8 արժեքները (L = 0.8·L<sub>0</sub> և L = 0.6·L<sub>0</sub>), սեղմեք «Չափել» նախ կայանի, ապա հրթիռի համակարգում և համեմատեք, թե ինչպես է նույն չափումը երևում երկու դիտորդներին։ Ուշադրություն դարձրեք, որ սովորական արագությունների դեպքում (β ≪ 1) կրճատումն աննկատելի է։</p>
+      <p>«Մյուոններ» ներդիրում ներկայացված է այս երևույթի փորձնական հաստատումը։ Տիեզերական ճառագայթների առաջացրած մյուոններն ապրում են միջինում ընդամենը 2.2 մկվ և առանց հարաբերականության կանցնեին մոտ 0.66 կմ, բայց դրանք գրանցվում են Երկրի մակերևույթին։ Երկրի համակարգում դա բացատրվում է ժամանակի դանդաղումով, իսկ մյուոնի համակարգում՝ մթնոլորտի շերտի հաստության կրճատումով. երկու բացատրությունն էլ տալիս են Երկրին հասնող մյուոնների նույն բաժինը։</p>
+    </section>
+  </main>
+
+  <footer data-shell="footer"></footer>
+</body>
+</html>

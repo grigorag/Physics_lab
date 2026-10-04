@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="hy">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Անորոշությունների առնչություն · Ֆիզիկայի Լաբորատորիաներ</title>
+  <link rel="icon" href="../../../assets/img/favicon.svg" type="image/svg+xml">
+  <script src="../../../assets/js/theme-init.js"></script>
+  <link rel="stylesheet" href="../../../assets/css/main.css">
+  <script type="module" src="../../../assets/js/core/shell.js"></script>
+  <script type="module" src="./main.js"></script>
+</head>
+<body data-sim="uncertainty" data-section="quantum">
+  <header data-shell="header"></header>
+
+  <main class="page">
+    <header class="sim-head">
+      <h1 class="sim-title">Անորոշությունների առնչություն</h1>
+      <p class="sim-subtitle">Հայզենբերգի սկզբունքը</p>
+    </header>
+
+    <div class="tabs" role="tablist" id="tabs">
+      <button role="tab" data-tab="packet" aria-controls="panel-packet" aria-selected="true">Ալիքային փաթեթ</button>
+      <button role="tab" data-tab="slit" aria-controls="panel-slit">Մեկ ճեղք</button>
+    </div>
+
+    <!-- ===== Wave packet ===== -->
+    <div id="panel-packet" role="tabpanel">
+      <div class="sim-layout">
+        <section class="stage">
+          <div class="canvas-wrap">
+            <canvas id="pkWave" aria-label="Բաղադրիչ ալիքները և դրանց գումարը՝ ալիքային փաթեթը"></canvas>
+            <ul class="legend legend--tl">
+              <li><i class="legend__line" style="--c: var(--blue)"></i>գումարը՝ Re ψ(x)</li>
+              <li><i class="legend__line" style="--c: var(--amber)"></i>պարուրիչը՝ ±|ψ(x)|</li>
+              <li><i class="legend__line" style="--c: var(--text-3)"></i>բաղադրիչ ալիքներ</li>
+            </ul>
+          </div>
+          <p class="chart-caption" id="pkWaveNote">Պատուհանը շարժվում է փաթեթի հետ. փաթեթի տեղաշարժը երևում է x առանցքի թվերից։</p>
+          <canvas class="chart" id="pkDens" aria-label="Հավանականության խտությունը՝ կախված կոորդինատից"></canvas>
+          <p class="chart-caption">Հավանականության խտությունը՝ |ψ(x)|². որտեղ է հնարավոր հայտնաբերել էլեկտրոնը։ Գունավոր շերտը ⟨x⟩ ± Δx միջակայքն է։</p>
+          <canvas class="chart" id="pkMom" aria-label="Իմպուլսների բաշխումը"></canvas>
+          <p class="chart-caption">Իմպուլսների բաշխումը՝ |φ(p)|². ինչ իմպուլսներով ալիքներից է կազմված փաթեթը։ Գունավոր շերտը ⟨p⟩ ± Δp միջակայքն է։</p>
+        </section>
+
+        <aside class="panel">
+          <section class="group" aria-label="Չափումներ">
+            <dl class="stats">
+              <div class="stat"><dt>Կոորդինատի անորոշություն Δx</dt><dd id="pkDx">—</dd></div>
+              <div class="stat"><dt>Իմպուլսի անորոշություն Δp</dt><dd id="pkDp">—</dd></div>
+              <div class="stat"><dt>Արտադրյալ Δx·Δp</dt><dd id="pkProd">—</dd></div>
+              <div class="stat"><dt>Սահման ħ/2</dt><dd id="pkLimit">—</dd></div>
+              <div class="stat"><dt>Δx·Δp / ħ</dt><dd id="pkRatio">—</dd></div>
+              <div class="stat"><dt>Ժամանակ t</dt><dd id="pkTime">—</dd></div>
+            </dl>
+            <div class="callout" id="pkNote"></div>
+          </section>
+
+          <section class="group">
+            <h2 class="group__title">Ալիքային փաթեթ</h2>
+            <div class="field">
+              <label class="field__label" for="pkWidth">Սկզբնական լայնություն Δx<sub>0</sub></label>
+              <output class="field__value" for="pkWidth"></output>
+              <input type="range" id="pkWidth" min="0.25" max="1" step="0.05" value="0.5">
+            </div>
+            <p class="hint" id="pkDkHint"></p>
+            <div class="field">
+              <label class="field__label" for="pkK0">Ալիքային թիվ k<sub>0</sub> = p<sub>0</sub>/ħ</label>
+              <output class="field__value" for="pkK0"></output>
+              <input type="range" id="pkK0" min="8" max="20" step="0.5" value="10">
+            </div>
+            <div class="field">
+              <span class="field__label" id="pkCountLabel">Գումարվող ալիքների թիվը</span>
+              <div class="segmented" id="pkCount" role="group" aria-labelledby="pkCountLabel">
+                <button data-value="1">1</button>
+                <button data-value="3">3</button>
+                <button data-value="7">7</button>
+                <button data-value="21">21</button>
+                <button data-value="0" aria-pressed="true">շատ</button>
+              </div>
+            </div>
+          </section>
+
+          <section class="group">
+            <h2 class="group__title">Ժամանակ</h2>
+            <label class="check"><input type="checkbox" id="pkAnimate"> Շարժում (ժամանակն ընթանում է)</label>
+            <button class="btn btn--block" id="pkReset">↺ Վերադառնալ t = 0</button>
+            <p class="hint">Ազատ էլեկտրոնի համար ω = ħk²/2m. տարբեր ալիքներ տարբեր արագությամբ են շարժվում, ուստի փաթեթը ժամանակի ընթացքում լայնանում է։</p>
+          </section>
+
+          <section class="group">
+            <h2 class="group__title">Էլեկտրոն</h2>
+            <dl class="stats">
+              <div class="stat"><dt>Ալիքի երկարություն λ<sub>0</sub> = 2π/k<sub>0</sub></dt><dd id="pkLambda">—</dd></div>
+              <div class="stat"><dt>Միջին իմպուլս p<sub>0</sub> = ħk<sub>0</sub></dt><dd id="pkP0">—</dd></div>
+              <div class="stat"><dt>Արագություն v = p<sub>0</sub>/m</dt><dd id="pkV">—</dd></div>
+              <div class="stat"><dt>Կինետիկ էներգիա</dt><dd id="pkE">—</dd></div>
+            </dl>
+          </section>
+
+          <section class="group">
+            <div class="formula">
+              <b>Δx · Δp ≥ ħ/2</b><br>
+              p = ħk = h/λ, &nbsp;ħ = h/2π<br>
+              ħ = 1.055·10⁻³⁴ Ջ·վ<br>
+              գաուսյան փաթեթ՝ Δx<sub>0</sub>·Δk = 1/2
+            </div>
+          </section>
+        </aside>
+      </div>
+
+      <section class="explain">
+        <h2>Ինչու չի կարելի միաժամանակ ճշգրիտ իմանալ կոորդինատը և իմպուլսը</h2>
+        <p>Միկրոմասնիկը՝ օրինակ էլեկտրոնը, ունի ալիքային հատկություններ. p իմպուլսով մասնիկին համապատասխանում է <em>λ = h/p</em> երկարությամբ ալիք։ Բայց մեկ «մաքուր» սինուսոիդը անվերջ է. այն ունի ճշգրիտ որոշված ալիքի երկարություն (հետևաբար՝ իմպուլս), բայց ոչինչ չի ասում այն մասին, թե որտեղ է մասնիկը։ Ընտրեք «1» ալիք և կտեսնեք՝ Δp = 0, իսկ |ψ|²-ն ամենուր նույնն է։</p>
+        <p>Որպեսզի մասնիկը գտնվի տարածության փոքր տիրույթում, պետք է գումարել տարբեր երկարության բազմաթիվ ալիքներ. մի տեղում դրանք ուժեղացնում են իրար, մնացած տեղերում՝ մարում։ Ստացվում է <em>ալիքային փաթեթ</em>։ Որքան նեղ փաթեթ ենք ուզում, այնքան ավելի տարբեր ալիքներ են պետք, այսինքն՝ այնքան լայն է իմպուլսների բաշխումը։ Փոքրացրեք Δx<sub>0</sub>-ն երկու անգամ, և Δp-ն կմեծանա ուղիղ երկու անգամ. արտադրյալը չի կարող փոքր լինել ħ/2-ից՝ <em>Δx·Δp ≥ ħ/2</em>։ Նույն օրենքին են ենթարկվում բոլոր ալիքները. կարճ ձայնային ազդանշանը նույնպես չունի որոշակի հաճախություն։</p>
+        <p>Սա չափիչ սարքերի անկատարություն չէ, այլ ալիքների հատկություն. էլեկտրոնը պարզապես չունի միաժամանակ ճշգրիտ կոորդինատ և ճշգրիտ իմպուլս։ Միացրեք շարժումը. արագ բաղադրիչներն առաջ են անցնում, դանդաղները՝ հետ մնում, և փաթեթը «լղոզվում» է. Δp-ն չի փոխվում, Δx-ն աճում է, իսկ արտադրյալը դառնում է ħ/2-ից մեծ։ Համեմատեք նեղ և լայն փաթեթները. ո՞րն է ավելի արագ լայնանում։</p>
+      </section>
+    </div>
+
+    <!-- ===== Single slit ===== -->
+    <div id="panel-slit" role="tabpanel" hidden>
+      <div class="sim-layout">
+        <section class="stage">
+          <div class="canvas-wrap">
+            <canvas id="slScene" aria-label="Էլեկտրոնների փունջն անցնում է ճեղքով և ընկնում էկրանին"></canvas>
+            <ul class="legend legend--tl">
+              <li><i class="legend__dot" style="--c: var(--teal)"></i>էլեկտրոններ</li>
+              <li><i class="legend__line" style="--c: var(--amber)"></i>տեսական բաշխում</li>
+              <li><i class="legend__line" style="--c: var(--coral)"></i><span>առաջին մինիմումներ (±θ<sub>1</sub>)</span></li>
+            </ul>
+          </div>
+          <p class="chart-caption">Ձախից՝ նույն իմպուլսով էլեկտրոնների փունջ, մեջտեղում՝ a լայնությամբ ճեղք, աջում՝ էկրանը և հարվածների բաշխումը։ Ճեղքի լայնությունը նկարում խոշորացված է, անկյունները ճիշտ են։</p>
+        </section>
+
+        <aside class="panel">
+          <section class="group" aria-label="Չափումներ">
+            <dl class="stats">
+              <div class="stat"><dt>Կոորդինատի անորոշություն Δx ≈ a</dt><dd id="slDx">—</dd></div>
+              <div class="stat"><dt>Առաջին մինիմում՝ sin θ<sub>1</sub> = λ/a</dt><dd id="slTheta">—</dd></div>
+              <div class="stat"><dt>Δp<sub>x</sub> ≈ p·sin θ<sub>1</sub> = h/a</dt><dd id="slDp">—</dd></div>
+              <div class="stat"><dt>Արտադրյալ Δx·Δp<sub>x</sub></dt><dd id="slProd">—</dd></div>
+              <div class="stat"><dt>Պլանկի հաստատուն h</dt><dd id="slH">—</dd></div>
+              <div class="stat"><dt>Էկրանին հասած էլեկտրոններ</dt><dd id="slCount">—</dd></div>
+              <div class="stat"><dt>Կենտրոնական մաքսիմումում՝ փորձ / տեսություն</dt><dd id="slShare">—</dd></div>
+            </dl>
+            <div class="callout" id="slNote"></div>
+          </section>
+
+          <section class="group">
+            <h2 class="group__title">Պարամետրեր</h2>
+            <div class="field">
+              <label class="field__label" for="slWidth">Ճեղքի լայնություն a</label>
+              <output class="field__value" for="slWidth"></output>
+              <input type="range" id="slWidth" min="0.5" max="2.5" step="0.05" value="1">
+            </div>
+            <div class="field">
+              <label class="field__label" for="slP">Էլեկտրոնի իմպուլս p</label>
+              <output class="field__value" for="slP"></output>
+              <input type="range" id="slP" min="2.2" max="6.6" step="0.1" value="3.3">
+            </div>
+            <div class="field">
+              <label class="field__label" for="slRate">Էլեկտրոնների հոսք</label>
+              <output class="field__value" for="slRate"></output>
+              <input type="range" id="slRate" min="5" max="300" step="5" value="60">
+            </div>
+            <div class="btn-row">
+              <button class="btn" id="slPlay"></button>
+              <button class="btn" id="slClear">↺ Մաքրել էկրանը</button>
+            </div>
+          </section>
+
+          <section class="group">
+            <h2 class="group__title">Էլեկտրոն</h2>
+            <dl class="stats">
+              <div class="stat"><dt>Ալիքի երկարություն λ = h/p</dt><dd id="slLambda">—</dd></div>
+              <div class="stat"><dt>Արագություն v = p/m</dt><dd id="slV">—</dd></div>
+              <div class="stat"><dt>Կինետիկ էներգիա</dt><dd id="slE">—</dd></div>
+            </dl>
+          </section>
+
+          <section class="group">
+            <div class="formula">
+              <b>a · sin θ<sub>1</sub> = λ</b>, &nbsp;λ = h/p<br>
+              Δx ≈ a, &nbsp;Δp<sub>x</sub> ≈ p·sin θ<sub>1</sub> = h/a<br>
+              <b>Δx · Δp<sub>x</sub> ≈ h</b><br>
+              h = 6.626·10⁻³⁴ Ջ·վ
+            </div>
+          </section>
+        </aside>
+      </div>
+
+      <section class="explain">
+        <h2>Ճեղքը «չափում է» կոորդինատը և «փչացնում» իմպուլսը</h2>
+        <p>Ճեղքից առաջ բոլոր էլեկտրոնները շարժվում են խիստ առաջ. նրանց իմպուլսի լայնական բաղադրիչը զրո է՝ p<sub>x</sub> = 0, բայց թե փնջի որ մասում է էլեկտրոնը՝ հայտնի չէ։ Ճեղքով անցած էլեկտրոնի լայնական կոորդինատը հայտնի է ճեղքի լայնության ճշտությամբ՝ <em>Δx ≈ a</em>։ Դրա «գինը» դիֆրակցիան է. ճեղքից հետո էլեկտրոնները շեղվում են տարբեր անկյուններով, այսինքն՝ ձեռք են բերում չկանխատեսվող լայնական իմպուլս։</p>
+        <p>Հարվածների մեծ մասն ընկնում է կենտրոնական մաքսիմումի մեջ, որի եզրը որոշվում է <em>a·sin θ<sub>1</sub> = λ</em> պայմանով։ Ուստի լայնական իմպուլսի անորոշությունը՝ Δp<sub>x</sub> ≈ p·sin θ<sub>1</sub> = pλ/a = h/a, և <em>Δx·Δp<sub>x</sub> ≈ h</em>՝ անկախ ճեղքի լայնությունից և էլեկտրոնի իմպուլսից։ Սա գնահատական է՝ մեծության կարգի ճշտությամբ, և համաձայն է Δx·Δp ≥ ħ/2 առնչության հետ։</p>
+        <p>Նեղացրեք ճեղքը. կոորդինատն ավելի ճշգրիտ է դառնում, իսկ էկրանի պատկերը՝ ավելի լայն։ Լայնացրեք՝ փունջը գրեթե չի ցրվում։ Փոխեք իմպուլսը. անկյունը փոխվում է (λ-ն ուրիշ է), բայց Δp<sub>x</sub> = h/a-ն մնում է նույնը։ Ուշադրություն դարձրեք նաև, որ յուրաքանչյուր էլեկտրոն էկրանին հարվածում է մեկ կետում, և միայն շատ հարվածներից հետո է երևում դիֆրակցիոն պատկերը։</p>
+      </section>
+    </div>
+  </main>
+
+  <footer data-shell="footer"></footer>
+</body>
+</html>

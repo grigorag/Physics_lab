@@ -56,12 +56,12 @@ site/
         └── *.js / sim.css     Optional extra modules / sim-specific styles
 ```
 
-Sections: `mechanics`, `molecular`, `electrodynamics`, `optics`.
+Sections: `mechanics`, `waves`, `molecular`, `electrodynamics`, `optics`, `relativity`, `quantum`, `nuclear`.
 
 ## Adding a simulation
 
 1. Create `sims/<section>/<id>/index.html` and `main.js`. Copy `sims/optics/thin-lens/` as a template.
-2. Add an entry to `sims` in `assets/js/catalog.js` (id, section, title, summary, path).
+2. Add a row to `SIMS` in `assets/js/catalog.js` (`[id, section, title, summary]`), inside its section's group; the path is derived as `sims/<section>/<id>/`.
 3. Optionally add a card illustration to `assets/js/thumbs.js` under the same id.
 
 The home page, the section page and breadcrumbs update automatically.

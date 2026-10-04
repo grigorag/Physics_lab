@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="hy">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ֆոտոէֆեկտ · Ֆիզիկայի Լաբորատորիաներ</title>
+  <link rel="icon" href="../../../assets/img/favicon.svg" type="image/svg+xml">
+  <script src="../../../assets/js/theme-init.js"></script>
+  <link rel="stylesheet" href="../../../assets/css/main.css">
+  <link rel="stylesheet" href="./sim.css">
+  <script type="module" src="../../../assets/js/core/shell.js"></script>
+  <script type="module" src="./main.js"></script>
+</head>
+<body data-sim="photoelectric" data-section="quantum">
+  <header data-shell="header"></header>
+
+  <main class="page">
+    <header class="sim-head">
+      <h1 class="sim-title">Ֆոտոէֆեկտ</h1>
+      <p class="sim-subtitle">Էյնշտեյնի հավասարումը, կարմիր սահմանը և փակող լարումը</p>
+    </header>
+
+    <div class="sim-layout">
+      <section class="stage">
+        <div class="canvas-wrap">
+          <canvas id="scene" aria-label="Վակուումային ֆոտոէլեմենտ՝ կաթոդով, անոդով, լույսի փնջով և էլեկտրական շղթայով"></canvas>
+          <ul class="legend legend--tr">
+            <li><i class="legend__dot" style="--c: var(--blue)"></i>ֆոտոէլեկտրոններ</li>
+          </ul>
+        </div>
+
+        <div class="charts">
+          <div>
+            <canvas class="chart" id="ivChart" aria-label="Վոլտ-ամպերային բնութագիծ՝ I(U)"></canvas>
+            <p class="chart-caption">Վոլտ-ամպերային բնութագիծ՝ I(U)։ <i class="swatch" style="--c: var(--coral)"></i>շղթայի ներկա վիճակը</p>
+          </div>
+          <div>
+            <canvas class="chart" id="ekChart" aria-label="Ֆոտոէլեկտրոնների առավելագույն կինետիկ էներգիայի կախումը լույսի հաճախությունից"></canvas>
+            <p class="chart-caption">E<sub>կ max</sub>(ν) կախումը։ Բարակ գծերը մյուս մետաղներն են. բոլոր ուղիղների թեքությունը նույնն է՝ h։</p>
+          </div>
+        </div>
+      </section>
+
+      <aside class="panel">
+        <section class="group">
+          <h2 class="group__title">Լույս</h2>
+          <div class="field">
+            <label class="field__label" for="lambda">Ալիքի երկարություն λ</label>
+            <output class="field__value" for="lambda"></output>
+            <input type="range" id="lambda" min="100" max="800" step="1" value="400">
+          </div>
+          <p class="hint" id="nuHint"></p>
+          <div class="field">
+            <label class="field__label" for="intensity">Ինտենսիվություն</label>
+            <output class="field__value" for="intensity"></output>
+            <input type="range" id="intensity" min="0" max="100" step="1" value="60">
+          </div>
+        </section>
+
+        <section class="group">
+          <h2 class="group__title">Ֆոտոէլեմենտ</h2>
+          <div class="field">
+            <label class="field__label" for="metal">Կաթոդի մետաղը</label>
+            <select class="select" id="metal"></select>
+          </div>
+          <div class="field">
+            <label class="field__label" for="voltage">Լարում U (անոդ − կաթոդ)</label>
+            <output class="field__value" for="voltage"></output>
+            <input type="range" id="voltage" min="-5" max="5" step="0.05" value="0">
+          </div>
+          <div class="callout" id="regime">—</div>
+        </section>
+
+        <section class="group">
+          <h2 class="group__title">Արդյունքներ</h2>
+          <dl class="stats">
+            <div class="stat"><dt>Ֆոտոնի էներգիա hν</dt><dd id="eVal">—</dd></div>
+            <div class="stat"><dt>Ելքի աշխատանք A</dt><dd id="aVal">—</dd></div>
+            <div class="stat"><dt>Կարմիր սահման λ₀</dt><dd id="l0Val">—</dd></div>
+            <div class="stat"><dt>Կարմիր սահման ν₀</dt><dd id="nu0Val">—</dd></div>
+            <div class="stat"><dt>E<sub>կ max</sub></dt><dd id="ekVal">—</dd></div>
+            <div class="stat"><dt>Էլեկտրոնների v<sub>max</sub></dt><dd id="vVal">—</dd></div>
+            <div class="stat"><dt>Փակող լարում U₀</dt><dd id="u0Val">—</dd></div>
+            <div class="stat"><dt>Ֆոտոհոսանք I</dt><dd id="iVal">—</dd></div>
+          </dl>
+        </section>
+
+        <section class="group">
+          <div class="btn-row">
+            <button class="btn" id="playBtn"></button>
+            <button class="btn" id="resetBtn">↺ Սկզբնական վիճակ</button>
+          </div>
+        </section>
+
+        <section class="group">
+          <div class="formula">
+            <b>hν = A + E<sub>կ max</sub></b><br>
+            Էյնշտեյնի հավասարումը<br>
+            <b>E = hν = hc/λ</b> — ֆոտոնի էներգիան<br>
+            <b>ν₀ = A/h, λ₀ = hc/A</b> — կարմիր սահմանը<br>
+            <b>eU₀ = E<sub>կ max</sub> = mv²<sub>max</sub>/2</b><br>
+            h = 6.63·10⁻³⁴ Ջ·վ = 4.14·10⁻¹⁵ էՎ·վ<br>
+            hc ≈ 1240 էՎ·նմ, 1 էՎ = 1.6·10⁻¹⁹ Ջ
+          </div>
+        </section>
+      </aside>
+    </div>
+
+    <section class="explain">
+      <h2>Ինչ է կատարվում այստեղ</h2>
+      <p>Ֆոտոէֆեկտը լույսի ազդեցությամբ նյութից էլեկտրոնների պոկվելն է։ Վակուումային խողովակի կաթոդի վրա լույս է ընկնում. լույսը կլանվում է առանձին բաժիններով՝ <em>ֆոտոններով</em>, որոնցից յուրաքանչյուրի էներգիան hν է։ Մեկ ֆոտոնն իր ամբողջ էներգիան տալիս է մեկ էլեկտրոնի։ Այդ էներգիայի մի մասը ծախսվում է մետաղից դուրս գալու համար (ելքի աշխատանք՝ A), մնացածը դառնում է էլեկտրոնի կինետիկ էներգիա՝ hν = A + E<sub>կ max</sub>։ Սա Էյնշտեյնի հավասարումն է։</p>
+      <p>Եթե ֆոտոնի էներգիան փոքր է ելքի աշխատանքից (ν &lt; ν₀, այսինքն՝ λ &gt; λ₀), էլեկտրոններ չեն պոկվում, որքան էլ ուժեղ լինի լույսը. սա ֆոտոէֆեկտի <em>կարմիր սահմանն</em> է։ Ընտրեք ցինկը և լուսավորեք տեսանելի լույսով. հոսանք չկա ցանկացած ինտենսիվության դեպքում, իսկ ուլտրամանուշակագույն ճառագայթումը (λ &lt; 286 նմ) անմիջապես հոսանք է առաջացնում։ Լույսի ինտենսիվությունը որոշում է վայրկյանում ընկնող ֆոտոնների, ուրեմն և պոկվող էլեկտրոնների թիվը՝ <em>հագեցման հոսանքը</em>, բայց չի փոխում էլեկտրոնների էներգիան. վերջինս կախված է միայն հաճախությունից։</p>
+      <p>Երբ անոդի պոտենցիալը կաթոդի պոտենցիալից ցածր է (U &lt; 0), դաշտն արգելակում է էլեկտրոններին, և անոդին հասնում են միայն ամենաարագները։ <em>Փակող լարման</em> դեպքում (U = −U₀, eU₀ = E<sub>կ max</sub>) հոսանքը դադարում է։ Փորձեք՝ նատրիումի և λ = 400 նմ դեպքում hν = 3.10 էՎ, E<sub>կ max</sub> = 0.35 էՎ, ուստի հոսանքը վերանում է U = −0.35 Վ-ի դեպքում։ Փոխեք ինտենսիվությունը և համոզվեք, որ U₀-ն չի փոխվում, իսկ ալիքի երկարությունը փոքրացնելիս այն աճում է։ Մոդելում ընդունված է, որ էլեկտրոնների էներգիաները հավասարաչափ են բաշխված 0-ից մինչև E<sub>կ max</sub>, իսկ հագեցման հոսանքը համեմատական է միայն ինտենսիվությանը։</p>
+    </section>
+  </main>
+
+  <footer data-shell="footer"></footer>
+</body>
+</html>

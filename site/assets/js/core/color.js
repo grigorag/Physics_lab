@@ -2,6 +2,7 @@
 
 /** Visible wavelength (nm) → approximate sRGB [r, g, b] in 0..255. */
 export function wavelengthToRGB(w) {
+  w = Math.min(780, Math.max(380, w));   // UV / IR take the colour of the nearest visible edge
   let r = 0, g = 0, b = 0;
   if (w >= 380 && w < 440) { r = -(w - 440) / 60; b = 1; }
   else if (w < 490) { g = (w - 440) / 50; b = 1; }

@@ -1,0 +1,13 @@
+/* The chart can be dragged horizontally to set β; keep vertical page scroll. */
+#lcChart { touch-action: pan-y; cursor: pointer; }
+
+/* Legend of the muon scene: a plain row under the canvas (it would cover the panel headings). */
+.lc-legend {
+  position: static;
+  flex-flow: row wrap;
+  gap: 4px 16px;
+  padding: 0 4px;
+  border: 0;
+  background: none;
+  backdrop-filter: none;
+}

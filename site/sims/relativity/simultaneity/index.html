@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="hy">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Միաժամանակության հարաբերականություն · Ֆիզիկայի Լաբորատորիաներ</title>
+  <link rel="icon" href="../../../assets/img/favicon.svg" type="image/svg+xml">
+  <script src="../../../assets/js/theme-init.js"></script>
+  <link rel="stylesheet" href="../../../assets/css/main.css">
+  <link rel="stylesheet" href="./sim.css">
+  <script type="module" src="../../../assets/js/core/shell.js"></script>
+  <script type="module" src="./main.js"></script>
+</head>
+<body data-sim="simultaneity" data-section="relativity">
+  <header data-shell="header"></header>
+
+  <main class="page">
+    <header class="sim-head">
+      <h1 class="sim-title">Միաժամանակության հարաբերականություն</h1>
+      <p class="sim-subtitle">Էյնշտեյնի գնացքը և երկու կայծակները</p>
+    </header>
+
+    <div class="sim-layout">
+      <section class="stage">
+        <div class="canvas-wrap">
+          <canvas id="cv" aria-label="Գնացքը, կառամատույցը, երկու կայծակները և լույսի ճակատները"></canvas>
+          <ul class="legend legend--tl">
+            <li><i class="legend__dot" style="--c: var(--teal)"></i>դիտորդ գնացքում</li>
+            <li><i class="legend__dot" style="--c: var(--purple)"></i>դիտորդ կառամատույցում</li>
+            <li><i class="legend__line" style="--c: var(--coral)"></i>A կայծակի լույսը (հետևում)</li>
+            <li><i class="legend__line" style="--c: var(--blue)"></i>B կայծակի լույսը (առջևում)</li>
+          </ul>
+        </div>
+
+        <div class="transport">
+          <button class="btn btn--primary" id="playBtn"></button>
+          <div class="field">
+            <label class="field__label" for="time">Ժամանակը <span id="frameName"></span></label>
+            <output class="field__value" for="time"></output>
+            <input type="range" id="time" min="0" max="1000" step="1" value="0">
+          </div>
+        </div>
+
+        <div class="st-row">
+          <div class="readout">
+            <div class="readout__title">Իրադարձություններ</div>
+            <ol class="evlog" id="log"></ol>
+          </div>
+          <div class="st-chart">
+            <canvas class="chart" id="chart" aria-label="Տարածաժամանակի դիագրամ ընտրված հաշվարկման համակարգում"></canvas>
+            <p class="chart-caption">Տարածաժամանակի դիագրամ. հորիզոնական առանցքը կոորդինատն է, ուղղաձիգը՝ ժամանակը։ Լույսի ճառագայթները 45° թեքությամբ ուղիղներ են, իսկ հորիզոնական կետագիծը ցույց է տալիս ընթացիկ պահը։</p>
+          </div>
+        </div>
+      </section>
+
+      <aside class="panel">
+        <section class="group">
+          <div class="field">
+            <span class="field__label" id="frameLabel">Հաշվարկման համակարգ</span>
+            <div class="segmented" id="frame" role="group" aria-labelledby="frameLabel">
+              <button data-value="platform" aria-pressed="true">Կառամատույցի</button>
+              <button data-value="train">Գնացքի</button>
+            </div>
+          </div>
+          <div class="field">
+            <label class="field__label" for="beta">Գնացքի արագություն v</label>
+            <output class="field__value" for="beta"></output>
+            <input type="range" id="beta" min="0" max="0.9" step="0.01" value="0.6">
+          </div>
+          <div class="btn-row">
+            <button class="btn" id="resetBtn">↺ Սկզբից</button>
+          </div>
+        </section>
+
+        <section class="group">
+          <h2 class="group__title">Ցուցադրում</h2>
+          <label class="check"><input type="checkbox" id="circles" checked> Լույսի ճակատները՝ շրջանագծերով</label>
+          <div class="field">
+            <span class="field__label" id="speedLabel">Անիմացիայի արագություն</span>
+            <div class="segmented" id="speed" role="group" aria-labelledby="speedLabel">
+              <button data-value="0.5">×0.5</button>
+              <button data-value="1" aria-pressed="true">×1</button>
+              <button data-value="2">×2</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="group">
+          <h2 class="group__title" id="statTitle">Չափումներ</h2>
+          <dl class="stats">
+            <div class="stat"><dt>β = v/c</dt><dd id="sBeta">—</dd></div>
+            <div class="stat"><dt>Լորենցի գործակից γ</dt><dd id="sGamma">—</dd></div>
+            <div class="stat"><dt>Գնացքի երկարությունը</dt><dd id="sLen">—</dd></div>
+            <div class="stat"><dt>Կառամատույցի A և B հետքերի հեռավորությունը</dt><dd id="sSep">—</dd></div>
+            <div class="stat"><dt>Կայծակների միջև ժամանակը</dt><dd id="sGap">—</dd></div>
+            <div class="stat"><dt>Գնացքի դիտորդը տեսնում է B-ն</dt><dd id="sTB">—</dd></div>
+            <div class="stat"><dt>Գնացքի դիտորդը տեսնում է A-ն</dt><dd id="sTA">—</dd></div>
+            <div class="stat"><dt>Կառամատույցի դիտորդը տեսնում է A-ն</dt><dd id="sPA">—</dd></div>
+            <div class="stat"><dt>Կառամատույցի դիտորդը տեսնում է B-ն</dt><dd id="sPB">—</dd></div>
+          </dl>
+          <div class="callout" id="note"></div>
+        </section>
+
+        <section class="group">
+          <div class="formula">
+            <b>γ = 1 / √(1 − v²/c²)</b><br>
+            Լորենցի գործակից<br>
+            <b>x′ = γ(x − vt)</b><br>
+            <b>t′ = γ(t − vx/c²)</b><br>
+            Լորենցի ձևափոխություններ<br>
+            <b>L = L₀ / γ</b><br>
+            շարժվող գնացքի երկարությունը<br>
+            <b>Δt′ = γ·v·L / c² = v·L₀ / c²</b><br>
+            կայծակների միջև ժամանակը գնացքի համակարգում<br><br>
+            L₀ = 600 մ,&nbsp; c = 300 մ/մկվ
+          </div>
+        </section>
+      </aside>
+    </div>
+
+    <section class="explain">
+      <h2>Միաժամանա՞կ են հարվածել կայծակները</h2>
+      <p>Գնացքը շարժվում է կառամատույցի երկայնքով <em>v</em> արագությամբ։ Այն պահին, երբ գնացքի մեջտեղում նստած դիտորդն անցնում է կառամատույցի մեջտեղում կանգնած դիտորդի մոտով (այդ պահն ընդունված է որպես t = t′ = 0), կառամատույցի համակարգում երկու կայծակ հարվածում են գնացքի ծայրերին՝ հետք թողնելով և՛ գնացքի, և՛ կառամատույցի վրա։ <em>Կառամատույցի համակարգում</em> A և B հետքերը հավասարահեռ են դիտորդից, և երկու բռնկումների լույսը նրան է հասնում նույն պահին. նա եզրակացնում է, որ կայծակները հարվածել են միաժամանակ։ Գնացքի դիտորդն այդ ընթացքում շարժվում է առջևի բռնկման լույսին ընդառաջ և հեռանում հետևի բռնկման լույսից, ուստի B-ն տեսնում է ավելի շուտ, քան A-ն։</p>
+      <p>Այժմ նույն իրադարձությունները դիտեք <em>գնացքի համակարգում</em>։ Այստեղ գնացքն անշարժ է, դիտորդը հավասարահեռ է նրա ծայրերից, իսկ լույսը երկու ուղղությամբ էլ տարածվում է նույն c արագությամբ. լույսի արագությունը նույնն է բոլոր իներցիալ հաշվարկման համակարգերում։ Եթե դիտորդը B-ի լույսը տեսել է ավելի շուտ, ուրեմն B կայծակն իսկապես ավելի շուտ է հարվածել՝ Δt′ = v·L₀/c² չափով։ Մի համակարգում միաժամանակ, բայց տարածության տարբեր կետերում տեղի ունեցած իրադարձությունները մյուս համակարգում միաժամանակ չեն. միաժամանակությունը <em>հարաբերական</em> է։ Իսկ այն, ինչ տեղի է ունենում նույն կետում և նույն պահին (օրինակ՝ երկու լուսային ազդանշանների հանդիպումը կառամատույցի դիտորդի մոտ), համընկնում է բոլոր համակարգերում։</p>
+      <p>Փորձեք. ընտրեք β = 0.6 և համեմատեք իրադարձությունների ցուցակը երկու համակարգերում. հերթականությունը, որով յուրաքանչյուր դիտորդ ստանում է ազդանշանները, չի փոխվում, փոխվում են միայն ժամանակի արժեքները և կայծակների հերթականությունը։ Ուշադրություն դարձրեք նաև երկարություններին. կառամատույցի համակարգում կրճատված է գնացքը, իսկ գնացքի համակարգում՝ կառամատույցը (նրա սալիկները նեղանում են)։ Փոքրացրեք արագությունը մինչև β ≈ 0.1. տարբերությունը գրեթե անհետանում է, այդ պատճառով էլ առօրյա կյանքում մենք այն չենք նկատում։</p>
+    </section>
+  </main>
+
+  <footer data-shell="footer"></footer>
+</body>
+</html>

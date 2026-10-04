@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="hy">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Էներգիական մակարդակներ և լազեր · Ֆիզիկայի Լաբորատորիաներ</title>
+  <link rel="icon" href="../../../assets/img/favicon.svg" type="image/svg+xml">
+  <script src="../../../assets/js/theme-init.js"></script>
+  <link rel="stylesheet" href="../../../assets/css/main.css">
+  <link rel="stylesheet" href="./sim.css">
+  <script type="module" src="../../../assets/js/core/shell.js"></script>
+  <script type="module" src="./main.js"></script>
+</head>
+<body data-sim="laser" data-section="quantum">
+  <header data-shell="header"></header>
+
+  <main class="page">
+    <header class="sim-head">
+      <h1 class="sim-title">Էներգիական մակարդակներ և լազեր</h1>
+      <p class="sim-subtitle">հարկադրական ճառագայթում և բնակեցվածության շրջում</p>
+    </header>
+
+    <div class="tabs" role="tablist" id="tabs">
+      <button role="tab" data-tab="atom" aria-controls="panel-atom" aria-selected="true">Ատոմ և ֆոտոն</button>
+      <button role="tab" data-tab="laser" aria-controls="panel-laser">Լազեր</button>
+    </div>
+
+    <!-- ===== One atom, one photon ===== -->
+    <div id="panel-atom" role="tabpanel">
+      <div class="sim-layout">
+        <section class="stage">
+          <div class="canvas-wrap">
+            <canvas id="aScene" aria-label="Երկմակարդակ ատոմ և ֆոտոն. կլանում, ինքնակամ և հարկադրական ճառագայթում"></canvas>
+          </div>
+          <div class="callout" id="aCallout">Ատոմը հիմնական վիճակում է՝ էլեկտրոնը E₁ մակարդակում է։ Ընտրեք գործընթացներից մեկը։</div>
+        </section>
+
+        <aside class="panel">
+          <section class="group">
+            <h2 class="group__title">Գործընթաց</h2>
+            <div class="atom-buttons">
+              <button class="btn btn--block" id="aAbsorb">Կլանում</button>
+              <button class="btn btn--block" id="aSpont">Ինքնակամ ճառագայթում</button>
+              <button class="btn btn--block" id="aStim">Հարկադրական ճառագայթում</button>
+            </div>
+            <p class="hint">Կոճակը ատոմը բերում է անհրաժեշտ վիճակի և, եթե պետք է, ուղարկում ֆոտոն։</p>
+          </section>
+
+          <section class="group">
+            <h2 class="group__title">Ֆոտոն</h2>
+            <div class="field">
+              <label class="field__label" for="aEnergy">Ֆոտոնի էներգիա hν</label>
+              <output class="field__value" for="aEnergy"></output>
+              <input type="range" id="aEnergy" min="1.6" max="3" step="0.05" value="2">
+            </div>
+            <button class="btn btn--primary btn--block" id="aFire">Ուղարկել ֆոտոն</button>
+            <p class="hint">Այս կոճակը ատոմի վիճակը չի փոխում. փորձեք ֆոտոն ուղարկել կլանումից անմիջապես հետո։</p>
+          </section>
+
+          <section class="group" aria-label="Չափումներ">
+            <dl class="stats">
+              <div class="stat"><dt>E<sub>2</sub> − E<sub>1</sub></dt><dd>2.00 էՎ</dd></div>
+              <div class="stat"><dt>Ֆոտոնի էներգիա hν</dt><dd id="aHnu">—</dd></div>
+              <div class="stat"><dt>Ալիքի երկարություն λ = hc / hν</dt><dd id="aLambda">—</dd></div>
+              <div class="stat"><dt>hν = E<sub>2</sub> − E<sub>1</sub></dt><dd id="aMatch">—</dd></div>
+              <div class="stat"><dt>Ատոմի վիճակ</dt><dd id="aState">—</dd></div>
+              <div class="stat"><dt>Վերջին ինքնակամ ճառագայթումը՝ սպասում</dt><dd id="aLife">—</dd></div>
+              <div class="stat"><dt>…ուղղություն (անկյունը առանցքի հետ)</dt><dd id="aDir">—</dd></div>
+            </dl>
+          </section>
+
+          <div class="formula">
+            <b>hν = E₂ − E₁</b><br>
+            ատոմը կլանում և ճառագայթում է միայն այս էներգիայով ֆոտոններ<br>
+            <b>λ = hc / (E₂ − E₁)</b><br>
+            hc ≈ 1240 էՎ·նմ
+          </div>
+        </aside>
+      </div>
+    </div>
+
+    <!-- ===== Laser ===== -->
+    <div id="panel-laser" role="tabpanel" hidden>
+      <div class="sim-layout">
+        <section class="stage">
+          <div class="canvas-wrap">
+            <canvas id="lScene" aria-label="Լազերի ռեզոնատորը. ակտիվ միջավայր, երկու հայելի և մղման լամպ"></canvas>
+            <ul class="legend legend--flow">
+              <li><i class="legend__ring" style="--c: var(--text-3)"></i>ատոմ E₁ մակարդակում</li>
+              <li><i class="legend__dot" style="--c: var(--amber)"></i>E₂ (մետակայուն)</li>
+              <li><i class="legend__dot" style="--c: var(--purple)"></i>E₃</li>
+              <li><i class="legend__line" style="--c: var(--red)"></i>ֆոտոն</li>
+            </ul>
+          </div>
+          <div class="callout" id="lCallout"></div>
+          <div class="laser-row">
+            <div>
+              <canvas class="chart" id="lLevels" aria-label="Էներգիական մակարդակները և դրանց բնակեցվածությունները"></canvas>
+              <p class="chart-caption">Եռամակարդակ սխեմա. շերտի երկարությունը ցույց է տալիս մակարդակի բնակեցվածությունը։</p>
+            </div>
+            <div>
+              <canvas class="chart" id="lChart" aria-label="Ռեզոնատորում ֆոտոնների թիվը և ելքի հզորությունը՝ կախված ժամանակից"></canvas>
+              <p class="chart-caption">Ձախ առանցք՝ ֆոտոնների թիվը ռեզոնատորում, աջ առանցք՝ ելքի հզորությունը (պայմ. միավոր՝ ֆոտոն/վ)։</p>
+            </div>
+          </div>
+        </section>
+
+        <aside class="panel">
+          <section class="group" aria-label="Չափումներ">
+            <dl class="stats">
+              <div class="stat"><dt>N<sub>1</sub> (հիմնական)</dt><dd id="lN1">—</dd></div>
+              <div class="stat"><dt>N<sub>2</sub> (մետակայուն)</dt><dd id="lN2">—</dd></div>
+              <div class="stat"><dt>N<sub>3</sub></dt><dd id="lN3">—</dd></div>
+              <div class="stat"><dt>Շրջում ΔN = N<sub>2</sub> − N<sub>1</sub></dt><dd id="lDN">—</dd></div>
+              <div class="stat"><dt>W·τ<sub>2</sub></dt><dd id="lWT">—</dd></div>
+              <div class="stat"><dt>Ֆոտոններ ռեզոնատորում</dt><dd id="lPhot">—</dd></div>
+              <div class="stat"><dt>Ելքի հզորություն P, պայմ. միավոր</dt><dd id="lPower">—</dd></div>
+            </dl>
+          </section>
+
+          <section class="group">
+            <h2 class="group__title">Պարամետրեր</h2>
+            <div class="field">
+              <label class="field__label" for="lPump">Մղման հզորություն (արագություն W)</label>
+              <output class="field__value" for="lPump"></output>
+              <input type="range" id="lPump" min="0" max="2" step="0.05" value="1">
+            </div>
+            <div class="field">
+              <label class="field__label" for="lTau">E<sub>2</sub> մակարդակի կյանքի տևողություն τ<sub>2</sub></label>
+              <output class="field__value" for="lTau"></output>
+              <input type="range" id="lTau" min="0.2" max="6" step="0.2" value="4">
+            </div>
+            <div class="field">
+              <label class="field__label" for="lR">Ելքի հայելու անդրադարձում R</label>
+              <output class="field__value" for="lR"></output>
+              <input type="range" id="lR" min="80" max="100" step="1" value="90">
+            </div>
+            <label class="check"><input type="checkbox" id="lMirrors" checked> Հայելիներ (ռեզոնատոր)</label>
+            <div class="btn-row">
+              <button class="btn" id="lPlay"></button>
+              <button class="btn" id="lReset">↺ Վերագործարկել</button>
+            </div>
+          </section>
+
+          <div class="formula">
+            <b>N₂ &gt; N₁</b> — բնակեցվածության շրջում<br>
+            առանց գեներացիայի՝ <b>N₂ / N₁ ≈ W·τ₂</b>,<br>
+            ուստի շրջման համար պետք է W·τ₂ &gt; 1<br>
+            գեներացիայի շեմ՝ ուժեղացումը մեկ լրիվ անցման ընթացքում ≥ կորուստներ
+          </div>
+        </aside>
+      </div>
+    </div>
+
+    <section class="explain">
+      <h2>Ինչպե՞ս է աշխատում լազերը</h2>
+      <p>Ատոմի էներգիան կարող է ունենալ միայն որոշակի արժեքներ՝ <em>էներգիական մակարդակներ</em>։ E<sub>1</sub> մակարդակից E<sub>2</sub> անցնելիս ատոմը <em>կլանում</em> է hν = E<sub>2</sub> − E<sub>1</sub> էներգիայով ֆոտոն, այլ էներգիայով ֆոտոնն անցնում է առանց փոխազդելու։ Գրգռված ատոմը որոշ ժամանակ անց ինքն իրեն վերադառնում է ներքև և արձակում ֆոտոն պատահական ուղղությամբ ու պատահական փուլով. սա <em>ինքնակամ ճառագայթումն</em> է, այդպես են լուսարձակում սովորական լամպերը։ Բայց եթե գրգռված ատոմի մոտով անցնի ճիշտ նույն hν էներգիայով ֆոտոն, ատոմը կճառագայթի <em>հարկադրաբար</em>, և նոր ֆոտոնը կլինի առաջինի ճշգրիտ պատճենը՝ նույն հաճախությամբ, ուղղությամբ և փուլով։ Առաջին ներդիրում փորձեք երեք գործընթացներն էլ և փոխեք ֆոտոնի էներգիան։</p>
+      <p>Ֆոտոնը նույն հավանականությամբ կլանվում է E<sub>1</sub> մակարդակի ատոմի կողմից և պատճենվում E<sub>2</sub> մակարդակի ատոմի մոտ։ Ուստի լույսն ուժեղանում է միայն այն դեպքում, երբ գրգռված ատոմներն ավելի շատ են՝ N<sub>2</sub> &gt; N<sub>1</sub>. սա <em>բնակեցվածության շրջումն</em> է։ Ինքն իրեն այդպիսի վիճակ չի առաջանում. ատոմներին պետք է անընդհատ էներգիա հաղորդել՝ <em>մղում</em>։ Մղումը ատոմները տեղափոխում է E<sub>3</sub> մակարդակ, որտեղից դրանք արագ և առանց ճառագայթման իջնում են <em>մետակայուն</em> E<sub>2</sub> մակարդակ։ Այնտեղ ատոմները երկար են մնում և կուտակվում են. եթե E<sub>2</sub>-ի կյանքի տևողությունը կարճ լինի, ատոմները կհասցնեն ինքնակամ ճառագայթել, և շրջում չի ստացվի։ Երկրորդ ներդիրում փոքրացրեք τ<sub>2</sub>-ը կամ մղումը և հետևեք N<sub>1</sub>, N<sub>2</sub> թվերին։</p>
+      <p>Հայելիները ֆոտոններին բազմիցս վերադարձնում են ակտիվ միջավայր։ Առանցքի երկայնքով թռչող ֆոտոնը ամեն անցումից ավելի շատ պատճեններ է առաջացնում, և երբ ուժեղացումը գերազանցում է կորուստները (<em>գեներացիայի շեմը</em>), ծնվում է ֆոտոնների հեղեղ։ Կողք թռչող ֆոտոնները լքում են ռեզոնատորը և չեն ուժեղանում, ուստի փունջը <em>ուղղորդված</em> է։ Բոլոր ֆոտոնները միմյանց պատճեններն են, ուստի լույսը <em>մեներանգ</em> է (մեկ հաճախություն) և <em>կոհերենտ</em> (համաձայնեցված փուլեր)։ Փունջը դուրս է գալիս կիսաթափանցիկ ելքի հայելու միջով։ Գտեք մղման այն արժեքը, որից սկսվում է գեներացիան, անջատեք հայելիները, փոխեք R-ը և համեմատեք գրաֆիկները։ «Լազեր» բառը անգլերեն Light Amplification by Stimulated Emission of Radiation արտահայտության հապավումն է՝ «լույսի ուժեղացում հարկադրական ճառագայթման միջոցով»։</p>
+    </section>
+  </main>
+
+  <footer data-shell="footer"></footer>
+</body>
+</html>

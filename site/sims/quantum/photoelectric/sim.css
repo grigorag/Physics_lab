@@ -1,0 +1,17 @@
+/* Photoelectric effect — sim-specific layout (tokens only). */
+
+/* Two charts side by side; stacked when the stage is narrow. */
+.charts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--sp-3);
+}
+.charts > div {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  min-width: 0;
+}
+
+.chart-caption .swatch { margin: 0 4px 0 10px; }
+.chart-caption .swatch:first-child { margin-left: 0; }

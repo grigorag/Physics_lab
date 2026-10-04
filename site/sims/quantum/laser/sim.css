@@ -1,0 +1,43 @@
+/* Laser lab: level diagram + time chart side by side, legend under the canvas. */
+
+.laser-row {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+  gap: var(--sp-3);
+  align-items: start;
+}
+.laser-row > div {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  min-width: 0;
+}
+
+@media (max-width: 720px) {
+  .laser-row { grid-template-columns: 1fr; }
+}
+
+/* A legend that flows under the canvas at every width. */
+.legend.legend--flow {
+  position: static;
+  flex-flow: row wrap;
+  gap: 4px 16px;
+  border: 0;
+  border-top: 1px solid var(--border);
+  border-radius: 0;
+  background: none;
+  backdrop-filter: none;
+}
+.legend__ring {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: 1.5px solid var(--c);
+  flex: none;
+}
+
+.atom-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}

@@ -1,0 +1,3 @@
+/* De Broglie lab: the voltage option is unavailable for neutral bodies. */
+.segmented > button:disabled { opacity: 0.4; cursor: not-allowed; }
+.segmented > button:disabled:hover { background: none; color: var(--text-2); }

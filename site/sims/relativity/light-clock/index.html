@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="hy">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Լուսային ժամացույց․ ժամանակի դանդաղում · Ֆիզիկայի Լաբորատորիաներ</title>
+  <link rel="icon" href="../../../assets/img/favicon.svg" type="image/svg+xml">
+  <script src="../../../assets/js/theme-init.js"></script>
+  <link rel="stylesheet" href="../../../assets/css/main.css">
+  <script type="module" src="../../../assets/js/core/shell.js"></script>
+  <script type="module" src="./main.js"></script>
+</head>
+<body data-sim="light-clock" data-section="relativity">
+  <header data-shell="header"></header>
+
+  <main class="page">
+    <header class="sim-head">
+      <h1 class="sim-title">Լուսային ժամացույց․ ժամանակի դանդաղում</h1>
+      <p class="sim-subtitle">Լորենցի գործակիցը</p>
+    </header>
+
+    <div class="sim-layout">
+      <section class="stage">
+        <div class="canvas-wrap">
+          <canvas id="cv" aria-label="Երկու լուսային ժամացույց՝ գնացքում և կառամատույցում"></canvas>
+        </div>
+
+        <canvas class="chart" id="chart" aria-label="Լորենցի գործակցի կախումը արագությունից"></canvas>
+        <p class="chart-caption">Լորենցի գործակցի՝ γ-ի կախումը β = v/c հարաբերական արագությունից։ Կետը ցույց է տալիս ընտրված արագությունը։</p>
+      </section>
+
+      <aside class="panel">
+        <section class="group">
+          <div class="btn-row">
+            <button class="btn btn--primary" id="playBtn"></button>
+            <button class="btn" id="resetBtn">↺ Սկզբից</button>
+          </div>
+        </section>
+
+        <section class="group">
+          <h2 class="group__title">Պարամետրեր</h2>
+          <div class="field">
+            <label class="field__label" for="beta">Գնացքի արագություն β = v/c</label>
+            <output class="field__value" for="beta"></output>
+            <input type="range" id="beta" min="0" max="0.99" step="0.01" value="0.6">
+          </div>
+          <div class="field">
+            <span class="field__label" id="frameLabel">Հաշվարկման համակարգ</span>
+            <div class="segmented" id="frame" role="group" aria-labelledby="frameLabel">
+              <button data-value="platform" aria-pressed="true">Կառամատույցի</button>
+              <button data-value="train">Գնացքի</button>
+            </div>
+          </div>
+          <p class="hint">Արագությունը կամ հաշվարկման համակարգը փոխելիս երկու ժամացույցներն էլ գործարկվում են սկզբից։ Շարժվող մարմինները նկարում կարճացած են շարժման ուղղությամբ (երկարության կրճատում)։</p>
+        </section>
+
+        <section class="group">
+          <h2 class="group__title">Ցուցադրում</h2>
+          <label class="check"><input type="checkbox" id="trail" checked> Լույսի իմպուլսի հետագիծը</label>
+          <label class="check"><input type="checkbox" id="triangle" checked> Ուղղանկյուն եռանկյունը</label>
+          <div class="field">
+            <span class="field__label" id="speedLabel">Անիմացիայի արագություն</span>
+            <div class="segmented" id="speed" role="group" aria-labelledby="speedLabel">
+              <button data-value="0.25">×0.25</button>
+              <button data-value="0.5">×0.5</button>
+              <button data-value="1" aria-pressed="true">×1</button>
+              <button data-value="2">×2</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="group">
+          <h2 class="group__title">Չափումներ</h2>
+          <dl class="stats">
+            <div class="stat"><dt>Արագություն v</dt><dd id="sV">—</dd></div>
+            <div class="stat"><dt>Լորենցի գործակից γ</dt><dd id="sGamma">—</dd></div>
+            <div class="stat"><dt>Սեփական պարբերություն Δt₀</dt><dd id="sT0">—</dd></div>
+            <div class="stat"><dt>Շարժվող ժամացույցի պարբերություն Δt</dt><dd id="sT">—</dd></div>
+            <div class="stat"><dt>Կառամատույցի ժամացույցի ցուցմունքը</dt><dd id="sPlat">—</dd></div>
+            <div class="stat"><dt>Գնացքի ժամացույցի ցուցմունքը</dt><dd id="sTrain">—</dd></div>
+            <div class="stat"><dt id="sRatioLabel">Ցուցմունքների հարաբերություն</dt><dd id="sRatio">—</dd></div>
+          </dl>
+          <div class="callout" id="example"></div>
+        </section>
+
+        <section class="group">
+          <div class="formula">
+            <b>Δt₀ = 2h / c</b><br>
+            սեփական պարբերություն (h = 1.5 մ)<br><br>
+            <b>(c·Δt/2)² = (v·Δt/2)² + h²</b><br>
+            Պյութագորասի թեորեմը եռանկյան համար<br><br>
+            <b>Δt = Δt₀ / √(1 − v²/c²) = γ·Δt₀</b><br>
+            ժամանակի դանդաղում<br>
+            <b>γ = 1 / √(1 − β²),&nbsp; β = v/c</b><br>
+            Լորենցի գործակից
+          </div>
+        </section>
+      </aside>
+    </div>
+
+    <section class="explain">
+      <h2>Ինչո՞ւ է շարժվող ժամացույցը դանդաղում</h2>
+      <p>Լուսային ժամացույցը երկու զուգահեռ հայելի է, որոնց միջև անընդհատ անդրադառնում է լույսի կարճ իմպուլսը։ Ամեն անգամ, երբ իմպուլսը վերադառնում է ներքևի հայելուն, ժամացույցը մեկ անգամ «տկտկում» է։ Եթե հայելիների հեռավորությունը <em>h</em> է, ապա ժամացույցի նկատմամբ անշարժ դիտորդի համար երկու հաջորդական տկտկոցների միջև անցնում է Δt₀ = 2h/c ժամանակ։ Այն կոչվում է <em>սեփական ժամանակ</em>։ Այստեղ h = 1.5 մ, ուստի Δt₀ ≈ 10 նվ (նանովայրկյան)։</p>
+      <p>Հարաբերականության հատուկ տեսության կանխադրույթի համաձայն՝ լույսի արագությունը վակուումում նույնն է բոլոր իներցիալ հաշվարկման համակարգերում։ Կառամատույցում կանգնած դիտորդի համար գնացքի ժամացույցի լույսը տարածվում է ոչ թե ուղղաձիգ, այլ թեք՝ զիգզագաձև հետագծով, որովհետև մինչև լույսը հասնում է հայելուն, հայելին գնացքի հետ տեղափոխվում է առաջ։ Լույսի անցած ճանապարհն ավելի երկար է, իսկ արագությունը նույն <em>c</em>-ն է, ուրեմն մեկ տկտկոցն ավելի երկար է տևում։ Ուղղանկյուն եռանկյան էջերն են h-ը և v·Δt/2-ը, ներքնաձիգը՝ c·Δt/2-ը. Պյութագորասի թեորեմից ստացվում է Δt = γ·Δt₀, որտեղ γ = 1/√(1 − v²/c²)՝ Լորենցի գործակիցը, երբեք փոքր չէ 1-ից։ Ուշադրություն դարձրեք, որ նկարում երկու իմպուլսներն էլ շարժվում են միևնույն արագությամբ։</p>
+      <p>Ընտրեք β = 0.6. այդ դեպքում γ = 1.25, և կառամատույցի ժամացույցի 5 տկտկոցի ընթացքում գնացքի ժամացույցը տկտկում է ընդամենը 4 անգամ։ Այժմ անցեք գնացքի հաշվարկման համակարգ. այստեղ գնացքի ժամացույցն է անշարժ, իսկ կառամատույցի ժամացույցը շարժվում է հակառակ ուղղությամբ, և դանդաղում է հենց նա։ Ժամանակի դանդաղումը փոխադարձ է. յուրաքանչյուր դիտորդի համար դանդաղ է ընթանում մյուսի ժամացույցը։ Դանդաղում են ոչ միայն լուսային ժամացույցները, այլև շարժվող համակարգի բոլոր պրոցեսները. օրինակ՝ մթնոլորտի վերին շերտերում առաջացող արագ մյուոնները հասնում են Երկրի մակերևույթին միայն այն պատճառով, որ նրանց կյանքի տևողությունը Երկրի հետ կապված համակարգում մի քանի անգամ երկարում է։ Հետևեք նաև, թե ինչպես է γ-ն կտրուկ աճում, երբ արագությունը մոտենում է լույսի արագությանը։</p>
+    </section>
+  </main>
+
+  <footer data-shell="footer"></footer>
+</body>
+</html>

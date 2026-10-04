@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="hy">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Երկճեղք փորձ առանձին մասնիկներով · Ֆիզիկայի Լաբորատորիաներ</title>
+  <link rel="icon" href="../../../assets/img/favicon.svg" type="image/svg+xml">
+  <script src="../../../assets/js/theme-init.js"></script>
+  <link rel="stylesheet" href="../../../assets/css/main.css">
+  <script type="module" src="../../../assets/js/core/shell.js"></script>
+  <script type="module" src="./main.js"></script>
+</head>
+<body data-sim="double-slit" data-section="quantum">
+  <header data-shell="header"></header>
+
+  <main class="page">
+    <header class="sim-head">
+      <h1 class="sim-title">Երկճեղք փորձ առանձին մասնիկներով</h1>
+      <p class="sim-subtitle">ալիքամասնիկային երկվություն</p>
+    </header>
+
+    <div class="sim-layout">
+      <section class="stage">
+        <div class="canvas-wrap canvas-wrap--dark">
+          <canvas id="scene" aria-label="Մասնիկների աղբյուր, երկու ճեղքով պատնեշ, էկրան՝ գրանցված մասնիկների կետերով, և հարվածների բաշխման հիստոգրամ"></canvas>
+          <ul class="legend legend--tr">
+            <li><i class="legend__dot" id="dotSwatch" style="--c: #ffb000"></i>գրանցված մասնիկ</li>
+            <li><i class="legend__line" style="--c: #f2f4ff"></i>տեսական բաշխում P(x)</li>
+          </ul>
+        </div>
+        <p class="chart-caption">Վերևում փորձի սխեման է (մասշտաբը պայմանական է), մեջտեղում՝ էկրանը դիմացից, ներքևում՝ հիստոգրամը. քանի մասնիկ է ընկել էկրանի յուրաքանչյուր նեղ շերտի վրա։ Պարամետրերը փոխելիս էկրանը մաքրվում է։</p>
+        <div class="callout" id="modeBox">—</div>
+      </section>
+
+      <aside class="panel">
+        <section class="group">
+          <h2 class="group__title">Մասնիկ</h2>
+          <div class="segmented" id="kind" role="group" aria-label="Մասնիկի տեսակը">
+            <button data-value="photon" aria-pressed="true">Ֆոտոն</button>
+            <button data-value="electron">Էլեկտրոն</button>
+          </div>
+          <div class="field" id="wlField">
+            <label class="field__label" for="wl">Ալիքի երկարություն λ</label>
+            <output class="field__value" for="wl"></output>
+            <input type="range" id="wl" min="400" max="700" step="5" value="600">
+          </div>
+          <div class="field" id="uField" hidden>
+            <label class="field__label" for="volt">Արագացնող լարում U</label>
+            <output class="field__value" for="volt"></output>
+            <input type="range" id="volt" min="50" max="2000" step="10" value="500">
+          </div>
+        </section>
+
+        <section class="group">
+          <h2 class="group__title">Տեղակայանք</h2>
+          <div class="field">
+            <label class="field__label" for="sep">Ճեղքերի հեռավորություն d</label>
+            <output class="field__value" for="sep"></output>
+            <input type="range" id="sep" min="0.1" max="0.5" step="0.01" value="0.2">
+          </div>
+          <div class="field">
+            <label class="field__label" for="slitW">Ճեղքի լայնություն a</label>
+            <output class="field__value" for="slitW"></output>
+            <input type="range" id="slitW" min="0.02" max="0.08" step="0.01" value="0.04">
+          </div>
+          <div class="field">
+            <label class="field__label" for="dist">Հեռավորություն էկրանից L</label>
+            <output class="field__value" for="dist"></output>
+            <input type="range" id="dist" min="0.5" max="3" step="0.1" value="1">
+          </div>
+          <div class="field">
+            <span class="field__label">Բաց ճեղքեր</span>
+            <div class="segmented" id="slits" role="group" aria-label="Բաց ճեղքեր">
+              <button data-value="both" aria-pressed="true">Երկուսն էլ</button>
+              <button data-value="left">Միայն ձախը</button>
+              <button data-value="right">Միայն աջը</button>
+            </div>
+          </div>
+          <label class="check"><input type="checkbox" id="detector"> Դետեկտոր ճեղքերի մոտ</label>
+        </section>
+
+        <section class="group">
+          <h2 class="group__title">Արձակում</h2>
+          <div class="field">
+            <label class="field__label" for="rate">Արձակման հաճախություն</label>
+            <output class="field__value" for="rate"></output>
+            <input type="range" id="rate" min="0" max="100" step="1" value="18">
+          </div>
+          <div class="btn-row">
+            <button class="btn" id="playBtn"></button>
+            <button class="btn" id="addBtn">+1000 մասնիկ</button>
+          </div>
+          <button class="btn btn--block" id="clearBtn">Մաքրել էկրանը</button>
+          <label class="check"><input type="checkbox" id="theory" checked> Ցույց տալ տեսական բաշխումը</label>
+        </section>
+
+        <section class="group">
+          <h2 class="group__title">Չափումներ</h2>
+          <dl class="stats">
+            <div class="stat"><dt>Գրանցված մասնիկներ N</dt><dd id="nVal">0</dd></div>
+            <div class="stat"><dt id="lamLabel">Ալիքի երկարություն λ</dt><dd id="lamVal">—</dd></div>
+            <div class="stat" id="speedRow" hidden><dt>Էլեկտրոնի արագություն v</dt><dd id="speedVal">—</dd></div>
+            <div class="stat"><dt>Շերտի լայնություն Δx = λL/d</dt><dd id="dxVal">—</dd></div>
+            <div class="stat"><dt>Դիֆրակցիոն մինիմում λL/a</dt><dd id="envVal">—</dd></div>
+            <div class="stat"><dt>Անցել է ձախ ճեղքով</dt><dd id="leftVal">—</dd></div>
+            <div class="stat"><dt>Անցել է աջ ճեղքով</dt><dd id="rightVal">—</dd></div>
+          </dl>
+        </section>
+
+        <section class="group">
+          <div class="formula">
+            <b>P(x) ∝ cos²(πdx/λL) · sinc²(πax/λL)</b><br>
+            հավանականության խտությունը էկրանին,<br>sinc u = sin u / u<br><br>
+            <b>Δx = λL/d</b><br>
+            հարևան մաքսիմումների հեռավորությունը<br><br>
+            <b>λ = h/p = h/√(2m<sub>e</sub>eU)</b><br>
+            էլեկտրոնի դը Բրոյլի ալիքի երկարությունը<br>
+            h = 6.63·10⁻³⁴ Ջ·վ
+          </div>
+        </section>
+      </aside>
+    </div>
+
+    <section class="explain">
+      <h2>Ինչ է կատարվում այստեղ</h2>
+      <p>Աղբյուրը մասնիկները՝ ֆոտոններ կամ էլեկտրոններ, արձակում է մեկ առ մեկ, այնպես որ տեղակայանքում միաժամանակ միայն մեկ մասնիկ կա։ Յուրաքանչյուր մասնիկ էկրանին գրանցվում է մեկ կետում՝ որպես ամբողջական մասնիկ, և նախապես հնարավոր չէ ասել, թե որտեղ կընկնի. առաջին կետերը պատահական են թվում։ Բայց երբ կետերը շատանում են, դրանք դասավորվում են լուսավոր և մութ շերտերով՝ ճիշտ այնպես, ինչպես երկու ճեղքով անցած ալիքների ինտերֆերենցի ժամանակ։ Մասնիկը գրանցվում է որպես մասնիկ, բայց տարածվում է որպես ալիք. սա է ալիքամասնիկային երկվությունը։</p>
+      <p>Ալիքը որոշում է միայն հավանականությունը. P(x)-ը ցույց է տալիս, թե որքան հաճախ են մասնիկներն ընկնում էկրանի x կետի շրջակայքում։ Հարևան մաքսիմումների հեռավորությունը՝ Δx = λL/d, կախված է ալիքի երկարությունից. ֆոտոնի համար դա լույսի ալիքի երկարությունն է, իսկ էլեկտրոնի համար՝ դը Բրոյլի ալիքի երկարությունը՝ λ = h/p, որը փոքրանում է արագացնող լարումը մեծացնելիս։ Ճեղքի a լայնությունը որոշում է դիֆրակցիոն պատկերի լայնությունը. շերտերը երևում են λL/a կիսալայնությամբ կենտրոնական մաքսիմումի ներսում։ Էլեկտրոնների ալիքի երկարությունը հազարավոր անգամ փոքր է լույսի ալիքի երկարությունից, ուստի դրանց համար ճեղքերը վերցված են միկրոմետրերի չափի։</p>
+      <p>Փորձեք. սկսեք դանդաղ արձակումից և հետևեք առանձին կետերին, հետո մեծացրեք հաճախությունը կամ սեղմեք «+1000 մասնիկ»։ Չափեք հիստոգրամի հարևան մաքսիմումների հեռավորությունը և համեմատեք λL/d արժեքի հետ։ Փակեք ճեղքերից մեկը. շերտերն անհետանում են, թեև մասնիկներն անցնում էին մեկ առ մեկ, ուրեմն յուրաքանչյուր մասնիկ «զգում է» երկու ճեղքն էլ։ Ի վերջո միացրեք ճեղքերի մոտ դրված դետեկտորը. հենց որ հայտնի է դառնում, թե որ ճեղքով է անցել մասնիկը, ինտերֆերենցը վերանում է, և ստացվում է երկու առանձին ճեղքերի պատկերների պարզ գումարը։</p>
+    </section>
+  </main>
+
+  <footer data-shell="footer"></footer>
+</body>
+</html>

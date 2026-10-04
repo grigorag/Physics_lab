@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="hy">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Արագությունների գումարման ռելյատիվիստական օրենքը · Ֆիզիկայի Լաբորատորիաներ</title>
+  <link rel="icon" href="../../../assets/img/favicon.svg" type="image/svg+xml">
+  <script src="../../../assets/js/theme-init.js"></script>
+  <link rel="stylesheet" href="../../../assets/css/main.css">
+  <link rel="stylesheet" href="./sim.css">
+  <script type="module" src="../../../assets/js/core/shell.js"></script>
+  <script type="module" src="./main.js"></script>
+</head>
+<body data-sim="velocity-addition" data-section="relativity">
+  <header data-shell="header"></header>
+
+  <main class="page">
+    <header class="sim-head">
+      <h1 class="sim-title">Արագությունների գումարման ռելյատիվիստական օրենքը</h1>
+      <p class="sim-subtitle">ինչու հնարավոր չէ գերազանցել լույսի արագությունը</p>
+    </header>
+
+    <div class="sim-layout">
+      <section class="stage">
+        <div class="canvas-wrap">
+          <canvas id="cv" aria-label="Տիեզերակայան, մայր նավ, զոնդ և լույսի իմպուլսներ՝ կայանի հաշվարկման համակարգում"></canvas>
+        </div>
+
+        <div class="readouts">
+          <div class="readout">
+            <div class="readout__title">Կայանի ժամացույցով</div>
+            <div id="posOut"></div>
+          </div>
+          <div class="readout">
+            <div class="readout__title"><i class="swatch" style="--c: var(--red)"></i>Ռելյատիվիստական օրենք</div>
+            <div id="relOut"></div>
+          </div>
+          <div class="readout">
+            <div class="readout__title"><i class="swatch" style="--c: var(--text-3)"></i>Դասական կանխատեսում</div>
+            <div id="clOut"></div>
+          </div>
+        </div>
+
+        <div class="charts">
+          <div class="chart-cell">
+            <div class="chart-cell__title">Զոնդի արագությունը կայանի նկատմամբ</div>
+            <div><canvas class="chart" id="chart" aria-label="Զոնդի u արագության կախումը u′ արագությունից՝ ռելյատիվիստական և դասական օրենքներով"></canvas></div>
+            <p class="chart-caption">
+              <i class="swatch" style="--c: var(--red)"></i> ռելյատիվիստական օրենք &nbsp;
+              <i class="swatch" style="--c: var(--text-3)"></i> դասական օրենք (u = v + u′)։
+              Ներկված տիրույթում |u| &gt; c. այնտեղ ոչ մի մարմին հայտնվել չի կարող։
+            </p>
+          </div>
+          <div class="chart-cell">
+            <div class="chart-cell__title">Բազմաստիճան հրթիռ</div>
+            <div><canvas class="chart" id="stages" aria-label="Հրթիռի արագությունը յուրաքանչյուր աստիճանից հետո"></canvas></div>
+            <div class="btn-row">
+              <button class="btn btn--primary" id="stageAdd">Ավելացնել +0.5c</button>
+              <button class="btn" id="stageReset">↺ Սկզբից</button>
+            </div>
+            <p class="chart-caption" id="stageNote"></p>
+          </div>
+        </div>
+      </section>
+
+      <aside class="panel">
+        <section class="group">
+          <div class="btn-row">
+            <button class="btn btn--primary" id="playBtn"></button>
+            <button class="btn" id="resetBtn">↺ Սկզբից</button>
+          </div>
+          <div class="field">
+            <span class="field__label" id="speedLabel">Անիմացիայի արագություն</span>
+            <div class="segmented" id="speed" role="group" aria-labelledby="speedLabel">
+              <button data-value="0.5">×0.5</button>
+              <button data-value="1">×1</button>
+              <button data-value="2" aria-pressed="true">×2</button>
+              <button data-value="4">×4</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="group">
+          <h2 class="group__title"><i class="swatch" style="--c: var(--blue)"></i>Մայր նավ</h2>
+          <div class="field">
+            <label class="field__label" for="v">Արագությունը կայանի նկատմամբ, v</label>
+            <output class="field__value" for="v"></output>
+            <input type="range" id="v" min="-0.99" max="0.99" step="0.01" value="0.5">
+          </div>
+        </section>
+
+        <section class="group">
+          <h2 class="group__title"><i class="swatch" style="--c: var(--red)"></i>Զոնդ</h2>
+          <div class="field">
+            <label class="field__label" for="w">Արագությունը նավի նկատմամբ, u′</label>
+            <output class="field__value" for="w"></output>
+            <input type="range" id="w" min="-1" max="1" step="0.01" value="0.5">
+          </div>
+          <button class="btn btn--block" id="lightBtn"><span>✦ Լույս (u′ = c)</span></button>
+          <p class="hint">Դրական արագությունն ուղղված է դեպի աջ, բացասականը՝ դեպի ձախ։ Երբ u′ = ±c, նավը զոնդի փոխարեն լույսի իմպուլս է արձակում։</p>
+          <label class="check"><input type="checkbox" id="ghost" checked> Ցույց տալ դասական կանխատեսումը</label>
+        </section>
+
+        <section class="group">
+          <h2 class="group__title">Արդյունքներ</h2>
+          <dl class="stats">
+            <div class="stat"><dt>Նավի արագություն v</dt><dd id="sV">—</dd></div>
+            <div class="stat"><dt>Զոնդը նավի նկատմամբ u′</dt><dd id="sW">—</dd></div>
+            <div class="stat"><dt>Դասական գումար v + u′</dt><dd id="sCl">—</dd></div>
+            <div class="stat"><dt>Ռելյատիվիստական u</dt><dd id="sU">—</dd></div>
+            <div class="stat"><dt>u-ն՝ կմ/վ-ով</dt><dd id="sUkm">—</dd></div>
+            <div class="stat"><dt>Դասական օրենքի սխալը</dt><dd id="sErr">—</dd></div>
+            <div class="stat"><dt>Լորենցի գործակից γ(v)</dt><dd id="sGv">—</dd></div>
+            <div class="stat"><dt>γ(u′)</dt><dd id="sGw">—</dd></div>
+            <div class="stat"><dt>γ(u)</dt><dd id="sGu">—</dd></div>
+          </dl>
+          <div class="callout" id="note"></div>
+        </section>
+
+        <section class="group">
+          <div class="formula">
+            <b>u = (v + u′) / (1 + v·u′/c²)</b><br>
+            արագությունների գումարման ռելյատիվիստական օրենքը<br>
+            <b>u = v + u′</b><br>
+            դասական օրենքը (երբ v, u′ ≪ c)<br>
+            <b>γ = 1 / √(1 − v²/c²)</b><br>
+            Լորենցի գործակիցը<br>
+            <b>c = 299 792 458 մ/վ</b>
+          </div>
+        </section>
+      </aside>
+    </div>
+
+    <section class="explain">
+      <h2>Ինչո՞ւ արագությունները պարզապես չեն գումարվում</h2>
+      <p>Դասական մեխանիկայում արագությունները գումարվում են. եթե ժապավենը շարժվում է v արագությամբ, իսկ զատիկը ժապավենի վրա՝ u′ արագությամբ, ապա գետնի նկատմամբ զատիկի արագությունը u = v + u′ է։ Փոքր արագությունների դեպքում այս օրենքը գերազանց է գործում։ Բայց եթե 0.9c արագությամբ թռչող նավից առաջ արձակենք զոնդ, որի արագությունը նավի նկատմամբ նույնպես 0.9c է, դասական օրենքը կտա 1.8c՝ լույսի արագությունից մեծ արժեք։ Փորձը ցույց է տալիս, որ դա անհնար է. վակուումում լույսի արագությունը նույնն է բոլոր իներցիալ հաշվարկման համակարգերում և սահմանային է ցանկացած մարմնի համար։</p>
+      <p>Հարաբերականության հատուկ տեսության մեջ արագությունները գումարվում են <em>u = (v + u′) / (1 + v·u′/c²)</em> օրենքով։ Հայտարարի պատճառով արդյունքը միշտ փոքր է c-ից. 0.9c և 0.9c արագությունների «գումարը» ընդամենը 0.9945c է։ Եթե նավն արձակում է լույս (u′ = c), ապա բանաձևից ստացվում է u = c՝ նավի ցանկացած արագության դեպքում. հենց դա է լույսի արագության հաստատունության սկզբունքը։ Իսկ երբ v-ն և u′-ը շատ փոքր են c-ից, v·u′/c² անդամն աննշան է, և ռելյատիվիստական օրենքը վերածվում է դասականի։</p>
+      <p>Փորձեք. վերցրեք v = 0.5c և u′ = 0.5c և համոզվեք, որ զոնդի արագությունը 0.8c է, այլ ոչ թե c։ Մեծացրեք երկու արագություններն էլ և հետևեք, թե ինչպես է դասական կանխատեսման «ուրվականը» դուրս գալիս լույսի իմպուլսներով սահմանափակված տիրույթից, մինչդեռ իսկական զոնդը միշտ մնում է լույսի ետևում։ Սեղմեք «Լույս» կոճակը և փոխեք նավի արագությունը. արձակված իմպուլսը միշտ շարժվում է կայանից հեռացող լույսի հետ կողք կողքի։ Փոքրացրեք արագությունները մինչև 0.01c և տեսեք, որ երկու օրենքների տարբերությունը գործնականում անհետանում է։ «Բազմաստիճան հրթիռ» գրաֆիկում ամեն նոր աստիճան արագությունը նախորդի նկատմամբ մեծացնում է 0.5c-ով, բայց կայանի նկատմամբ արագությունը միայն մոտենում է c-ին և երբեք չի հասնում դրան։</p>
+    </section>
+  </main>
+
+  <footer data-shell="footer"></footer>
+</body>
+</html>

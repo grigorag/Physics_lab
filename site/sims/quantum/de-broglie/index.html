@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="hy">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Դը Բրոյլի ալիքներ · Ֆիզիկայի Լաբորատորիաներ</title>
+  <link rel="icon" href="../../../assets/img/favicon.svg" type="image/svg+xml">
+  <script src="../../../assets/js/theme-init.js"></script>
+  <link rel="stylesheet" href="../../../assets/css/main.css">
+  <link rel="stylesheet" href="./sim.css">
+  <script type="module" src="../../../assets/js/core/shell.js"></script>
+  <script type="module" src="./main.js"></script>
+</head>
+<body data-sim="de-broglie" data-section="quantum">
+  <header data-shell="header"></header>
+
+  <main class="page">
+    <header class="sim-head">
+      <h1 class="sim-title">Դը Բրոյլի ալիքներ</h1>
+      <p class="sim-subtitle">մասնիկների ալիքային հատկությունները</p>
+    </header>
+
+    <div class="tabs" role="tablist" id="tabs">
+      <button role="tab" data-tab="wavelength" aria-controls="panel-wavelength" aria-selected="true">Ալիքի երկարություն</button>
+      <button role="tab" data-tab="diffraction" aria-controls="panel-diffraction">Էլեկտրոնների դիֆրակցիա</button>
+    </div>
+
+    <!-- ===== De Broglie wavelength ===== -->
+    <div id="panel-wavelength" role="tabpanel">
+      <div class="sim-layout">
+        <section class="stage">
+          <div class="canvas-wrap">
+            <canvas id="wlCanvas" aria-label="Շարժվող մասնիկի ալիքային փաթեթը և նրա դը Բրոյլի ալիքի երկարությունը երկարությունների լոգարիթմական սանդղակի վրա"></canvas>
+            <span class="canvas-hint">Ալիքային փաթեթի պատկերը սխեմատիկ է. մասշտաբը պահպանված չէ</span>
+          </div>
+          <div class="readouts">
+            <div class="readout">
+              <div class="readout__title">Դը Բրոյլի ալիքի երկարություն</div>
+              <div id="wlBig">—</div>
+            </div>
+            <div class="readout">
+              <div class="readout__title">Ատոմի չափի համեմատ (10⁻¹⁰ մ)</div>
+              <div id="wlRatio">—</div>
+            </div>
+          </div>
+        </section>
+
+        <aside class="panel">
+          <section class="group">
+            <h2 class="group__title">Մարմին</h2>
+            <div class="field">
+              <label class="field__label" for="wlObject">Ընտրեք մարմինը</label>
+              <select class="select" id="wlObject">
+                <option value="electron" selected>Էլեկտրոն</option>
+                <option value="proton">Պրոտոն</option>
+                <option value="alpha">α-մասնիկ</option>
+                <option value="c60">C₆₀ մոլեկուլ (ֆուլերեն)</option>
+                <option value="dust">Փոշեհատիկ (1 մկգ)</option>
+                <option value="ball">Գնդակ (0.1 կգ)</option>
+              </select>
+            </div>
+          </section>
+
+          <section class="group">
+            <h2 class="group__title">Շարժում</h2>
+            <div class="field">
+              <span class="field__label">Ինչն է տրված</span>
+              <div class="segmented" id="wlMode" role="group" aria-label="Ինչն է տրված">
+                <button data-value="speed" aria-pressed="true">Արագություն v</button>
+                <button data-value="voltage">Լարում U</button>
+              </div>
+            </div>
+            <div class="field" id="wlSpeedField">
+              <label class="field__label" for="wlSpeed">Արագություն v</label>
+              <output class="field__value" for="wlSpeed"></output>
+              <input type="range" id="wlSpeed" min="0" max="7.477" step="0.01" value="6">
+            </div>
+            <div class="field" id="wlVoltageField" hidden>
+              <label class="field__label" for="wlVoltage">Արագացնող լարում U</label>
+              <output class="field__value" for="wlVoltage"></output>
+              <input type="range" id="wlVoltage" min="0" max="3.407" step="0.001" value="2.176">
+            </div>
+            <p class="hint" id="wlModeHint">—</p>
+          </section>
+
+          <section class="group">
+            <h2 class="group__title">Հաշվարկ</h2>
+            <dl class="stats">
+              <div class="stat"><dt>Զանգված m</dt><dd id="wlM">—</dd></div>
+              <div class="stat"><dt>Արագություն v</dt><dd id="wlV">—</dd></div>
+              <div class="stat"><dt>v / c</dt><dd id="wlBeta">—</dd></div>
+              <div class="stat"><dt>Իմպուլս p = mv</dt><dd id="wlP">—</dd></div>
+              <div class="stat"><dt>Կինետիկ էներգիա</dt><dd id="wlE">—</dd></div>
+              <div class="stat"><dt>Ալիքի երկարություն λ</dt><dd id="wlL">—</dd></div>
+            </dl>
+            <div class="callout" id="wlInfo">—</div>
+          </section>
+
+          <section class="group">
+            <div class="formula">
+              <b>λ = h / p = h / (mv)</b><br>
+              դը Բրոյլի ալիքի երկարություն<br><br>
+              <b>λ = h / √(2mqU)</b><br>
+              U լարումով արագացված q լիցքով մասնիկի համար (qU = mv²/2)<br><br>
+              <b>h = 6.63·10⁻³⁴ Ջ·վ</b><br>
+              Պլանկի հաստատուն
+            </div>
+          </section>
+        </aside>
+      </div>
+
+      <section class="explain">
+        <h2>Ինչ է կատարվում այստեղ</h2>
+        <p>1924 թվականին Լուի դը Բրոյլը ենթադրեց, որ ոչ միայն լույսը, այլև նյութի ցանկացած մասնիկ ունի ալիքային հատկություններ։ <em>p = mv</em> իմպուլսով շարժվող մասնիկին համապատասխանում է ալիք, որի երկարությունը <em>λ = h / p</em> է, որտեղ h-ը Պլանկի հաստատունն է։ Որքան մեծ են մարմնի զանգվածն ու արագությունը, այնքան կարճ է այդ ալիքը։</p>
+        <p>Ալիքային հատկությունները՝ դիֆրակցիան և ինտերֆերենցը, նկատելի են միայն այն դեպքում, երբ ալիքի երկարությունը համեմատելի է արգելքների չափերի հետ։ Էլեկտրոնի համար λ-ն նույն կարգի է, ինչ բյուրեղում ատոմների միջև հեռավորությունը (մոտ 10⁻¹⁰ մ), ուստի բյուրեղը էլեկտրոնների համար դիֆրակցիոն ցանց է։ Իսկ գնդակի կամ փոշեհատիկի ալիքի երկարությունը միլիարդավոր անգամ փոքր է նույնիսկ ատոմի միջուկից, և ոչ մի փորձով հնարավոր չէ նկատել դրանց ալիքային հատկությունները. այդպիսի մարմինները շարժվում են դասական մեխանիկայի օրենքներով։</p>
+        <p>Փորձեք. ընտրեք էլեկտրոնը և տվեք 10⁶ մ/վ արագություն՝ կստանաք λ ≈ 0.73 նմ։ Արագացրեք էլեկտրոնը 150 Վ լարումով և համոզվեք, որ λ ≈ 0.1 նմ։ Ապա ընտրեք գնդակը և տեսեք, թե սանդղակի վրա որքան հեռու է նրա ալիքի երկարությունը ատոմի միջուկի չափից։ Հետաքրքիր է նաև C₆₀ մոլեկուլը. մոտ 200 մ/վ արագության դեպքում նրա λ-ն ընդամենը մի քանի պիկոմետր է, բայց 1999 թվականին հաջողվեց դիտել նույնիսկ այդպիսի ծանր մոլեկուլների ինտերֆերենցը։</p>
+      </section>
+    </div>
+
+    <!-- ===== Electron diffraction ===== -->
+    <div id="panel-diffraction" role="tabpanel" hidden>
+      <div class="sim-layout">
+        <section class="stage">
+          <div class="canvas-wrap canvas-wrap--dark">
+            <canvas id="dfCanvas" aria-label="Էլեկտրոնների փունջն անցնում է գրաֆիտի բարակ թաղանթով և լուսարձակող էկրանին առաջացնում դիֆրակցիոն օղակներ"></canvas>
+            <ul class="legend legend--tl">
+              <li><i class="legend__line" style="--c: var(--amber)"></i>d₁ = 0.213 նմ հարթություններ</li>
+              <li><i class="legend__line" style="--c: var(--blue)"></i>d₂ = 0.123 նմ հարթություններ</li>
+            </ul>
+          </div>
+        </section>
+
+        <aside class="panel">
+          <section class="group">
+            <h2 class="group__title">Պարամետրեր</h2>
+            <div class="field">
+              <label class="field__label" for="dfU">Արագացնող լարում U</label>
+              <output class="field__value" for="dfU"></output>
+              <input type="range" id="dfU" min="20" max="5000" step="10" value="4000">
+            </div>
+            <div class="field">
+              <label class="field__label" for="dfL">Թաղանթից էկրան հեռավորություն L</label>
+              <output class="field__value" for="dfL"></output>
+              <input type="range" id="dfL" min="50" max="300" step="5" value="135">
+            </div>
+            <label class="check"><input type="checkbox" id="dfTheory" checked> Օղակների հաշվարկային դիրքերը</label>
+            <label class="check"><input type="checkbox" id="dfPause"> Կանգնեցնել փունջը</label>
+          </section>
+
+          <section class="group">
+            <h2 class="group__title">Հաշվարկ</h2>
+            <dl class="stats">
+              <div class="stat"><dt>Լարում U</dt><dd id="dfUVal">—</dd></div>
+              <div class="stat"><dt>Էլեկտրոնի արագություն v</dt><dd id="dfV">—</dd></div>
+              <div class="stat"><dt>v / c</dt><dd id="dfBeta">—</dd></div>
+              <div class="stat"><dt>Ալիքի երկարություն λ</dt><dd id="dfLam">—</dd></div>
+              <div class="stat"><dt>Բրեգի անկյուն θ₁ (d₁)</dt><dd id="dfTh1">—</dd></div>
+              <div class="stat"><dt>Բրեգի անկյուն θ₂ (d₂)</dt><dd id="dfTh2">—</dd></div>
+              <div class="stat"><dt>Օղակի շառավիղ r₁</dt><dd id="dfR1">—</dd></div>
+              <div class="stat"><dt>Օղակի շառավիղ r₂</dt><dd id="dfR2">—</dd></div>
+            </dl>
+            <div class="callout" id="dfInfo">—</div>
+          </section>
+
+          <section class="group">
+            <div class="formula">
+              <b>λ = h / √(2m<sub>e</sub>eU)</b><br>
+              λ (Å) ≈ 12.27 / √U (Վ)<br><br>
+              <b>2d sin θ = nλ</b><br>
+              Վուլֆ–Բրեգի պայման (այստեղ n = 1)<br><br>
+              <b>r = L tg 2θ ≈ Lλ / d</b><br>
+              օղակի շառավիղը էկրանին
+            </div>
+          </section>
+        </aside>
+      </div>
+
+      <section class="explain">
+        <h2>Էլեկտրոնների դիֆրակցիան բյուրեղի վրա</h2>
+        <p>Դը Բրոյլի վարկածը փորձով հաստատվեց 1927 թվականին. Դևիսոնը և Ջերմերը դիտեցին էլեկտրոնների դիֆրակցիան նիկելի բյուրեղից անդրադառնալիս, իսկ Ջ. Պ. Թոմսոնը՝ բարակ մետաղե թաղանթի միջով անցնելիս։ Այս փորձում U լարումով արագացված էլեկտրոնների նեղ փունջն անցնում է գրաֆիտի բարակ բազմաբյուրեղ թաղանթով և ընկնում լուսարձակող էկրանին։</p>
+        <p>Բյուրեղի ատոմական հարթություններից անդրադարձած ալիքները ուժեղացնում են միմյանց միայն այն ուղղություններով, որոնց համար կատարվում է Վուլֆ–Բրեգի պայմանը՝ <em>2d sin θ = nλ</em>։ Փունջը շեղվում է 2θ անկյունով, իսկ քանի որ թաղանթում մանր բյուրեղիկները կողմնորոշված են պատահականորեն, էկրանին կետերի փոխարեն առաջանում են օղակներ՝ <em>r = L tg 2θ ≈ Lλ / d</em> շառավղով։ Գրաֆիտի երկու միջհարթային հեռավորություններին՝ d₁ = 0.213 նմ և d₂ = 0.123 նմ, համապատասխանում է երկու օղակ։</p>
+        <p>Մեծացրեք լարումը. էլեկտրոններն արագանում են, նրանց ալիքի երկարությունը փոքրանում է (<em>λ ~ 1/√U</em>), և օղակները սեղմվում են։ Լարումը 4 անգամ մեծացնելիս օղակների շառավիղները փոքրանում են մոտ 2 անգամ։ Չափելով օղակի շառավիղը և իմանալով L-ը և d-ն՝ կարելի է հաշվել λ-ն և համոզվել, որ այն համընկնում է դը Բրոյլի բանաձևով ստացված արժեքի հետ։ Ուշադրություն դարձրեք, որ յուրաքանչյուր էլեկտրոն էկրանին թողնում է մեկ կետ. օղակները գոյանում են բազմաթիվ էլեկտրոնների հարվածներից։</p>
+      </section>
+    </div>
+  </main>
+
+  <footer data-shell="footer"></footer>
+</body>
+</html>

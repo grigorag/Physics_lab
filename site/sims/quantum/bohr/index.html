@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="hy">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ջրածնի ատոմի Բորի մոդելը · Ֆիզիկայի Լաբորատորիաներ</title>
+  <link rel="icon" href="../../../assets/img/favicon.svg" type="image/svg+xml">
+  <script src="../../../assets/js/theme-init.js"></script>
+  <link rel="stylesheet" href="../../../assets/css/main.css">
+  <link rel="stylesheet" href="./sim.css">
+  <script type="module" src="../../../assets/js/core/shell.js"></script>
+  <script type="module" src="./main.js"></script>
+</head>
+<body data-sim="bohr" data-section="quantum">
+  <header data-shell="header"></header>
+
+  <main class="page">
+    <header class="sim-head">
+      <h1 class="sim-title">Ջրածնի ատոմի Բորի մոդելը</h1>
+      <p class="sim-subtitle">էներգիական մակարդակներ և սպեկտր</p>
+    </header>
+
+    <div class="sim-layout">
+      <section class="stage">
+        <div class="views">
+          <div class="canvas-wrap">
+            <canvas id="atom" aria-label="Ջրածնի ատոմը՝ միջուկը և էլեկտրոնի ուղեծրերը"></canvas>
+          </div>
+          <div class="canvas-wrap levels">
+            <canvas id="levels" aria-label="Ջրածնի ատոմի էներգիական մակարդակների դիագրամ"></canvas>
+          </div>
+        </div>
+        <p class="hint">
+          Սեղմեք դիագրամի որևէ մակարդակի վրա՝ էլեկտրոնն այնտեղ տեղափոխելու համար. դեպի ցած՝ ֆոտոնի <b>արձակում</b>,
+          դեպի վեր՝ <b>կլանում</b>։ Ուղեծրերի շառավիղները պատկերված են սեղմված մասշտաբով
+          (իրականում r<sub>n</sub> = n²·a<sub>0</sub>, վեցերորդ ուղեծիրը 36 անգամ մեծ է առաջինից)։
+          Էներգիական մակարդակները պատկերված են մասշտաբով։
+        </p>
+
+        <div class="canvas-wrap spectrum">
+          <canvas id="spectrum" aria-label="Ջրածնի ճառագայթման սպեկտրը"></canvas>
+        </div>
+        <div class="spectrum-bar">
+          <button class="btn" id="lymanBtn">Լայմանի սերիա</button>
+          <button class="btn" id="balmerBtn">Բալմերի սերիա</button>
+          <button class="btn" id="paschenBtn">Պաշենի սերիա</button>
+          <button class="btn" id="clearBtn">Մաքրել</button>
+        </div>
+        <p class="hint">
+          Սպեկտրում կուտակվում են ատոմի արձակած ֆոտոնների գծերը։ Ալիքի երկարության առանցքը հավասարաչափ չէ.
+          այն բաժանված է տեղամասերի, և տեսանելի տիրույթը (380–750 նմ) ձգված է։ 200 նմ-ից մեծ ալիքի
+          երկարությունները տրված են օդում, ինչպես սպեկտրային աղյուսակներում։
+        </p>
+      </section>
+
+      <aside class="panel">
+        <section class="group">
+          <h2 class="group__title">Անցում</h2>
+          <div class="field">
+            <span class="field__label">Սկզբնական մակարդակ</span>
+            <div class="segmented levels-pick" id="from" role="group" aria-label="Սկզբնական մակարդակ">
+              <button data-value="1" aria-pressed="true">1</button>
+              <button data-value="2">2</button>
+              <button data-value="3">3</button>
+              <button data-value="4">4</button>
+              <button data-value="5">5</button>
+              <button data-value="6">6</button>
+            </div>
+          </div>
+          <div class="field">
+            <span class="field__label">Վերջնական մակարդակ</span>
+            <div class="segmented levels-pick" id="to" role="group" aria-label="Վերջնական մակարդակ">
+              <button data-value="1">1</button>
+              <button data-value="2">2</button>
+              <button data-value="3" aria-pressed="true">3</button>
+              <button data-value="4">4</button>
+              <button data-value="5">5</button>
+              <button data-value="6">6</button>
+            </div>
+          </div>
+          <button class="btn btn--primary btn--block" id="goBtn">Անցում</button>
+          <button class="btn btn--block" id="autoBtn"></button>
+          <label class="check"><input type="checkbox" id="wave"> Դը Բրոյլի կանգուն ալիք</label>
+          <div class="field">
+            <label class="field__label" for="speed">Անիմացիայի արագություն</label>
+            <output class="field__value" for="speed"></output>
+            <input type="range" id="speed" min="0.25" max="3" step="0.25" value="1">
+          </div>
+          <button class="btn btn--block" id="resetBtn">↺ Վերագործարկել</button>
+        </section>
+
+        <section class="group">
+          <h2 class="group__title">Էլեկտրոնի վիճակը</h2>
+          <dl class="stats">
+            <div class="stat"><dt>Մակարդակ n</dt><dd id="sN">—</dd></div>
+            <div class="stat"><dt>Ուղեծրի շառավիղ r<sub>n</sub></dt><dd id="sR">—</dd></div>
+            <div class="stat"><dt>Էներգիա E<sub>n</sub></dt><dd id="sE">—</dd></div>
+            <div class="stat"><dt>Արագություն v<sub>n</sub></dt><dd id="sV">—</dd></div>
+            <div class="stat"><dt>Իոնացման էներգիա</dt><dd id="sIon">—</dd></div>
+          </dl>
+        </section>
+
+        <section class="group">
+          <h2 class="group__title">Վերջին անցումը</h2>
+          <dl class="stats">
+            <div class="stat"><dt>Անցում</dt><dd id="tWhat">—</dd></div>
+            <div class="stat"><dt>Ֆոտոնի էներգիա ΔE</dt><dd id="tDE">—</dd></div>
+            <div class="stat"><dt>Հաճախություն ν</dt><dd id="tNu">—</dd></div>
+            <div class="stat"><dt>Ալիքի երկարություն λ</dt><dd id="tLam">—</dd></div>
+            <div class="stat"><dt>Տիրույթ</dt><dd id="tReg">—</dd></div>
+            <div class="stat"><dt>Սերիա</dt><dd id="tSer">—</dd></div>
+          </dl>
+          <div class="callout" id="calc">Կատարեք անցում՝ ֆոտոնի բնութագրերը տեսնելու համար։</div>
+        </section>
+
+        <section class="group">
+          <h2 class="group__title">Բանաձևեր</h2>
+          <div class="formula">
+            <b>1/λ = R·(1/n<sub>1</sub>² − 1/n<sub>2</sub>²)</b><br>
+            Ռիդբերգի բանաձևը, n<sub>1</sub> &lt; n<sub>2</sub>, R = 1.097·10<sup>7</sup> մ<sup>−1</sup><br>
+            <b>E<sub>n</sub> = −13.6 էՎ / n²</b><br>
+            <b>hν = E<sub>n<sub>2</sub></sub> − E<sub>n<sub>1</sub></sub></b><br>
+            <b>r<sub>n</sub> = n²·a<sub>0</sub></b>, a<sub>0</sub> = 0.0529 նմ<br>
+            <b>v<sub>n</sub> = v<sub>1</sub>/n</b>, v<sub>1</sub> = 2.19·10<sup>6</sup> մ/վ<br>
+            <b>2πr<sub>n</sub> = n·λ<sub>Բ</sub></b> — ուղեծրի վրա տեղավորվում է դը Բրոյլի ամբողջ թվով ալիք
+          </div>
+        </section>
+      </aside>
+    </div>
+
+    <section class="explain">
+      <h2>Ինչպես է ատոմը ճառագայթում</h2>
+      <p>
+        Ըստ Բորի կանխադրույթների՝ ջրածնի ատոմի էլեկտրոնը կարող է գտնվել միայն որոշակի՝ <em>ստացիոնար</em>
+        վիճակներում, որոնցում ատոմը չի ճառագայթում։ Այդ վիճակների էներգիաներն են E<sub>n</sub> = −13.6 էՎ / n²,
+        իսկ ուղեծրերի շառավիղները՝ r<sub>n</sub> = n²·a<sub>0</sub>։ Ամենացածր՝ n = 1 մակարդակը <em>հիմնական
+        վիճակն</em> է, մյուսները՝ գրգռված վիճակներ։ Էլեկտրոնն ատոմից պոկելու (իոնացման) համար հիմնական վիճակում
+        անհրաժեշտ է 13.6 էՎ էներգիա։
+      </p>
+      <p>
+        Մի վիճակից մյուսին անցնելիս ատոմն արձակում կամ կլանում է մեկ ֆոտոն, որի էներգիան ճիշտ հավասար է
+        մակարդակների էներգիաների տարբերությանը՝ hν = E<sub>n<sub>2</sub></sub> − E<sub>n<sub>1</sub></sub>։
+        Այդ պատճառով ջրածնի սպեկտրը <em>գծային</em> է։ n = 1 մակարդակին անցումները կազմում են Լայմանի սերիան
+        (ուլտրամանուշակագույն), n = 2 մակարդակին՝ Բալմերի սերիան (տեսանելի լույս), n = 3 մակարդակին՝
+        Պաշենի սերիան (ինֆրակարմիր)։ Դը Բրոյլի վարկածը բացատրում է, թե ինչու են թույլատրելի հենց այդ
+        ուղեծրերը. նրանց երկարության վրա տեղավորվում է էլեկտրոնի ամբողջ թվով ալիք՝ կանգուն ալիք։
+      </p>
+      <p>
+        Փորձեք. կատարեք 3 → 2 անցումը և համոզվեք, որ արձակվում է 656.3 նմ ալիքի երկարությամբ կարմիր ֆոտոն
+        (H<sub>α</sub> գիծը)։ Ցույց տվեք Բալմերի ամբողջ սերիան և հաշվեք տեսանելի գծերը։ Միացրեք ինքնակամ
+        անցումները և հետևեք, թե ինչպես է գրգռված ատոմը աստիճանաբար վերադառնում հիմնական վիճակ՝ յուրաքանչյուր
+        քայլին արձակելով մեկ ֆոտոն։ Միացրեք կանգուն ալիքը և հաշվեք ալիքի երկարությունները տարբեր ուղեծրերի վրա։
+      </p>
+    </section>
+  </main>
+
+  <footer data-shell="footer"></footer>
+</body>
+</html>

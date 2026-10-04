@@ -70,6 +70,7 @@
   --blue:   #4ea8ef;
   --red:    #f26d6d;
   --green:  #5ccf86;
+  --pink:   #ec7ac0;
 
   --on-accent: #0a0d16;     /* text on a solid accent fill */
   --shadow:    0 18px 40px -24px rgb(0 0 0 / 0.7);
@@ -104,6 +105,7 @@
   --blue:   #1f72c4;
   --red:    #d03a3a;
   --green:  #23803f;
+  --pink:   #b5307f;
 
   --on-accent: #ffffff;
   --shadow:    0 14px 32px -20px rgb(30 42 90 / 0.28);
@@ -116,6 +118,10 @@
 [data-section="molecular"]       { --accent: var(--coral); }
 [data-section="electrodynamics"] { --accent: var(--purple); }
 [data-section="optics"]          { --accent: var(--teal); }
+[data-section="waves"]           { --accent: var(--blue); }
+[data-section="relativity"]      { --accent: var(--red); }
+[data-section="quantum"]         { --accent: var(--pink); }
+[data-section="nuclear"]         { --accent: var(--green); }
 
 /* Local accent: <div class="segmented tint" style="--accent: #c14a3a">.
    Derived accent shades must be declared wherever --accent can change,

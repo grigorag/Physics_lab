@@ -26,6 +26,7 @@ const PALETTES = {
     blue:   '#4ea8ef',
     red:    '#f26d6d',
     green:  '#5ccf86',
+    pink:   '#ec7ac0',
   },
   light: {
     bg:        '#f3f5fa',
@@ -45,6 +46,7 @@ const PALETTES = {
     blue:   '#1f72c4',
     red:    '#d03a3a',
     green:  '#23803f',
+    pink:   '#b5307f',
   },
 };
 

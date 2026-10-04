@@ -1,0 +1,54 @@
+/* Relativity of simultaneity — sim-specific layout (tokens only). */
+
+/* Play button + time scrubber under the scene. */
+.transport {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: var(--sp-3) var(--sp-4);
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface-1);
+}
+.transport > .btn { min-width: 9.5em; }
+
+/* Event log next to the spacetime diagram. */
+.st-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--sp-3);
+  align-items: start;
+}
+.st-chart { display: grid; gap: var(--sp-2); min-width: 0; }
+
+.evlog {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  min-height: 13.5em;
+  font-family: var(--font-sans);
+}
+.evlog li {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 5px 0;
+}
+.evlog li + li { border-top: 1px dashed var(--border); }
+.evlog .swatch { align-self: center; }
+.evlog span { flex: 1; min-width: 0; color: var(--text); }
+.evlog b { font-family: var(--font-mono); white-space: nowrap; }
+.evlog .evlog__empty { color: var(--text-3); }
+
+.callout { margin-top: var(--sp-3); }
+
+@media (max-width: 700px) {
+  .st-row { grid-template-columns: minmax(0, 1fr); }
+  .evlog { min-height: 0; }
+}
+@media (max-width: 480px) {
+  .transport { grid-template-columns: minmax(0, 1fr); }
+}

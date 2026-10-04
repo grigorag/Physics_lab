@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="hy">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Թունելային էֆեկտ · Ֆիզիկայի Լաբորատորիաներ</title>
+  <link rel="icon" href="../../../assets/img/favicon.svg" type="image/svg+xml">
+  <script src="../../../assets/js/theme-init.js"></script>
+  <link rel="stylesheet" href="../../../assets/css/main.css">
+  <script type="module" src="../../../assets/js/core/shell.js"></script>
+  <script type="module" src="./main.js"></script>
+</head>
+<body data-sim="tunneling" data-section="quantum">
+  <header data-shell="header"></header>
+
+  <main class="page">
+    <header class="sim-head">
+      <h1 class="sim-title">Թունելային էֆեկտ</h1>
+      <p class="sim-subtitle">մասնիկի անցումը պոտենցիալային արգելքի միջով</p>
+    </header>
+
+    <div class="sim-layout">
+      <section class="stage">
+        <div class="canvas-wrap">
+          <canvas id="cv" aria-label="Էլեկտրոնի ալիքային փաթեթի բախումը պոտենցիալային արգելքին"></canvas>
+          <ul class="legend legend--tr">
+            <li><i class="legend__dot" style="--c: var(--blue)"></i><span>հավանականության խտություն |ψ|²</span></li>
+            <li id="legRe" hidden><i class="legend__line" style="--c: var(--teal)"></i>Re ψ</li>
+            <li><i class="legend__dot" style="--c: var(--amber)"></i><span>արգելք U(x)</span></li>
+            <li><i class="legend__line" style="--c: var(--coral)"></i>մասնիկի էներգիա E</li>
+            <li id="legMag" hidden><i class="legend__line" style="--c: var(--pink)"></i><span>անցած մասը՝ խոշորացված</span></li>
+          </ul>
+        </div>
+
+        <div class="readouts">
+          <div class="readout">
+            <div class="readout__title"><i class="swatch" style="--c: var(--blue)"></i>Արգելքից ձախ · անդրադարձում</div>
+            <div id="outR"></div>
+          </div>
+          <div class="readout">
+            <div class="readout__title"><i class="swatch" style="--c: var(--pink)"></i>Արգելքից աջ · անցում</div>
+            <div id="outT"></div>
+          </div>
+          <div class="readout">
+            <div class="readout__title">Ընթացք</div>
+            <div id="outState"></div>
+          </div>
+        </div>
+
+        <canvas class="chart" id="chart" aria-label="Անցման գործակցի կախումը էներգիայից"></canvas>
+        <p class="chart-caption">Անցման գործակցի T(E) տեսական կորը տվյալ արգելքի համար։ Կարմիր գիծը մասնիկի էներգիան է, գունավոր շերտը՝ փաթեթի էներգիաների միջակայքը (E ± ΔE), օղակը՝ մոդելում չափված T-ն (հայտնվում է բախումից հետո)։</p>
+      </section>
+
+      <aside class="panel">
+        <section class="group">
+          <div class="btn-row">
+            <button class="btn" id="playBtn"></button>
+            <button class="btn btn--primary" id="restartBtn">↺ Նորից</button>
+          </div>
+          <div class="field">
+            <span class="field__label" id="speedLabel">Անիմացիայի արագություն</span>
+            <div class="segmented" id="speed" role="group" aria-labelledby="speedLabel">
+              <button data-value="0.25">×0.25</button>
+              <button data-value="0.5">×0.5</button>
+              <button data-value="1" aria-pressed="true">×1</button>
+              <button data-value="2">×2</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="group">
+          <h2 class="group__title">Մասնիկ և արգելք</h2>
+          <div class="field">
+            <label class="field__label" for="energy">Էլեկտրոնի էներգիա E</label>
+            <output class="field__value" for="energy"></output>
+            <input type="range" id="energy" min="0.5" max="10" step="0.1" value="5">
+          </div>
+          <div class="field">
+            <label class="field__label" for="height">Արգելքի բարձրություն U₀</label>
+            <output class="field__value" for="height"></output>
+            <input type="range" id="height" min="0.5" max="15" step="0.5" value="10">
+          </div>
+          <div class="field">
+            <label class="field__label" for="width">Արգելքի լայնություն a</label>
+            <output class="field__value" for="width"></output>
+            <input type="range" id="width" min="0.05" max="1" step="0.05" value="0.1">
+          </div>
+          <div class="field">
+            <label class="field__label" for="sigma">Փաթեթի լայնություն σ</label>
+            <output class="field__value" for="sigma"></output>
+            <input type="range" id="sigma" min="0.3" max="1" step="0.05" value="0.6">
+          </div>
+          <p class="hint">Ալիքային փաթեթը տարբեր էներգիաներով ալիքների վերադրում է. որքան նեղ է փաթեթը, այնքան մեծ է էներգիայի ցրվածքը՝ ΔE-ն։ Ավելի մեծ էներգիայով բաղադրիչներն արգելքով շատ ավելի հեշտ են անցնում, ուստի մոդելում չափված T-ն փոքր-ինչ տարբերվում է մեկ որոշակի էներգիայի համար գրված բանաձևի արժեքից։ Լայն փաթեթի դեպքում տարբերությունը փոքր է։</p>
+          <label class="check"><input type="checkbox" id="showRe"> Ցույց տալ Re ψ-ն (ալիքը)</label>
+          <p class="hint">Պարամետրը փոխելիս փաթեթը նորից է արձակվում։</p>
+        </section>
+
+        <section class="group">
+          <h2 class="group__title">Արժեքներ</h2>
+          <dl class="stats">
+            <div class="stat"><dt>Էներգիա E</dt><dd id="sE">—</dd></div>
+            <div class="stat"><dt>Էներգիայի ցրվածք ΔE</dt><dd id="sDE">—</dd></div>
+            <div class="stat"><dt>Արգելքի բարձրություն U₀</dt><dd id="sU">—</dd></div>
+            <div class="stat"><dt>Արգելքի լայնություն a</dt><dd id="sA">—</dd></div>
+            <div class="stat"><dt>Մարման գործակից κ</dt><dd id="sK">—</dd></div>
+            <div class="stat"><dt>Թափանցման խորություն 1/κ</dt><dd id="sD">—</dd></div>
+            <div class="stat"><dt>T՝ բանաձևով (E էներգիայի համար)</dt><dd id="sTth">—</dd></div>
+            <div class="stat"><dt>T՝ բանաձևով (փաթեթի համար)</dt><dd id="sTp">—</dd></div>
+            <div class="stat"><dt>T՝ մոդելում</dt><dd id="sT">—</dd></div>
+            <div class="stat"><dt>R՝ մոդելում</dt><dd id="sR">—</dd></div>
+            <div class="stat"><dt>R + T</dt><dd id="sSum">—</dd></div>
+          </dl>
+          <div class="callout" id="verdict"></div>
+        </section>
+
+        <section class="group">
+          <h2 class="group__title">T(E) գրաֆիկ</h2>
+          <div class="segmented" id="scale" role="group" aria-label="T առանցքի մասշտաբ">
+            <button data-value="lin" aria-pressed="true">գծային</button>
+            <button data-value="log">լոգարիթմական</button>
+          </div>
+        </section>
+
+        <section class="group">
+          <div class="formula">
+            E &lt; U₀ (թունելային անցում)՝<br>
+            <b>T = [1 + U₀²·sh²(κa) / (4E(U₀ − E))]⁻¹</b><br>
+            <b>κ = √(2m(U₀ − E)) / ħ</b><br>
+            եթե κa ≫ 1, ապա <b>T ~ e<sup>−2κa</sup></b><br><br>
+            E &gt; U₀ (արգելքի վրայով)՝<br>
+            <b>T = [1 + U₀²·sin²(k′a) / (4E(E − U₀))]⁻¹</b><br>
+            <b>k′ = √(2m(E − U₀)) / ħ</b><br><br>
+            <b>R = 1 − T</b><br>
+            m-ը էլեկտրոնի զանգվածն է, a-ն՝ արգելքի լայնությունը
+          </div>
+        </section>
+      </aside>
+    </div>
+
+    <section class="explain">
+      <h2>Ինչպե՞ս է մասնիկն անցնում «անանցանելի» արգելքի միջով</h2>
+      <p>Դասական ֆիզիկայում մասնիկը չի կարող հայտնվել այնտեղ, որտեղ նրա պոտենցիալ էներգիան մեծ կլիներ լրիվ էներգիայից. եթե E &lt; U₀, գնդիկը հետ է գլորվում արգելքից (տե՛ս նկարի ներքևի շերտը)։ Միկրոմասնիկն ունի ալիքային հատկություններ. նրա վիճակը նկարագրվում է ψ ալիքային ֆունկցիայով, իսկ <em>|ψ|²</em>-ն ցույց է տալիս մասնիկը տվյալ տեղում հայտնաբերելու հավանականության խտությունը։ Արգելքի ներսում ալիքային ֆունկցիան միանգամից զրո չի դառնում, այլ արագ մարում է՝ e<sup>−κx</sup> օրենքով։ Եթե արգելքը բավականաչափ բարակ է, ալիքի մի մասը հասնում է նրա մյուս կողմը, և մասնիկը որոշ հավանականությամբ հայտնվում է արգելքի հետևում։ Սա <em>թունելային էֆեկտն</em> է։ Մասնիկը չի «կիսվում». T-ն այն հավանականությունն է, որով մասնիկը կհայտնաբերվի արգելքից աջ, իսկ R-ը՝ ձախ։</p>
+      <p>Անցման հավանականությունը չափազանց զգայուն է արգելքի լայնության և բարձրության նկատմամբ՝ T ~ e<sup>−2κa</sup>։ Փորձեք. E = 5 էՎ, U₀ = 10 էՎ դեպքում a-ն 0.1 նմ-ից դարձրեք 0.2 նմ, ապա 0.4 նմ և հետևեք, թե քանի անգամ է փոքրանում T-ն (երբ անցած մասը շատ փոքր է, այն ցույց է տրվում նաև խոշորացված)։ Այնուհետև E-ն դարձրեք U₀-ից մեծ. դասական մասնիկը միշտ կանցներ, իսկ քվանտային մասնիկը մասամբ անդրադառնում է։ Լայն արգելքի դեպքում T(E) գրաֆիկում երևում են ռեզոնանսներ. երբ արգելքի լայնության վրա տեղավորվում է ամբողջ թվով կիսաալիք (k′a = πn), T = 1։</p>
+      <p>Թունելային էֆեկտով են բացատրվում շատ երևույթներ։ <em>α-տրոհման</em> ժամանակ α-մասնիկը թունելային անցումով դուրս է գալիս միջուկից, թեև նրա էներգիան փոքր է կուլոնյան արգելքի բարձրությունից. դրա համար էլ կիսատրոհման պարբերությունն այդքան ուժեղ է կախված α-մասնիկի էներգիայից։ <em>Թունելային մանրադիտակում</em> էլեկտրոններն անցնում են ասեղի ծայրի և մակերևույթի միջև եղած բացակով, և հոսանքն այնքան զգայուն է հեռավորության նկատմամբ, որ հնարավոր է «տեսնել» առանձին ատոմներ։ <em>Արեգակի</em> ընդերքում պրոտոնների ջերմային շարժման էներգիան չի բավարարում կուլոնյան վանողությունը հաղթահարելու համար, և միջուկային սինթեզը հնարավոր է միայն թունելային էֆեկտի շնորհիվ։</p>
+    </section>
+  </main>
+
+  <footer data-shell="footer"></footer>
+</body>
+</html>
